@@ -41,7 +41,7 @@ public class VideoFinishParams {
 
     // Mandatory
 
-    private TestPassStatus status;
+    private TestPassStatus testStatus;
 
     // Optional
 

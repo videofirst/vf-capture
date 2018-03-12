@@ -218,7 +218,7 @@ public class VideoStatusTest {
             TestLog.builder().cat("browser").tier(L1).ts(ts1).log("awesome log 1").build(),
             TestLog.builder().cat("server").tier(L2).ts(ts2).log("awesome log 2").build());
         VideoFinishParams videoFinishParams = VideoFinishParams.builder()
-            .status(TestPassStatus.fail)
+            .testStatus(TestPassStatus.fail)
             .meta(ImmutableMap.of("author", "Bob"))
             .description(" even more awesome description ")
             .error(" awesome error ")

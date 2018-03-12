@@ -211,8 +211,8 @@ public class DefaultVideoService implements VideoService {
                 "videos can only be finished which is state is `recording` OR `stopped`.");
         }
 
-        if (finishVideoParams.getStatus() == null) {
-            throw new InvalidParameterException("Please fill in missing 'status' attribute");
+        if (finishVideoParams.getTestStatus() == null) {
+            throw new InvalidParameterException("Please fill in missing 'testStatus' attribute");
         }
     }
 

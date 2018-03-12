@@ -88,9 +88,9 @@ public class VideoControllerTest extends AbstractControllerTest {
     // Video finish params
 
     private static final VideoFinishParams VIDEO_FINISH_PARAMS_MIN = VideoFinishParams.builder()
-        .status(TestPassStatus.fail).build();
+        .testStatus(TestPassStatus.fail).build();
     private static final VideoFinishParams VIDEO_FINISH_PARAMS_MAX = VideoFinishParams.builder()
-        .status(TestPassStatus.fail)
+        .testStatus(TestPassStatus.fail)
         .meta(ImmutableMap.of("author", "Bob", "extra", "stuff"))
         .description(" even more awesome description ")
         .error(" awesome error ")

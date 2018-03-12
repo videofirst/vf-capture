@@ -210,7 +210,7 @@ vft_default:
 
 
 # --------------------------------------------------------------------------------------------------
-# 2. "Other" Configuration Properties
+# 3. "Other" Configuration Properties
 # --------------------------------------------------------------------------------------------------
 #
 #    These are "other" configuration properties which generally don't need to change.
