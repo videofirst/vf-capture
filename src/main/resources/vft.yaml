@@ -1,0 +1,231 @@
+
+# ==================================================================================================
+#
+# VFT Capture configuration file.
+#
+# This configuration file contains 2 types of configuration properties: -
+#
+# 1. Start-up (start with `vft_config`) - cannot be changed at runtime.
+# 2. Defaults (start with `vft_default`) - can be overridden via REST calls.
+#
+# Comments exist beside each configuration property in this file to explain it's purpose and
+# possible values.
+#
+# ==================================================================================================
+
+
+# --------------------------------------------------------------------------------------------------
+# 1. "Start-up" Configuration Properties
+# --------------------------------------------------------------------------------------------------
+#
+#    These are configuration properties which can only be set at start-up. Once the application is
+#    running then it CANNOT be changed / overridden e.g. security username, storage locations OR
+#    upload URL.
+#
+# --------------------------------------------------------------------------------------------------
+
+vft_config:
+
+    # 1.1 Security settings - do not use the defaults in production!
+    security:
+
+        # Type of security. Can be (1) `plain` or (2) `encrypted` (encrypted password). If using
+        # encrypted run `VftAgentApplication` with the `-pwd` arg to generate encrypted entries.
+        type: plain
+        #type: encrypted
+
+        # Username. NOTE - if type = 'encrypted' then this must be encrypted.
+        user: test
+        #user: "$2a$10$.XmVZBw2ap.hyEF7UEW9k.wbwwBLYMYu1ZCxdf.poXg1rxHJnuAIS"
+
+        # Password. NOTE - if type = 'encrypted' then this must be encrypted.
+        pass:
+
+        # Lock out attempts. Number of attempts before access is locked.
+        lockOutAttempts: 3
+
+        # Lock out in seconds. Number of seconds a locked-out user must wait before retrying.
+        lockOutInSeconds: 60
+
+
+    # 1.2 Categories - must be set for each test. The following categories should work for
+    # most software companies but these can be changed to suit different use cases.
+    # NOTE - the categories are separated with the pipe `|` character.
+    categories: organisation | product
+
+
+    # 1.3 Storage properties - define where temporary and actual videos/data are stored.
+    storage:
+        # Temporary folder where videos get stored when they are being recorded
+        tempFolder: ${java.io.tmpdir}/vft/temp
+        # Output video folder where videos + meta-data are stored
+        videoFolder: ${user.home}/vft/videos
+
+
+    # 1.4 Upload configuration - when a test finishes then the captured video / data can then be
+    # uploaded to the endpoint defined.  To use this functionality  we require `enable=true`.
+    # It's currently quite basic and requires headers being set - will improve soon.
+    upload:
+
+        # Enable / disable uploading functionality (defaults to false).
+        enable: false
+        #enable: true
+
+        # Specify a REST end-point to upload to (must be of type POST)
+        url: https://app.videofirst.co/upload
+
+        # Define additional HTTP headers (recommended for security)
+        headers:
+
+            # Example header for HTTP Basic authentication with "test:password" base64 encoded.
+            # Go to https://www.base64encode.org to encode / decode Base64 Strings
+            Authorization: "Basic dGVzdDpwYXNzd29yZA=="
+
+        # Number of uploads which can be occur simultaneously
+        threads: 5
+
+        # Define how long 'finished' uploads remain in the upload status list (in seconds)
+        keepFinishedUploadsInSecs: 30
+
+
+    # 1.5 JVM system properties to include in the info environment
+    environment:
+        - java.awt.graphicsenv
+        - java.vendor
+        - java.version
+        - java.vm.vendor
+        - java.vm
+        - os.arch
+        - os.name
+        - os.version
+        - user.country
+
+# --------------------------------------------------------------------------------------------------
+# 2. "Default" Configuration Properties
+# --------------------------------------------------------------------------------------------------
+#
+#    These are configuration properties which set default values.  These can all
+#    be overridden at run-time via parameters in various REST calls e.g. setting
+#    the default category values or display capture area.
+#
+# --------------------------------------------------------------------------------------------------
+
+vft_default:
+
+    # 2.1 Category defaults.  In reality categories may not change between testing so useful to set
+    # these here e.g. `organisation: Google, product: Search`
+    categories:
+        organisation:
+        product:
+
+    # 2.2 Display defaults.  These are used to defined the capture area, define a border on the
+    # screen (which shows the capture area), set a background (create a consist colour between tests
+    # e.g. white) or set the text label (e.g. which shows the video status).
+    display:
+
+        # 2.2.1 Set this property to always display items (e.g. borders, text etc) on top
+        alwaysOnTop: false
+
+        # 2.2.2 Display capture area - this sets the video capture area. Properties include: -
+        #
+        #   - `x`        X co-ordinate of the capture area e.g. `100` (defaults to `0`).
+        #   - `y`        Y co-ordinate of the capture area e.g. `100` (defaults to `0`).
+        #   - `width`    Width of capture area e.g. `640` (defaults to `displayWidth`).
+        #   - `height`   Height of capture area e.g. `480` (defaults to `displayHeight`).
+        #
+        # NOTE(1): All these attributes (`x`, `y`, `width` and `height`) can use the following: -
+        #          `displayX`, `displayY`, `displayWidth`,`displayHeight`.
+        #
+        # NOTE(2): Simple calculations can also be used e.g.
+        #          `width: displayWidth / 2` (capture width is half the display width)
+        #          `height: displayHeight - 50` (capture height is display height minus 50 pixels)
+        capture:
+            x: 0
+            y: 0
+            width: displayWidth
+            height: displayHeight
+
+        # 2.2.3 Display border - draws a border on the screen based on the defined capture area.
+        # Properties include: -
+        #
+        #   - `display`  Set to `true` to display border (defaults to `false`).
+        #   - `color`    Border color which is a hex value e.g. "#000000" (defaults to `#ff0000`).
+        #   - `padding`  Spacing of border from capture area. Value of `1` draws border directly
+        #                outside capture area.  Value of `0` draws border inside (defaults to `1`).
+        #   - `width`    Pixel width of the border (defaults to `1`).
+        border:
+            display: false
+            color: "#ff0000"
+            padding: 1
+            width: 1
+
+        # 2.2.4 Display background - draws a coloured square on the screen.
+        # Properties include: -
+        #
+        #   - `display`  Set to `true` to display background (defaults to `false`).
+        #   - `color`    Border color which is a hex value e.g. "#000000" (defaults to `#ff0000`).
+        #   - `x`        X co-ordinate of the background area e.g. `100` (defaults to `0`).
+        #   - `y`        Y co-ordinate of the background area e.g. `100` (defaults to `0`).
+        #   - `width`    Width of background area e.g. `640` (defaults to `displayWidth`).
+        #   - `height`   Height of background area e.g. `480` (defaults to `displayHeight`).
+        #
+        # NOTE(1): All these attributes (`x`, `y`, `width` and `height`) can use the following: -
+        #          `displayX`, `displayY`, `displayWidth`,`displayHeight` AND
+        #          `captureX`, `captureY`, `captureWidth`,`captureHeight`.
+        #
+        # NOTE(2): Simple calculations can also be used e.g.
+        #          `width: displayWidth / 2` (background width is half the display width)
+        #          `height: captureHeight + 20` (background height is capture height plus 20 pixels)
+        background:
+            display: false
+            color: "#ffffff"
+            x: 0
+            y: 0
+            width: displayWidth
+            height: displayHeight
+
+        # 2.2.5 Set text onto the screen which shows useful information show as the state recording state.
+        # Properties include: -
+        #
+        #   - `display`    Set to `true` to display text (defaults to `false`).
+        #   - `color`      Border color which is a hex value e.g. "#009900" (defaults to `#000000`).
+        #   - `fontSize`   Size of font e.g. `16` (defaults to `12).
+        #   - `x`          X co-ordinate of the text e.g. `50` (defaults to `0`).
+        #   - `y`          Y co-ordinate of the text e.g. `20` (defaults to `0`).
+        #
+        # NOTE(1): All these attributes (`x`, `y`, `width` and `height`) can use the following: -
+        #          `displayX`, `displayY`, `displayWidth`, `displayHeight` AND
+        #          `captureX`, `captureY`, `captureWidth`, `captureHeight` AND
+        #          `backgroundX`, `backgroundY`, `backgroundWidth`, `backgroundHeight`
+        #
+        # NOTE(2): Simple calculations can also be used e.g.
+        #          `x: backgroundX + 10` (text X is background X plus 10 pixels)
+        #          `y: captureHeight - 20` (text Y is capture height minus 20 pixels)
+        text:
+            display: false
+            color: "#000000"
+            fontSize: 12
+            x: 0
+            y: 0
+
+
+# --------------------------------------------------------------------------------------------------
+# 2. "Other" Configuration Properties
+# --------------------------------------------------------------------------------------------------
+#
+#    These are "other" configuration properties which generally don't need to change.
+#
+# --------------------------------------------------------------------------------------------------
+
+# 3.1 Server port.  The default port is 1357 but this can be changed to something else.
+server:
+    port: 1357
+
+# 3.2 Spring properties
+spring:
+    jackson:
+        serialization:
+          WRITE_DATES_AS_TIMESTAMPS: false
+    http.multipart:
+        max-file-size: 200MB
+        max-request-size: 200MB

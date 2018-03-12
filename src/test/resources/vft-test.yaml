@@ -1,0 +1,42 @@
+# Test configuration for integration testing.
+vft_config:
+
+    # Test security settings
+    security:
+
+        type: plain
+        user: test
+        pass: password
+
+    # Test categories
+    categories: organisation|product|module
+
+    # Test storage
+    storage:
+        tempFolder: ${java.io.tmpdir}/vft-testing/temp
+        videoFolder: ${java.io.tmpdir}/vft-testing/videos
+
+    # Test upload - uses a mock endpoint which only exists in `/src/test/java`
+    upload:
+
+        enable: true
+        url: http://localhost:1357/mock-upload
+        # Define additional HTTP headers - "test:password"
+        headers:
+            Authorization: "Basic dGVzdDpwYXNzd29yZA=="
+        threads: 1
+        # Reduce purge schedule so that that test runs more quickly
+        purgeFinishedUploadSchedule: 4000
+
+    # Test environment - only including a single property here.
+    environment:
+        - java.awt.graphicsenv
+
+# Test defaults
+vft_default:
+
+    # Test category defaults
+    categories:
+        organisation: Acme
+        product: Moon Rocket
+        module: UI
