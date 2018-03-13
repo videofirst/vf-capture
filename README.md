@@ -14,7 +14,7 @@ user interface testing.  It has the following features: -
 ## Installation
 
 * Ensure [Java](https://java.com/en/download/) is installed (minimum Java 8).
-* Download the latest [release](link) of _VFT Capture_.
+* Download the latest [release](https://github.com/videofirst/vft-capture/releases) of _VFT Capture_.
 * Extract the zip (or tar) file somewhere e.g. `c:\vft` (Windows) or `/opt/vft` (Linux).
 * The minimum configuration required is setting the password in the `vft.yaml` file : -
 
