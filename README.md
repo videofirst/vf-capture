@@ -18,7 +18,7 @@ VFT Capture is a cross-platform tool which enables testers and engineers to capt
 * Unzip the zip (or tar) somewhere e.g. `c:\vft` (Windows) or `/opt/vft` (Linux).
 * The minimum configuration required is setting the password in the `vft.yaml` file : -
 
-    ```bash
+    ```yaml
     vft_config:
         ...
         security:
@@ -35,7 +35,7 @@ VFT Capture is a cross-platform tool which enables testers and engineers to capt
     curl -u "test:password" http://localhost:1357/api
     ```
 
-  ... will display top-level information ...
+  ... will display top-level information  ...
 
     ```json
     {
@@ -46,15 +46,13 @@ VFT Capture is a cross-platform tool which enables testers and engineers to capt
         "storage" : {
           "tempFolder" : "C:\\Users\\bob\\AppData\\Local\\Temp\\vft\\temp",
           "videoFolder" : "C:\\Users\\bob\\vft\\videos"
-        },
-        ...
+        }
       },
       "defaults" : {
         "categories" : {
           "organisation" : "",
           "product" : ""
-        },
-        ...
+        }
       },
       "video" : {
         "state" : "idle"
@@ -75,7 +73,7 @@ You are now ready to perform your first capture!  You can use something like
 3. **Scenario:** a feature contains various scenarios you are testing of the feature e.g. if the feature is `search` a potential scenario is `search by city`.
 4. **Test Status:** the outcome of the test.  Available values include `pass`, `fail`, `error` or `aborted`.
 
-> **NOTE:** the **Test Status** is the only field which is set _after_ the test finishes, the others must be set _before_.
+> **Note:** the **Test Status** is the only field which is set _after_ the test finishes, the others must be set _before_.
 
 #### Start recording
 
@@ -95,7 +93,7 @@ curl -X POST http://localhost:1357/api/videos/start \
       }'
 ```
 
-... will return ...
+These are the minimum required parameters to start a test and this will return the following ...
 
 ```json
 {
@@ -118,13 +116,12 @@ curl -X POST http://localhost:1357/api/videos/start \
   },
   "format" : "avi",
   "environment" : {
-    "java.awt.graphicsenv" : "sun.awt.Win32GraphicsEnvironment",
-    ...
+    "java.awt.graphicsenv" : "sun.awt.Win32GraphicsEnvironment"
   }
 }
 ```
 
-This is the minimum required.  If you are constantly using the same categories, these can be set in the `vft.yaml` file.
+.  If you are constantly using the same categories, these can be set in the `vft.yaml` file.
 
 ```yaml
 vft_default:
@@ -151,34 +148,87 @@ curl -X POST http://localhost:1357/api/videos/finish \
 ```json
 {
   "state" : "finished",
-  "categories" : {
-    "organisation" : "Google",
-    "product" : "Search"
-  },
-  "feature" : "Home Page Search",
-  "scenario" : "Search for Belfast",
   "started" : "2018-03-12T13:56:28.528",
   "finished" : "2018-03-12T13:56:35.699",
   "durationSeconds" : 7.171,
   "folder" : "google/search/home-page-search/search-for-belfast/2018-03-12_13-56-28_vxva1z",
   "id" : "2018-03-12_13-56-28_vxva1z",
-  "capture" : {
-    "x" : 0,
-    "y" : 0,
-    "width" : 1920,
-    "height" : 1200
-  },
-  "format" : "avi",
-  "meta" : { },
-  "environment" : {
-    "java.awt.graphicsenv" : "sun.awt.Win32GraphicsEnvironment",
-    ...
-  },
   "testStatus" : "fail"
 }
 ```
 
-The **VFT-Capture** app will have created 2 files in the `${user.home}/vft/videos` folder.  The folder structure is generated from the `categories`, `feature` and `scenario`.
+The **VFT-Capture** app captures video / test data to the folder defined by the `vft_config.storage.videoFolder` property (defaults to `${user.home}/vft/videos`).  The example above will save the 2 files (video + JSON file) into a sub-folder structure using the provided `categories`, `feature`, `scenario` parameters and the generated `id` of each test. This can be identified from the `folder` property in the JSON output e.g.
+
+```
+    "folder" : "google/search/home-page-search/search-for-belfast/2018-03-12_13-56-28_vxva1z",
+```
+
+If you look inside this folder you'll see 2 files e.g.: -
+
+1. `2018-03-12_13-56-28_vxva1z.avi` - video of screen capture.
+2. `2018-03-12_13-56-28_vxva1z.json` - data file containing various information on the test (similar to the JSON output of the `/api/videos/finish` (POST) endpoint).
+
+Congratulations - you've captured your first test!
+
+#### Upload the Capture
+
+Once a test has been captured, the generated video and test can be uploaded to an HTTP endpoint.  This endpoint must satisfy the following: -
+
+- **HTTP Method:** must be of type `POST`.
+- **HTTP Params:** must contain 2 multi-part parameters - `video` and `data`.
+
+An example using Java (Spring MVC) is as follows: -
+
+```java
+@RestController
+public UploadControler {
+    @PostMapping("/upload")
+    public ResponseEntity<Void> uploadVideo(@RequestParam("video") MultipartFile videoFile,
+        @RequestParam("data") MultipartFile dataFile) {
+        // do something with videoFile / dataFile
+        return ResponseEntity.ok().build();
+    }
+}
+```
+
+A working test example is available [here](https://github.com/videofirst/vft-capture/blob/master/src/test/java/co/videofirst/vft/capture/mock/MockUploadController.java) in the VFT-Capture source code.
+
+Once deployed, edit the `vft.yaml` file and set `upload` to `true` and set the `url` parameter to the deployed URL e.g.
+
+```yaml
+vft_config:
+    ...
+    upload:
+        ...
+        enable: true
+        url: http://www.example.com/upload
+```
+
+> **Note:** additional HTTP headers can also be specified in the `vft.yaml`configuration file e.g. for Basic Auth.
+
+A video can now be uploaded the configured URL via the `/api/videos/uploads/<id>` (POST) endpoint e.g.: -
+
+```bash
+curl -X POST http://localhost:1357/api/videos/uploads/2018-03-12_13-56-28_vxva1z\
+  -u 'test:password'
+```
+
+... will return ...
+
+```
+[
+  {
+    "id" : "2018-03-12_13-56-28_vxva1z",
+    "state" : "uploading",
+    "url" : "http://localhost:1234/upload",
+    "scheduled" : "2018-03-13T09:58:47.51",
+    "started" : "2018-03-13T09:58:47.537"
+  }
+]
+```
+
+If the upload is big (or connection is slow) you can view the status of the upload using the `/api/videos/uploads` (GET) endpoint: -
+
 
 ## Configuration
 
@@ -190,9 +240,7 @@ The `vft.yaml` configuration file contains 2 types of configuration properties: 
 
 Comments exist beside each configuration property in the `vft.yaml` file to explain it's purpose and possible values.
 
-
-
-#### Updating Configuration
+#### Updating the Configuration
 
 There are 3 main ways to set the configuration of VFT-Capture.  These are: -
 

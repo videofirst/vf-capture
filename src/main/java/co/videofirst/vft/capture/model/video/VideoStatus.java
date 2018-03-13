@@ -190,7 +190,7 @@ public class VideoStatus {
                 videoFinishParams.getDescription() != null && !videoFinishParams.getDescription()
                     .isEmpty() ? videoFinishParams.getDescription().trim()
                     : oldVideo.getDescription())
-            .testStatus(videoFinishParams.getStatus())
+            .testStatus(videoFinishParams.getTestStatus())
             .testError(VftUtils.nullTrim(videoFinishParams.getError()))
             .testLogs(videoFinishParams.getLogs())
             .build();

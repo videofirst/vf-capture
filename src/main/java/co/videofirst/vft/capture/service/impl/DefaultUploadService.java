@@ -111,7 +111,7 @@ public class DefaultUploadService implements UploadService, Runnable {
     public void upload(String videoId) {
         if (!uploadConfig.isEnable()) {
             throw new VideoUploadException(
-                "Please enable upload configuration (i.e. set `config.system.upload.enable` property to `true`)");
+                "Please enable upload configuration (i.e. set `vft_config.upload.enable` property to `true`)");
         }
 
         Video video = getVideo(videoId);
@@ -181,7 +181,7 @@ public class DefaultUploadService implements UploadService, Runnable {
                 log.info("Removing video " + videoId);
                 uploads.remove(videoId);
             }
-            log.info("Not removing video " + videoId);
+            log.debug("Not removing video " + videoId);
         }
     }
 
