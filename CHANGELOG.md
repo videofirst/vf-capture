@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 - Create super simple user interface (should we use React / quicker to do a template for now).
+- Add `* **Simple UI:** enables manual screen capture, useful when e.g. performing exploratory UI testing.` to README.md
 - Investigate keyboard shortcuts to start / stop video capture.
 - Do GatsbyJS? - https://scotch.io/tutorials/zero-to-deploy-a-practical-guide-to-static-sites-with-gatsbyjs
 - Check out [ https://docs.spring.io/spring-boot/docs/current/reference/html/deployment-install.html ]
