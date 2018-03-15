@@ -1,8 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import registerServiceWorker from './registerServiceWorker';
+import { ThemeProvider } from 'styled-components';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+import './index.css';
+import App from './app/App';
+import registerServiceWorker from './app/registerServiceWorker';
+
+const theme = {
+    pc1: "#222",
+    pc2: "#C2B49A",
+    bg: "white"
+}
+
+ReactDOM.render(
+    <ThemeProvider theme={theme}>
+       <App />
+    </ThemeProvider>,
+    document.getElementById('root')
+);
 registerServiceWorker();
