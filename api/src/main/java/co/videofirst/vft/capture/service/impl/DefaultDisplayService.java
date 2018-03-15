@@ -29,7 +29,7 @@ import co.videofirst.vft.capture.model.display.DisplayBorder;
 import co.videofirst.vft.capture.model.display.DisplayCapture;
 import co.videofirst.vft.capture.model.display.DisplayText;
 import co.videofirst.vft.capture.model.display.DisplayUpdate;
-import co.videofirst.vft.capture.model.video.VideoStatus;
+import co.videofirst.vft.capture.model.capture.CaptureStatus;
 import co.videofirst.vft.capture.service.DisplayService;
 import java.awt.Color;
 import java.awt.Font;
@@ -56,7 +56,7 @@ public class DefaultDisplayService extends JWindow implements DisplayService {
 
     // Stateful field
     private DisplayUpdate displayUpdate;
-    private VideoStatus status;
+    private CaptureStatus status;
 
     @Autowired
     public DefaultDisplayService(VftConfig vftConfig) {
@@ -69,7 +69,7 @@ public class DefaultDisplayService extends JWindow implements DisplayService {
     }
 
     @Override
-    public void update(DisplayUpdate displayUpdate, VideoStatus status) {
+    public void update(DisplayUpdate displayUpdate, CaptureStatus status) {
         this.displayUpdate = displayUpdate;
         this.status = status;
 

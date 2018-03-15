@@ -24,9 +24,9 @@
 package co.videofirst.vft.capture.controller.rest;
 
 import co.videofirst.vft.capture.model.info.Info;
+import co.videofirst.vft.capture.service.CaptureService;
 import co.videofirst.vft.capture.service.InfoService;
 import co.videofirst.vft.capture.service.UploadService;
-import co.videofirst.vft.capture.service.VideoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,13 +43,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class InfoController {
 
     private final InfoService infoService;  // get static info
-    private final VideoService videoService;  // get real-time video status
+    private final CaptureService captureService;  // get real-time video status
     private final UploadService uploadService; // get real-time status on uploads
 
     @GetMapping
     public Info list() {
         Info info = infoService.getInfo();
-        info.setVideo(videoService.status());
+        info.setCaptureStatus(captureService.status());
         info.setUploads(uploadService.status());
         return info;
     }

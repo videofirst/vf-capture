@@ -21,40 +21,63 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package co.videofirst.vft.capture.model.video;
+package co.videofirst.vft.capture.model.capture;
 
 import co.videofirst.vft.capture.enums.TestPassStatus;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import co.videofirst.vft.capture.model.display.DisplayCapture;
+import co.videofirst.vft.capture.model.test.TestLog;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.io.File;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * High level video summary - useful for a list of videos.
+ * Capture object.
  *
  * @author Bob Marks
  */
 @Data
-@AllArgsConstructor
+@Builder(toBuilder = true)
 @NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(Include.NON_NULL)
-@JsonPropertyOrder({"id", "categories", "feature", "scenario", "started", "finished",
-    "format", "testStatus"})
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class VideoSummary {
+@JsonPropertyOrder({"id", "categories", "feature", "scenario", "description", "started", "finished",
+    "folder", "format", "capture", "meta", "environment", "testStatus", "testError",
+    "testLogs", "upload"})
+public class Capture {
+
+    public static final String FORMAT_AVI = "avi"; // only supported format at minute
 
     private String id;
     private Map<String, String> categories;
     private String feature;
     private String scenario;
+    private String description;
     private LocalDateTime started;
     private LocalDateTime finished;
+    private String folder;
     private String format;
+    private DisplayCapture capture;
+    private Map<String, String> meta;
+    private Map<String, String> environment;
     private TestPassStatus testStatus;
+    private String testError;
+    private List<TestLog> testLogs;
+    private Upload upload;
+
+    // Don't save these fields
+    @JsonIgnore
+    private File videoFile;
+
+    @JsonIgnore
+    private File dataFile;
 
 }

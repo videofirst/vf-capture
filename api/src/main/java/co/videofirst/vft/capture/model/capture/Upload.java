@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package co.videofirst.vft.capture.model.video;
+package co.videofirst.vft.capture.model.capture;
 
 import co.videofirst.vft.capture.enums.UploadState;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -32,7 +32,7 @@ import lombok.Builder;
 import lombok.Data;
 
 /**
- * Video upload object.
+ * Capture upload object.
  *
  * @author Bob Marks
  */

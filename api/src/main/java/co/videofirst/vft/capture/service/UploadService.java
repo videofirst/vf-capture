@@ -23,20 +23,20 @@
  */
 package co.videofirst.vft.capture.service;
 
-import co.videofirst.vft.capture.model.video.UploadStatus;
+import co.videofirst.vft.capture.model.capture.UploadStatus;
 import java.util.List;
 
 /**
- * High-level video upload service.
+ * High-level capture upload service.
  *
  * @author Bob Marks
  */
 public interface UploadService {
 
     /**
-     * Upload video.
+     * Upload capture.
      */
-    void upload(String videoId);
+    void upload(String captureId);
 
     /**
      * Return status of uploads.
@@ -44,7 +44,7 @@ public interface UploadService {
     List<UploadStatus> status();
 
     /**
-     * Cancel the upload of a video.
+     * Cancel the upload of a capture.
      */
     void cancel();
 

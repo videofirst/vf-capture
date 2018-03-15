@@ -23,14 +23,14 @@
  */
 package co.videofirst.vft.capture.controller.rest;
 
-import co.videofirst.vft.capture.model.params.VideoFinishParams;
-import co.videofirst.vft.capture.model.params.VideoStartParams;
-import co.videofirst.vft.capture.model.video.UploadStatus;
-import co.videofirst.vft.capture.model.video.Video;
-import co.videofirst.vft.capture.model.video.VideoStatus;
-import co.videofirst.vft.capture.model.video.VideoSummary;
+import co.videofirst.vft.capture.model.params.CaptureFinishParams;
+import co.videofirst.vft.capture.model.params.CaptureStartParams;
+import co.videofirst.vft.capture.model.capture.Capture;
+import co.videofirst.vft.capture.model.capture.UploadStatus;
+import co.videofirst.vft.capture.model.capture.CaptureStatus;
+import co.videofirst.vft.capture.model.capture.CaptureSummary;
 import co.videofirst.vft.capture.service.UploadService;
-import co.videofirst.vft.capture.service.VideoService;
+import co.videofirst.vft.capture.service.CaptureService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -43,75 +43,75 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Main controller which is used to capture video and upload when finished.
+ * Main controller which is used to capture video / test data, then  upload when finished.
  *
  * @author Bob Marks
  */
 @RestController
-@RequestMapping("/api/videos")
+@RequestMapping("/api/captures")
 @RequiredArgsConstructor
-public class VideoController {
+public class CaptureController {
 
-    private final VideoService videoService;
+    private final CaptureService captureService;
     private final UploadService uploadService;
 
     @GetMapping
-    public List<VideoSummary> list() {
-        List<VideoSummary> list = videoService.list();
+    public List<CaptureSummary> list() {
+        List<CaptureSummary> list = captureService.list();
         return list;
     }
 
-    @GetMapping("/{videoId}")
-    public Video select(@PathVariable final String videoId) {
-        Video video = videoService.select(videoId);
-        return video;
+    @GetMapping("/{captureId}")
+    public Capture select(@PathVariable final String captureId) {
+        Capture capture = captureService.select(captureId);
+        return capture;
     }
 
     @PostMapping("/start")
-    public VideoStatus start(@RequestBody VideoStartParams param) {
-        VideoStatus status = videoService.start(param);
+    public CaptureStatus start(@RequestBody CaptureStartParams param) {
+        CaptureStatus status = captureService.start(param);
         return status;
     }
 
     @PostMapping("/record")
-    public VideoStatus record() {
-        VideoStatus status = videoService.record();
+    public CaptureStatus record() {
+        CaptureStatus status = captureService.record();
         return status;
     }
 
     @PostMapping("/stop")
-    public VideoStatus stop() {
-        VideoStatus status = videoService.stop();
+    public CaptureStatus stop() {
+        CaptureStatus status = captureService.stop();
         return status;
     }
 
     @PostMapping("finish")
-    public VideoStatus finish(@RequestBody VideoFinishParams videoFinishParams) {
-        VideoStatus status = videoService.finish(videoFinishParams);
+    public CaptureStatus finish(@RequestBody CaptureFinishParams captureFinishParams) {
+        CaptureStatus status = captureService.finish(captureFinishParams);
         return status;
     }
 
     @PostMapping("cancel")
-    public VideoStatus cancel() {
-        VideoStatus status = videoService.cancel();
+    public CaptureStatus cancel() {
+        CaptureStatus status = captureService.cancel();
         return status;
     }
 
     @GetMapping("/status")
-    public VideoStatus status() {
-        VideoStatus status = videoService.status();
+    public CaptureStatus status() {
+        CaptureStatus status = captureService.status();
         return status;
     }
 
-    @DeleteMapping("/{videoId}")
-    public ResponseEntity<Void> delete(@PathVariable final String videoId) {
-        videoService.delete(videoId);
+    @DeleteMapping("/{captureId}")
+    public ResponseEntity<Void> delete(@PathVariable final String captureId) {
+        captureService.delete(captureId);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/upload/{videoId}")
-    public List<UploadStatus> uploadByVideoId(@PathVariable final String videoId) {
-        uploadService.upload(videoId);
+    @PostMapping("/upload/{captureId}")
+    public List<UploadStatus> uploadByCaptureId(@PathVariable final String captureId) {
+        uploadService.upload(captureId);
         return uploadStatus();
     }
 

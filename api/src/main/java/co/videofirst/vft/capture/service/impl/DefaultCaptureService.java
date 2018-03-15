@@ -23,21 +23,21 @@
  */
 package co.videofirst.vft.capture.service.impl;
 
-import co.videofirst.vft.capture.dao.VideoDao;
-import co.videofirst.vft.capture.enums.VideoState;
+import co.videofirst.vft.capture.dao.CaptureDao;
+import co.videofirst.vft.capture.enums.CaptureState;
 import co.videofirst.vft.capture.exception.InvalidParameterException;
 import co.videofirst.vft.capture.exception.InvalidStateException;
 import co.videofirst.vft.capture.model.display.DisplayUpdate;
-import co.videofirst.vft.capture.model.params.VideoFinishParams;
-import co.videofirst.vft.capture.model.params.VideoStartParams;
-import co.videofirst.vft.capture.model.video.Video;
-import co.videofirst.vft.capture.model.video.VideoStatus;
-import co.videofirst.vft.capture.model.video.VideoSummary;
+import co.videofirst.vft.capture.model.params.CaptureFinishParams;
+import co.videofirst.vft.capture.model.params.CaptureStartParams;
+import co.videofirst.vft.capture.model.capture.Capture;
+import co.videofirst.vft.capture.model.capture.CaptureStatus;
+import co.videofirst.vft.capture.model.capture.CaptureSummary;
 import co.videofirst.vft.capture.recorder.VideoRecord;
 import co.videofirst.vft.capture.recorder.VideoRecorder;
+import co.videofirst.vft.capture.service.CaptureService;
 import co.videofirst.vft.capture.service.DisplayService;
 import co.videofirst.vft.capture.service.InfoService;
-import co.videofirst.vft.capture.service.VideoService;
 import co.videofirst.vft.capture.utils.ConfigUtils;
 import java.util.List;
 import java.util.Map;
@@ -47,50 +47,50 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /**
- * Default implementation of the high level VideoService interface.
+ * Default implementation of the high level CaptureService interface.
  *
  * @author Bob Marks
  */
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class DefaultVideoService implements VideoService {
+public class DefaultCaptureService implements CaptureService {
 
     // Injected fields
 
     private final VideoRecorder videoRecorder;
     private final DisplayService displayService;
     private final InfoService infoService;
-    private final VideoDao videoDao;
+    private final CaptureDao captureDao;
 
     // Local fields
 
-    private VideoStatus videoStatus = VideoStatus.IDLE;  // only stateful object
+    private CaptureStatus captureStatus = CaptureStatus.IDLE;  // only stateful object
 
     @Override
-    public Video select(String videoId) {
-        Video video = videoDao.findById(videoId);
-        return video;
+    public Capture select(String captureId) {
+        Capture capture = captureDao.findById(captureId);
+        return capture;
     }
 
     @Override
-    public List<VideoSummary> list() {
-        List<VideoSummary> list = videoDao.list();
+    public List<CaptureSummary> list() {
+        List<CaptureSummary> list = captureDao.list();
         return list;
     }
 
     @Override
-    public VideoStatus status() {
-        return videoStatus;
+    public CaptureStatus status() {
+        return captureStatus;
     }
 
     @Override
-    public VideoStatus start(VideoStartParams videoStartParams) {
-        validateStart(videoStartParams);
+    public CaptureStatus start(CaptureStartParams captureStartParams) {
+        validateStart(captureStartParams);
 
-        videoStatus = VideoStatus.start(infoService.getInfo(), videoStartParams);
+        captureStatus = CaptureStatus.start(infoService.getInfo(), captureStartParams);
 
-        if (videoStartParams.record()) {
+        if (captureStartParams.record()) {
             record();
         }
 
@@ -99,15 +99,15 @@ public class DefaultVideoService implements VideoService {
     }
 
     @Override
-    public VideoStatus record() {
-        if (videoStatus.getState() != VideoState.started) {
-            throw new InvalidStateException("Current state is '" + videoStatus.getState() + "' - " +
+    public CaptureStatus record() {
+        if (captureStatus.getState() != CaptureState.started) {
+            throw new InvalidStateException("Current state is '" + captureStatus.getState() + "' - " +
                 "video can only be recoded when state is  'started'.");
         }
 
         DisplayUpdate displayUpdate = getDisplayUpdate();
 
-        videoStatus = videoStatus.record(displayUpdate.getCapture());
+        captureStatus = captureStatus.record(displayUpdate.getCapture());
         videoRecorder.record(getVideoRecord());
 
         refreshDisplay();
@@ -116,14 +116,14 @@ public class DefaultVideoService implements VideoService {
     }
 
     @Override
-    public VideoStatus stop() {
-        if (videoStatus.getState() != VideoState.recording) {
+    public CaptureStatus stop() {
+        if (captureStatus.getState() != CaptureState.recording) {
             throw new InvalidParameterException(
-                "Current state is '" + videoStatus.getState() + "' - " +
+                "Current state is '" + captureStatus.getState() + "' - " +
                     "You can only stop a video when it is in a state is 'recording'.");
         }
 
-        videoStatus = videoStatus.stop();
+        captureStatus = captureStatus.stop();
         videoRecorder.stop();
         refreshDisplay();
 
@@ -131,35 +131,35 @@ public class DefaultVideoService implements VideoService {
     }
 
     @Override
-    public VideoStatus finish(VideoFinishParams finishVideo) {
+    public CaptureStatus finish(CaptureFinishParams finishVideo) {
 
         validateFinish(finishVideo);
 
-        if (videoStatus.getState() == VideoState.recording) {
+        if (captureStatus.getState() == CaptureState.recording) {
             stop();
         }
 
-        VideoStatus finishedVideoStatus = videoStatus.finish(finishVideo);
-        videoDao.save(finishedVideoStatus.getVideo());
+        CaptureStatus finishedCaptureStatus = captureStatus.finish(finishVideo);
+        captureDao.save(finishedCaptureStatus.getCapture());
 
-        videoStatus = VideoStatus.IDLE; // mark current status as stopped ..
+        captureStatus = CaptureStatus.IDLE; // mark current status as stopped ..
         refreshDisplay();
 
-        return finishedVideoStatus;  // ... although return the finished status to the user
+        return finishedCaptureStatus;  // ... although return the finished status to the user
     }
 
     @Override
-    public VideoStatus cancel() {
+    public CaptureStatus cancel() {
         videoRecorder.cancel();  // cancel any recording if applicable
-        videoStatus = VideoStatus.IDLE; // re-set status
+        captureStatus = CaptureStatus.IDLE; // re-set status
         refreshDisplay();
 
         return status();
     }
 
     @Override
-    public void delete(String videoId) {
-        videoDao.delete(videoId);
+    public void delete(String captureId) {
+        captureDao.delete(captureId);
     }
 
     // Private methods
@@ -175,16 +175,16 @@ public class DefaultVideoService implements VideoService {
     /**
      * Validate start parameters.
      */
-    private void validateStart(VideoStartParams videoStartParams) {
+    private void validateStart(CaptureStartParams captureStartParams) {
 
-        if (videoStatus.getState() != VideoState.idle
-            && videoStatus.getState() != VideoState.started) {
-            throw new InvalidStateException("Current state is '" + videoStatus.getState() + "' - " +
+        if (captureStatus.getState() != CaptureState.idle
+            && captureStatus.getState() != CaptureState.started) {
+            throw new InvalidStateException("Current state is '" + captureStatus.getState() + "' - " +
                 "video can only be started when state is 'idle', 'uploaded' or re-started when it is in a state is 'started'. "
                 + "Please finish recording or cancel.");
         }
 
-        Map<String, String> getCategoryMap = getCategoryMap(videoStartParams.getCategories());
+        Map<String, String> getCategoryMap = getCategoryMap(captureStartParams.getCategories());
 
         String categories = getCategoryMap.entrySet().stream()
             .filter(category -> category.getValue() == null || category.getValue().isEmpty())
@@ -195,19 +195,19 @@ public class DefaultVideoService implements VideoService {
                 "Please fill in missing categories [ " + categories + " ]");
         }
 
-        if (videoStartParams.getFeature() == null || videoStartParams.getFeature().isEmpty()) {
+        if (captureStartParams.getFeature() == null || captureStartParams.getFeature().isEmpty()) {
             throw new InvalidParameterException("Please fill in missing 'feature' attribute");
         }
-        if (videoStartParams.getScenario() == null || videoStartParams.getScenario().isEmpty()) {
+        if (captureStartParams.getScenario() == null || captureStartParams.getScenario().isEmpty()) {
             throw new InvalidParameterException("Please fill in missing 'scenario' attribute");
         }
     }
 
-    private void validateFinish(VideoFinishParams finishVideoParams) {
+    private void validateFinish(CaptureFinishParams finishVideoParams) {
         // Check state first of all
-        if (videoStatus.getState() != VideoState.recording
-            && videoStatus.getState() != VideoState.stopped) {
-            throw new InvalidStateException("Current state is '" + videoStatus.getState() + "' - " +
+        if (captureStatus.getState() != CaptureState.recording
+            && captureStatus.getState() != CaptureState.stopped) {
+            throw new InvalidStateException("Current state is '" + captureStatus.getState() + "' - " +
                 "videos can only be finished which is state is `recording` OR `stopped`.");
         }
 
@@ -221,24 +221,24 @@ public class DefaultVideoService implements VideoService {
      */
     private DisplayUpdate getDisplayUpdate() {
         return DisplayUpdate
-            .build(infoService.getInfo(), videoStatus.getVideoStartParams().getDisplay());
+            .build(infoService.getInfo(), captureStatus.getCaptureStartParams().getDisplay());
     }
 
     /**
      * Return video record.
      */
     private VideoRecord getVideoRecord() {
-        if (videoStatus == null || videoStatus.getVideo() == null) {
-            log.warn("Video record is null");
+        if (captureStatus == null || captureStatus.getCapture() == null) {
+            log.warn("Capture record is null");
             return null;
         }
 
-        Video video = videoStatus.getVideo();
+        Capture capture = captureStatus.getCapture();
         return VideoRecord.builder()
-            .id(video.getId())
-            .folder(video.getFolder())
-            .format(video.getFormat())
-            .capture(video.getCapture())
+            .id(capture.getId())
+            .folder(capture.getFolder())
+            .format(capture.getFormat())
+            .capture(capture.getCapture())
             .build();
     }
 
@@ -247,7 +247,7 @@ public class DefaultVideoService implements VideoService {
      */
     private void refreshDisplay() {
         DisplayUpdate displayUpdate = getDisplayUpdate();
-        displayService.update(displayUpdate, videoStatus);
+        displayService.update(displayUpdate, captureStatus);
     }
 
 }

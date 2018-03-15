@@ -23,11 +23,11 @@
  */
 package co.videofirst.vft.capture.dao.filesystem;
 
-import co.videofirst.vft.capture.dao.VideoDao;
+import co.videofirst.vft.capture.dao.CaptureDao;
 import co.videofirst.vft.capture.exception.VideoOpenException;
 import co.videofirst.vft.capture.exception.VideoSaveException;
-import co.videofirst.vft.capture.model.video.Video;
-import co.videofirst.vft.capture.model.video.VideoSummary;
+import co.videofirst.vft.capture.model.capture.Capture;
+import co.videofirst.vft.capture.model.capture.CaptureSummary;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.File;
@@ -44,13 +44,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
- * File system implementation of the VideoDao interface.
+ * File system implementation of the CaptureDao interface.
  *
  * @author Bob Marks
  */
 @Slf4j
 @Component
-public class FileSystemVideoDao implements VideoDao {
+public class FileSystemCaptureDao implements CaptureDao {
 
     // Constants
 
@@ -63,9 +63,9 @@ public class FileSystemVideoDao implements VideoDao {
 
     //  Private fields
 
-    private final Map<String, File> videoIdCache = new HashMap<>(); // cache
+    private final Map<String, File> captureIdCache = new HashMap<>(); // cache
 
-    public FileSystemVideoDao(ObjectMapper objectMapper,
+    public FileSystemCaptureDao(ObjectMapper objectMapper,
         @Value("${vft_config.storage.videoFolder}") File videoFolder) {
         this.objectMapper = objectMapper;
         this.videoFolder = videoFolder;
@@ -74,64 +74,64 @@ public class FileSystemVideoDao implements VideoDao {
     }
 
     @Override
-    public void save(Video video) {
+    public void save(Capture capture) {
         try {
-            File file = getDataFile(video);
+            File file = getDataFile(capture);
             FileOutputStream fileOutputStream = new FileOutputStream(file);
-            objectMapper.writeValue(fileOutputStream, video);
+            objectMapper.writeValue(fileOutputStream, capture);
         } catch (IOException e) {
-            throw new VideoSaveException("Error saving video - " + e.getMessage(), e);
+            throw new VideoSaveException("Error saving capture - " + e.getMessage(), e);
         }
     }
 
     @Override
-    public Video findById(String videoId) {
+    public Capture findById(String captureId) {
 
         // Check cache
-        if (videoIdCache.get(videoId) != null) {
+        if (captureIdCache.get(captureId) != null) {
             try {
-                Video video = readVideoFromDataFile(videoIdCache.get(videoId), Video.class);
-                if (video != null && video.getId().equals(videoId)) {
-                    return video;
+                Capture capture = readVideoFromDataFile(captureIdCache.get(captureId), Capture.class);
+                if (capture != null && capture.getId().equals(captureId)) {
+                    return capture;
                 }
             } catch (VideoOpenException voEx) {
-                log.warn("Error opening video", voEx.getMessage());
+                log.warn("Error opening capture", voEx.getMessage());
             }
 
             // remove from cache and continue
-            videoIdCache.remove(videoId);
+            captureIdCache.remove(captureId);
         }
 
         FindFile findFile = new FindFile();
-        findVideoFile(videoId, videoFolder, findFile);
+        findVideoFile(captureId, videoFolder, findFile);
         if (findFile.getFile() == null) {
-            throw new VideoOpenException("Cannot find a video for ID - " + videoId);
+            throw new VideoOpenException("Cannot find a capture for ID - " + captureId);
         }
 
-        Video video = readVideoFromDataFile(findFile.getFile(), Video.class);
-        videoIdCache.put(videoId, findFile.getFile());
-        return video;
+        Capture capture = readVideoFromDataFile(findFile.getFile(), Capture.class);
+        captureIdCache.put(captureId, findFile.getFile());
+        return capture;
     }
 
     @Override
-    public List<VideoSummary> list() {
+    public List<CaptureSummary> list() {
         // Iterate over file system and read all the files
-        List<VideoSummary> videos = new ArrayList<VideoSummary>();
-        findVideoSummaries(videoFolder, videos);
+        List<CaptureSummary> videos = new ArrayList<CaptureSummary>();
+        findCaptureSummaries(videoFolder, videos);
         return videos;
     }
 
     @Override
-    public void delete(String videoId) {
+    public void delete(String captureId) {
 
-        Video video = findById(videoId);
-        if (video != null) {
+        Capture capture = findById(captureId);
+        if (capture != null) {
             // delete files, first
-            File dir = video.getDataFile().getParentFile();
-            video.getDataFile().delete();
-            video.getVideoFile().delete();
+            File dir = capture.getDataFile().getParentFile();
+            capture.getDataFile().delete();
+            capture.getVideoFile().delete();
 
-            // now go up parent by parent until the video dir ...
+            // now go up parent by parent until the capture dir ...
             while (!dir.equals(videoFolder)) {
                 // .. but if you encounter a folder with other child folders / files then return
                 if (dir.list().length != 0) {
@@ -152,10 +152,10 @@ public class FileSystemVideoDao implements VideoDao {
             V v = objectMapper.readValue(fileInputStream, videoType);
 
             // Set additional (non-saved) fields which can be useful e.g. uploading / streaming
-            if (v instanceof Video) {
-                Video video = (Video) v;
-                video.setDataFile(getDataFile(video));
-                video.setVideoFile(getVideoFile(video));
+            if (v instanceof Capture) {
+                Capture capture = (Capture) v;
+                capture.setDataFile(getDataFile(capture));
+                capture.setVideoFile(getVideoFile(capture));
             }
 
             return v;
@@ -164,11 +164,11 @@ public class FileSystemVideoDao implements VideoDao {
         }
     }
 
-    private void findVideoFile(String videoId, File curFolder, FindFile findFile) {
+    private void findVideoFile(String captureId, File curFolder, FindFile findFile) {
         for (File file : curFolder.listFiles()) {
             if (file.isDirectory()) {
-                findVideoFile(videoId, file, findFile);
-            } else if (file.getName().equalsIgnoreCase(videoId + "." + EXT_JSON)) {
+                findVideoFile(captureId, file, findFile);
+            } else if (file.getName().equalsIgnoreCase(captureId + "." + EXT_JSON)) {
                 findFile.setFile(file);
             }
             if (findFile.getFile() != null) {
@@ -177,31 +177,31 @@ public class FileSystemVideoDao implements VideoDao {
         }
     }
 
-    private void findVideoSummaries(File curFolder, List<VideoSummary> videos) {
+    private void findCaptureSummaries(File curFolder, List<CaptureSummary> videos) {
         for (File file : curFolder.listFiles()) {
             if (file.isDirectory()) {
-                findVideoSummaries(file, videos);
+                findCaptureSummaries(file, videos);
             } else if (file.getName().endsWith("." + EXT_JSON)) {
-                VideoSummary videoSummary = readVideoFromDataFile(file, VideoSummary.class);
-                videos.add(videoSummary);
+                CaptureSummary captureSummary = readVideoFromDataFile(file, CaptureSummary.class);
+                videos.add(captureSummary);
             }
         }
     }
 
-    private File getDataFile(Video video) {
-        return getFile(video, EXT_JSON);
+    private File getDataFile(Capture capture) {
+        return getFile(capture, EXT_JSON);
     }
 
-    private File getVideoFile(Video video) {
-        return getFile(video, video.getFormat());
+    private File getVideoFile(Capture capture) {
+        return getFile(capture, capture.getFormat());
     }
 
-    private File getFile(Video video, String extension) {
-        File fullFolder = new File(videoFolder, video.getFolder());
+    private File getFile(Capture capture, String extension) {
+        File fullFolder = new File(videoFolder, capture.getFolder());
         fullFolder.mkdirs();  // make directories if required
 
-        // replace video extension with ".json" extension
-        String filename = video.getId() + "." + extension;
+        // replace capture extension with ".json" extension
+        String filename = capture.getId() + "." + extension;
         File file = new File(fullFolder, filename);
         return file;
     }

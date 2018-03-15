@@ -34,8 +34,8 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
 import co.videofirst.vft.capture.enums.TestPassStatus;
-import co.videofirst.vft.capture.model.params.VideoFinishParams;
-import co.videofirst.vft.capture.model.params.VideoStartParams;
+import co.videofirst.vft.capture.model.params.CaptureFinishParams;
+import co.videofirst.vft.capture.model.params.CaptureStartParams;
 import co.videofirst.vft.capture.model.test.TestLog;
 import co.videofirst.vft.capture.test.VftTesting;
 import com.google.common.collect.ImmutableMap;
@@ -55,11 +55,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * Controller test to test the REST methods of VideoController.
+ * Controller test to test the REST methods of CaptureController.
  *
  * @author Bob Marks
  */
-public class VideoControllerTest extends AbstractControllerTest {
+public class CaptureControllerTest extends AbstractControllerTest {
 
     // Constants
 
@@ -67,16 +67,16 @@ public class VideoControllerTest extends AbstractControllerTest {
         .of("version", "1.2.3-beta", "author", "David");
     private static final LocalDateTime TS1 = LocalDateTime.of(2015, 1, 2, 12, 13, 14);
     private static final LocalDateTime TS2 = LocalDateTime.of(2016, 2, 3, 16, 17, 18);
-    private static final String MOCK_VIDEO_ID = "2018-02-15_12-14-02_n3jwzb";
+    private static final String MOCK_CAPTURE_ID = "2018-02-15_12-14-02_n3jwzb";
 
-    // Video start params
+    // Capture start params
 
-    private static final VideoStartParams VIDEO_START_PARAMS_MIN = VideoStartParams.builder()
+    private static final CaptureStartParams CAPTURE_START_PARAMS_MIN = CaptureStartParams.builder()
         .feature("Bob Feature").scenario("Dave Scenario").build();
-    private static final VideoStartParams VIDEO_START_PARAMS_MIN_NO_RECORD = VideoStartParams
+    private static final CaptureStartParams CAPTURE_START_PARAMS_MIN_NO_RECORD = CaptureStartParams
         .builder()
         .feature("Bob Feature").scenario("Dave Scenario").record("false").build();
-    private static final VideoStartParams VIDEO_START_PARAMS_MAX = VideoStartParams.builder()
+    private static final CaptureStartParams CAPTURE_START_PARAMS_MAX = CaptureStartParams.builder()
         .categories(ImmutableMap.of("organisation", "Google",
             "product", "Search", "module", "Web App"))
         .feature("Advanced Search ")
@@ -85,11 +85,11 @@ public class VideoControllerTest extends AbstractControllerTest {
         .description("Awesome test")
         .build();
 
-    // Video finish params
+    // Capture finish params
 
-    private static final VideoFinishParams VIDEO_FINISH_PARAMS_MIN = VideoFinishParams.builder()
+    private static final CaptureFinishParams CAPTURE_FINISH_PARAMS_MIN = CaptureFinishParams.builder()
         .testStatus(TestPassStatus.fail).build();
-    private static final VideoFinishParams VIDEO_FINISH_PARAMS_MAX = VideoFinishParams.builder()
+    private static final CaptureFinishParams CAPTURE_FINISH_PARAMS_MAX = CaptureFinishParams.builder()
         .testStatus(TestPassStatus.fail)
         .meta(ImmutableMap.of("author", "Bob", "extra", "stuff"))
         .description(" even more awesome description ")
@@ -100,7 +100,7 @@ public class VideoControllerTest extends AbstractControllerTest {
         .build();
 
     // ===========================================
-    // [ /api/videos ] GET
+    // [ /api/captures ] GET
     // ===========================================
 
     @Test
@@ -140,13 +140,13 @@ public class VideoControllerTest extends AbstractControllerTest {
     }
 
     // ===========================================
-    // [ /api/videos/<videoId> ] GET
+    // [ /api/captures/<captureId> ] GET
     // ===========================================
 
     @Test
-    public void shouldRetrieveVideoById() throws JSONException {
+    public void shouldRetrieveCaptureById() throws JSONException {
 
-        ResponseEntity<String> response = video(MOCK_VIDEO_ID);
+        ResponseEntity<String> response = video(MOCK_CAPTURE_ID);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
@@ -179,13 +179,13 @@ public class VideoControllerTest extends AbstractControllerTest {
     }
 
     // ===========================================
-    // [ /api/videos/start ] POST
+    // [ /api/captures/start ] POST
     // ===========================================
 
     @Test
     public void shouldStartMinParamsWithNoRecord() throws JSONException {
 
-        ResponseEntity<String> response = startVideo(VIDEO_START_PARAMS_MIN_NO_RECORD);
+        ResponseEntity<String> response = startVideo(CAPTURE_START_PARAMS_MIN_NO_RECORD);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
@@ -207,7 +207,7 @@ public class VideoControllerTest extends AbstractControllerTest {
     @Test
     public void shouldStartMinParamsWithRecord() throws JSONException {
 
-        ResponseEntity<String> response = startVideo(VIDEO_START_PARAMS_MIN);
+        ResponseEntity<String> response = startVideo(CAPTURE_START_PARAMS_MIN);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
@@ -239,7 +239,7 @@ public class VideoControllerTest extends AbstractControllerTest {
     @Test
     public void shouldStartWithMaximumParams() throws JSONException {
 
-        ResponseEntity<String> response = startVideo(VIDEO_START_PARAMS_MAX);
+        ResponseEntity<String> response = startVideo(CAPTURE_START_PARAMS_MAX);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
@@ -274,13 +274,13 @@ public class VideoControllerTest extends AbstractControllerTest {
     }
 
     // ===========================================
-    // [ /api/videos/record ] POST
+    // [ /api/captures/record ] POST
     // ===========================================
 
     @Test
     public void shouldRecord() throws JSONException {
 
-        startVideo(VIDEO_START_PARAMS_MIN_NO_RECORD); // must specify record, otherwise no need
+        startVideo(CAPTURE_START_PARAMS_MIN_NO_RECORD); // must specify record, otherwise no need
         ResponseEntity<String> response = recordVideo();
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -313,13 +313,13 @@ public class VideoControllerTest extends AbstractControllerTest {
     // FIXME - error states
 
     // ===========================================
-    // [ /api/videos/stop ] POST
+    // [ /api/captures/stop ] POST
     // ===========================================
 
     @Test
     public void shouldStop() throws JSONException {
 
-        startVideo(VIDEO_START_PARAMS_MIN);
+        startVideo(CAPTURE_START_PARAMS_MIN);
         ResponseEntity<String> response = stopVideo();
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -353,14 +353,14 @@ public class VideoControllerTest extends AbstractControllerTest {
     // FIXME - error states
 
     // ===========================================
-    // [ /api/videos/finish ] POST
+    // [ /api/captures/finish ] POST
     // ===========================================
 
     @Test
     public void shouldFinishWithMinParams() throws JSONException {
 
-        startVideo(VIDEO_START_PARAMS_MIN);
-        ResponseEntity<String> response = finishVideo(VIDEO_FINISH_PARAMS_MIN);
+        startVideo(CAPTURE_START_PARAMS_MIN);
+        ResponseEntity<String> response = finishVideo(CAPTURE_FINISH_PARAMS_MIN);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
@@ -394,8 +394,8 @@ public class VideoControllerTest extends AbstractControllerTest {
     @Test
     public void shouldFinishWithMaxParams() throws JSONException {
 
-        startVideo(VIDEO_START_PARAMS_MAX);
-        ResponseEntity<String> response = finishVideo(VIDEO_FINISH_PARAMS_MAX);
+        startVideo(CAPTURE_START_PARAMS_MAX);
+        ResponseEntity<String> response = finishVideo(CAPTURE_FINISH_PARAMS_MAX);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
@@ -446,13 +446,13 @@ public class VideoControllerTest extends AbstractControllerTest {
     }
 
     // ===========================================
-    // [ /api/videos/status ] GET
+    // [ /api/captures/status ] GET
     // ===========================================
 
     @Test
     public void shouldGetsStatusWithStartedUsingMinParamsAndNoRecord() throws JSONException {
 
-        startVideo(VIDEO_START_PARAMS_MIN_NO_RECORD);
+        startVideo(CAPTURE_START_PARAMS_MIN_NO_RECORD);
         ResponseEntity<String> response = statusVideo();
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -473,7 +473,7 @@ public class VideoControllerTest extends AbstractControllerTest {
     }
 
     // ===========================================
-    // [ /api/videos/<videoId> ] DELETE
+    // [ /api/captures/<captureId> ] DELETE
     // ===========================================
 
     @Test
@@ -482,19 +482,19 @@ public class VideoControllerTest extends AbstractControllerTest {
         // Check video exists
         File folder = new File(VftTesting.VFT_VIDEO_FOLDER,
             "acme/moon-rocket/ui/bob-feature/dave-scenario/2018-02-15_12-14-02_n3jwzb");
-        File dataFile = new File(folder, MOCK_VIDEO_ID + ".json");
-        File videoFile = new File(folder, MOCK_VIDEO_ID + ".avi");
+        File dataFile = new File(folder, MOCK_CAPTURE_ID + ".json");
+        File videoFile = new File(folder, MOCK_CAPTURE_ID + ".avi");
         assertThat(dataFile).exists();
         assertThat(videoFile).exists();
 
-        assertThat(deleteVideo(MOCK_VIDEO_ID).getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(deleteVideo(MOCK_CAPTURE_ID).getStatusCode()).isEqualTo(HttpStatus.OK);
 
         assertThat(dataFile).doesNotExist();
         assertThat(videoFile).doesNotExist();
     }
 
     // ===========================================
-    // [ /api/videos/cancel ]
+    // [ /api/captures/cancel ]
     // ===========================================
 
     @Test
@@ -506,21 +506,21 @@ public class VideoControllerTest extends AbstractControllerTest {
 
     @Test
     public void shouldCancelFromStartedState() throws JSONException {
-        ResponseEntity<String> response = startVideo(VIDEO_START_PARAMS_MIN_NO_RECORD);
+        ResponseEntity<String> response = startVideo(CAPTURE_START_PARAMS_MIN_NO_RECORD);
 
         cancelAndAssertStatusIsIdle("$.feature", response);
     }
 
     @Test
     public void shouldCancelFromRecordingState() throws JSONException {
-        ResponseEntity<String> response = startVideo(VIDEO_START_PARAMS_MIN);
+        ResponseEntity<String> response = startVideo(CAPTURE_START_PARAMS_MIN);
 
         cancelAndAssertStatusIsIdle("$.started", response);
     }
 
     @Test
     public void shouldCancelFromStoppedState() throws JSONException {
-        startVideo(VIDEO_START_PARAMS_MIN);
+        startVideo(CAPTURE_START_PARAMS_MIN);
         ResponseEntity<String> response = stopVideo();
 
         cancelAndAssertStatusIsIdle("$.finished", response);
@@ -528,14 +528,14 @@ public class VideoControllerTest extends AbstractControllerTest {
 
     @Test
     public void shouldCancelFromFinishedState() throws JSONException {
-        startVideo(VIDEO_START_PARAMS_MIN);
-        ResponseEntity<String> response = finishVideo(VIDEO_FINISH_PARAMS_MIN);
+        startVideo(CAPTURE_START_PARAMS_MIN);
+        ResponseEntity<String> response = finishVideo(CAPTURE_FINISH_PARAMS_MIN);
 
         cancelAndAssertStatusIsIdle("$.testStatus", response);
     }
 
     // ===========================================
-    // [ /api/videos/upload ]
+    // [ /api/captures/upload ]
     // ===========================================
 
     @Test
@@ -583,97 +583,97 @@ public class VideoControllerTest extends AbstractControllerTest {
     private ResponseEntity<String> videos() {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         return restTemplate
-            .exchange(urlWithPort("/api/videos"), HttpMethod.GET, entity, String.class);
+            .exchange(urlWithPort("/api/captures"), HttpMethod.GET, entity, String.class);
     }
 
     /**
-     * Call /api/videos/[videoId] GET endpoint.
+     * Call /api/captures/[captureId] GET endpoint.
      */
-    private ResponseEntity<String> video(String videoId) {
+    private ResponseEntity<String> video(String captureId) {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(
-            urlWithPort("/api/videos/" + videoId), HttpMethod.GET, entity, String.class);
+            urlWithPort("/api/captures/" + captureId), HttpMethod.GET, entity, String.class);
     }
 
     /**
-     * Call /api/videos/start POST endpoint.
+     * Call /api/captures/start POST endpoint.
      */
-    private ResponseEntity<String> startVideo(VideoStartParams videoStartParams) {
-        HttpEntity<VideoStartParams> entity = new HttpEntity<>(videoStartParams, headers);
+    private ResponseEntity<String> startVideo(CaptureStartParams captureStartParams) {
+        HttpEntity<CaptureStartParams> entity = new HttpEntity<>(captureStartParams, headers);
         return restTemplate.exchange(
-            urlWithPort("/api/videos/start"), HttpMethod.POST, entity, String.class);
+            urlWithPort("/api/captures/start"), HttpMethod.POST, entity, String.class);
     }
 
     /**
-     * Call /api/videos/record POST endpoint.
+     * Call /api/captures/record POST endpoint.
      */
     private ResponseEntity<String> recordVideo() {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(
-            urlWithPort("/api/videos/record"), HttpMethod.POST, entity, String.class);
+            urlWithPort("/api/captures/record"), HttpMethod.POST, entity, String.class);
     }
 
     /**
-     * Call /api/videos/stop POST endpoint.
+     * Call /api/captures/stop POST endpoint.
      */
     private ResponseEntity<String> stopVideo() {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(
-            urlWithPort("/api/videos/stop"), HttpMethod.POST, entity, String.class);
+            urlWithPort("/api/captures/stop"), HttpMethod.POST, entity, String.class);
     }
 
     /**
-     * Call /api/videos/finish POST endpoint.
+     * Call /api/captures/finish POST endpoint.
      */
-    private ResponseEntity<String> finishVideo(VideoFinishParams videoFinishParams) {
-        HttpEntity<VideoFinishParams> entity = new HttpEntity<>(videoFinishParams, headers);
+    private ResponseEntity<String> finishVideo(CaptureFinishParams captureFinishParams) {
+        HttpEntity<CaptureFinishParams> entity = new HttpEntity<>(captureFinishParams, headers);
         return restTemplate.exchange(
-            urlWithPort("/api/videos/finish"), HttpMethod.POST, entity, String.class);
+            urlWithPort("/api/captures/finish"), HttpMethod.POST, entity, String.class);
     }
 
     /**
-     * Call /api/videos/cancel POST endpoint.
+     * Call /api/captures/cancel POST endpoint.
      */
     private ResponseEntity<String> cancelVideo() {
-        HttpEntity<VideoFinishParams> entity = new HttpEntity<>(headers);
+        HttpEntity<CaptureFinishParams> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(
-            urlWithPort("/api/videos/cancel"), HttpMethod.POST, entity, String.class);
+            urlWithPort("/api/captures/cancel"), HttpMethod.POST, entity, String.class);
     }
 
     /**
-     * Call /api/videos/status GET endpoint.
+     * Call /api/captures/status GET endpoint.
      */
     private ResponseEntity<String> statusVideo() {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(
-            urlWithPort("/api/videos/status"), HttpMethod.GET, entity, String.class);
+            urlWithPort("/api/captures/status"), HttpMethod.GET, entity, String.class);
     }
 
     /**
-     * Call /api/videos/[videoID] DELETE endpoint.
+     * Call /api/captures/[captureId] DELETE endpoint.
      */
-    private ResponseEntity<Void> deleteVideo(String videoId) {
+    private ResponseEntity<Void> deleteVideo(String captureId) {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         return restTemplate
-            .exchange(urlWithPort("/api/videos/" + videoId), HttpMethod.DELETE, entity, Void.class);
+            .exchange(urlWithPort("/api/captures/" + captureId), HttpMethod.DELETE, entity, Void.class);
     }
 
     /**
-     * Call /api/videos/upload/[videoId] endpoint.
+     * Call /api/captures/upload/[captureId] endpoint.
      */
-    private ResponseEntity<String> uploadById(String videoId) {
+    private ResponseEntity<String> uploadById(String captureId) {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(
-            urlWithPort("/api/videos/upload/" + videoId), HttpMethod.POST, entity, String.class);
+            urlWithPort("/api/captures/upload/" + captureId), HttpMethod.POST, entity, String.class);
     }
 
     /**
-     * Call /api/videos/upload endpoint.
+     * Call /api/captures/upload endpoint.
      */
     private ResponseEntity<String> uploadStatus() {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         return restTemplate
-            .exchange(urlWithPort("/api/videos/upload"), HttpMethod.GET, entity, String.class);
+            .exchange(urlWithPort("/api/captures/upload"), HttpMethod.GET, entity, String.class);
     }
 
     /**

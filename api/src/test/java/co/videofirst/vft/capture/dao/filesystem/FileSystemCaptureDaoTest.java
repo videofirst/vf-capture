@@ -33,8 +33,8 @@ import static org.assertj.core.data.MapEntry.entry;
 import co.videofirst.vft.capture.enums.TestPassStatus;
 import co.videofirst.vft.capture.model.display.DisplayCapture;
 import co.videofirst.vft.capture.model.test.TestLog;
-import co.videofirst.vft.capture.model.video.Video;
-import co.videofirst.vft.capture.model.video.VideoSummary;
+import co.videofirst.vft.capture.model.capture.Capture;
+import co.videofirst.vft.capture.model.capture.CaptureSummary;
 import co.videofirst.vft.capture.test.VftTesting;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -51,11 +51,11 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
- * Unit test to test the methods of FileSystemVideoDao.
+ * Unit test to test the methods of FileSystemCaptureDao.
  *
  * @author Bob Marks
  */
-public class FileSystemVideoDaoTest {
+public class FileSystemCaptureDaoTest {
 
     // Constants
 
@@ -66,7 +66,7 @@ public class FileSystemVideoDaoTest {
 
     // Fields
 
-    private FileSystemVideoDao target;
+    private FileSystemCaptureDao target;
 
     private ObjectMapper objectMapper;
 
@@ -78,7 +78,7 @@ public class FileSystemVideoDaoTest {
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(WRITE_DATES_AS_TIMESTAMPS);
 
-        target = new FileSystemVideoDao(objectMapper, VftTesting.VFT_VIDEO_FOLDER);
+        target = new FileSystemCaptureDao(objectMapper, VftTesting.VFT_VIDEO_FOLDER);
     }
 
     @After
@@ -89,7 +89,7 @@ public class FileSystemVideoDaoTest {
     @Test
     public void shouldSaveVideo() throws IOException, JSONException {
 
-        Video video = Video.builder()
+        Capture capture = Capture.builder()
             .started(ts1)
             .finished(ts2)
             .categories(ImmutableMap
@@ -111,9 +111,9 @@ public class FileSystemVideoDaoTest {
 
             .build();
 
-        target.save(video);
+        target.save(capture);
 
-        // Assert that video meta-data was saved
+        // Assert that capture meta-data was saved
         assertFolderExists(VftTesting.VFT_VIDEO_FOLDER, "google-search", "login",
             "search-by-country",
             "2018-01-30_17-33-47_a9kea");
@@ -164,24 +164,24 @@ public class FileSystemVideoDaoTest {
 
         String id = "2018-02-15_12-14-02_n3jwzb";
 
-        Video video = target.findById(id);
+        Capture capture = target.findById(id);
 
-        assertThat(video.getId()).isEqualTo(id);
-        assertThat(video.getCategories()).containsExactly(entry("organisation", "Acme"),
+        assertThat(capture.getId()).isEqualTo(id);
+        assertThat(capture.getCategories()).containsExactly(entry("organisation", "Acme"),
             entry("product", "Moon Rocket"), entry("module", "UI"));
-        assertThat(video.getFeature()).isEqualTo("Bob Feature");
-        assertThat(video.getScenario()).isEqualTo("Dave Scenario");
-        assertThat(video.getStarted()).isEqualTo(LocalDateTime.of(2018, 2, 15, 12, 14, 02));
-        assertThat(video.getFinished()).isEqualTo(LocalDateTime.of(2018, 2, 15, 12, 14, 03));
-        assertThat(video.getFolder())
+        assertThat(capture.getFeature()).isEqualTo("Bob Feature");
+        assertThat(capture.getScenario()).isEqualTo("Dave Scenario");
+        assertThat(capture.getStarted()).isEqualTo(LocalDateTime.of(2018, 2, 15, 12, 14, 02));
+        assertThat(capture.getFinished()).isEqualTo(LocalDateTime.of(2018, 2, 15, 12, 14, 03));
+        assertThat(capture.getFolder())
             .isEqualTo("acme/moon-rocket/ui/bob-feature/dave-scenario/2018-02-15_12-14-02_n3jwzb");
-        assertThat(video.getFormat()).isEqualTo("avi");
-        assertThat(video.getCapture()).isEqualTo(DisplayCapture.builder()
+        assertThat(capture.getFormat()).isEqualTo("avi");
+        assertThat(capture.getCapture()).isEqualTo(DisplayCapture.builder()
             .x(0).y(0).width(1920).height(1200).build());
-        assertThat(video.getMeta()).isEmpty();
-        assertThat(video.getEnvironment())
+        assertThat(capture.getMeta()).isEmpty();
+        assertThat(capture.getEnvironment())
             .containsExactly(entry("java.awt.graphicsenv", "sun.awt.Win32GraphicsEnvironment"));
-        assertThat(video.getTestStatus()).isEqualTo(TestPassStatus.fail);
+        assertThat(capture.getTestStatus()).isEqualTo(TestPassStatus.fail);
     }
 
     @Test
@@ -189,10 +189,10 @@ public class FileSystemVideoDaoTest {
 
         String id = "2018-02-15_12-14-02_n3jwzb";
 
-        List<VideoSummary> videos = target.list();
+        List<CaptureSummary> videos = target.list();
 
         assertThat(videos).hasSize(2);
-        VideoSummary video = videos.get(0);  // Detailed test on the first video
+        CaptureSummary video = videos.get(0);  // Detailed test on the first video
         assertThat(video.getId()).isEqualTo(id);
         assertThat(video.getCategories()).containsExactly(entry("organisation", "Acme"),
             entry("product", "Moon Rocket"), entry("module", "UI"));

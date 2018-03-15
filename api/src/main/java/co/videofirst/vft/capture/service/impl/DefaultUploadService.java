@@ -24,15 +24,15 @@
 package co.videofirst.vft.capture.service.impl;
 
 import co.videofirst.vft.capture.configuration.properties.UploadConfig;
-import co.videofirst.vft.capture.dao.VideoDao;
+import co.videofirst.vft.capture.dao.CaptureDao;
 import co.videofirst.vft.capture.enums.UploadState;
 import co.videofirst.vft.capture.exception.InvalidStateException;
 import co.videofirst.vft.capture.exception.VideoUploadException;
 import co.videofirst.vft.capture.http.ProgressEntityWrapper;
 import co.videofirst.vft.capture.http.ProgressListener;
-import co.videofirst.vft.capture.model.video.Upload;
-import co.videofirst.vft.capture.model.video.UploadStatus;
-import co.videofirst.vft.capture.model.video.Video;
+import co.videofirst.vft.capture.model.capture.Capture;
+import co.videofirst.vft.capture.model.capture.Upload;
+import co.videofirst.vft.capture.model.capture.UploadStatus;
 import co.videofirst.vft.capture.service.InfoService;
 import co.videofirst.vft.capture.service.UploadService;
 import java.io.File;
@@ -78,7 +78,7 @@ public class DefaultUploadService implements UploadService, Runnable {
 
     // Injected fields
 
-    private final VideoDao videoDao;
+    private final CaptureDao captureDao;
 
     // Local fields / stateful objects
 
@@ -86,13 +86,13 @@ public class DefaultUploadService implements UploadService, Runnable {
     @Setter
     private UploadConfig uploadConfig;
 
-    private final BlockingQueue<Video> queue = new LinkedBlockingQueue<>();
-    private final Map<String, Video> uploads = new ConcurrentHashMap<>();
+    private final BlockingQueue<Capture> queue = new LinkedBlockingQueue<>();
+    private final Map<String, Capture> uploads = new ConcurrentHashMap<>();
 
     @Autowired
-    public DefaultUploadService(InfoService infoService, VideoDao videoDao) {
+    public DefaultUploadService(InfoService infoService, CaptureDao captureDao) {
         uploadConfig = infoService.getInfo().getInfo().getUpload();
-        this.videoDao = videoDao;
+        this.captureDao = captureDao;
 
         // Create thread of execution depending on the number of configured threads
         if (uploadConfig.isEnable()) {
@@ -108,27 +108,27 @@ public class DefaultUploadService implements UploadService, Runnable {
     // Methods from `UploadService`
 
     @Override
-    public void upload(String videoId) {
+    public void upload(String captureId) {
         if (!uploadConfig.isEnable()) {
             throw new VideoUploadException(
                 "Please enable upload configuration (i.e. set `vft_config.upload.enable` property to `true`)");
         }
 
-        Video video = getVideo(videoId);
+        Capture capture = getCapture(captureId);
 
-        // Check video is finished i.e. the `finished` timestamp is set.
-        if (video.getFinished() == null) {
+        // Check capture is finished i.e. the `finished` timestamp is set.
+        if (capture.getFinished() == null) {
             throw new InvalidStateException(
-                "You can only upload a video which is finished.  Please try again later.");
+                "You can only upload a capture which is finished.  Please try again later.");
         }
 
-        // Mark video that it's scheduled for upload
+        // Mark capture that it's scheduled for upload
         Upload upload = Upload.schedule(uploadConfig.getUrl());
-        video.setUpload(upload);
-        videoDao.save(video);
+        capture.setUpload(upload);
+        captureDao.save(capture);
 
-        uploads.put(videoId, video);
-        queue.add(video);
+        uploads.put(captureId, capture);
+        queue.add(capture);
     }
 
     @Override
@@ -156,12 +156,12 @@ public class DefaultUploadService implements UploadService, Runnable {
     @Override
     public void run() {
         // Very simple consumer which runs in a separate Thread. It loops forever and takes
-        // video's off the queue.
+        // capture's off the queue.
         while (true) {
             try {
                 // Take off queue and update that upload
-                Video video = queue.take();
-                uploadToServer(video);
+                Capture capture = queue.take();
+                uploadToServer(capture);
             } catch (InterruptedException e) {
                 log.warn("Interruption error", e);
             }
@@ -170,50 +170,50 @@ public class DefaultUploadService implements UploadService, Runnable {
 
     @Scheduled(fixedDelayString = "${vft_config.upload.purgeFinishedUploadSchedule:2000}")
     public void purgeFinishedUploads() {
-        for (String videoId : uploads.keySet()) {
-            Video video = uploads.get(videoId);
+        for (String captureId : uploads.keySet()) {
+            Capture capture = uploads.get(captureId);
             LocalDateTime time = LocalDateTime.now()
                 .minusSeconds(uploadConfig.getKeepFinishedUploadsInSecs());
-            if (video.getUpload() != null &&
-                video.getUpload().getState() == UploadState.finished &&
-                video.getUpload().getFinished().isBefore(time)) {
+            if (capture.getUpload() != null &&
+                capture.getUpload().getState() == UploadState.finished &&
+                capture.getUpload().getFinished().isBefore(time)) {
 
-                log.info("Removing video " + videoId);
-                uploads.remove(videoId);
+                log.info("Removing capture " + captureId);
+                uploads.remove(captureId);
             }
-            log.debug("Not removing video " + videoId);
+            log.debug("Not removing capture " + captureId);
         }
     }
 
     // Private methods
 
     /**
-     * Retrieve video and throw an exception of the video doesn't exist.
+     * Retrieve capture and throw an exception of the capture doesn't exist.
      */
-    private Video getVideo(String videoId) {
-        Video video = videoDao.findById(videoId);
-        if (video == null) {
+    private Capture getCapture(String captureId) {
+        Capture capture = captureDao.findById(captureId);
+        if (capture == null) {
             throw new InvalidStateException(
-                "Video [ " + videoId + " ] doesn't exist! Please re-check video ID.");
+                "Capture [ " + captureId + " ] doesn't exist! Please re-check capture ID.");
         }
-        return video;
+        return capture;
     }
 
     /**
-     * Upload video upload.
+     * Update capture upload.
      */
-    private void updateVideoUpload(final Video video, final Upload upload) {
-        video.setUpload(upload);
-        videoDao.save(video);
+    private void updateCaptureUpload(final Capture capture, final Upload upload) {
+        capture.setUpload(upload);
+        captureDao.save(capture);
     }
 
     /**
-     * Upload video to server.
+     * Upload capture to server.
      */
-    private void uploadToServer(final Video video) {
+    private void uploadToServer(final Capture capture) {
 
-        updateVideoUpload(video, video.getUpload().start());
-        HttpPost httpPost = getHttpPost(video);
+        updateCaptureUpload(capture, capture.getUpload().start());
+        HttpPost httpPost = getHttpPost(capture);
 
         try {
             // Execute HTTP call
@@ -225,26 +225,26 @@ public class DefaultUploadService implements UploadService, Runnable {
             // Check status and update accordingly
             if (statusCode == 200) {
                 log.trace("Upload successful, body [ " + httpBody + " ]");
-                updateVideoUpload(video, video.getUpload().finish());
+                updateCaptureUpload(capture, capture.getUpload().finish());
             } else {
                 log.trace("Upload unsuccessful, body [ " + httpBody + " ] / status code [ "
                     + statusCode);
-                updateVideoUpload(video, video.getUpload().error(httpBody, statusCode));
+                updateCaptureUpload(capture, capture.getUpload().error(httpBody, statusCode));
             }
         } catch (IOException ioEx) {
             log.warn("IO exception calling upload", ioEx);
             String errorMessage = ioEx.getMessage();
-            updateVideoUpload(video, video.getUpload().error(errorMessage, null));
+            updateCaptureUpload(capture, capture.getUpload().error(errorMessage, null));
         }
     }
 
     /**
      * Prepare HTTP Post upload call
      */
-    private HttpPost getHttpPost(Video video) {
-        // Get video file and data file
-        File videoFile = validateExists(video.getVideoFile());
-        File dataFile = validateExists(video.getDataFile());
+    private HttpPost getHttpPost(Capture capture) {
+        // Get capture file and data file
+        File videoFile = validateExists(capture.getVideoFile());
+        File dataFile = validateExists(capture.getDataFile());
 
         HttpPost httpPost = new HttpPost(uploadConfig.getUrl());
         uploadConfig.getHeaders().entrySet().stream()
@@ -256,7 +256,7 @@ public class DefaultUploadService implements UploadService, Runnable {
         builder.addBinaryBody(PARAM_DATA, dataFile, ContentType.DEFAULT_BINARY, dataFile.getName());
         HttpEntity multipart = builder.build();
 
-        ProgressListener pListener = new VideoUploadProgressListener(videoDao, video,
+        ProgressListener pListener = new VideoUploadProgressListener(captureDao, capture,
             DAO_UPDATE_INTERVAL_MILLIS);
         httpPost.setEntity(new ProgressEntityWrapper(multipart, pListener));
         return httpPost;
@@ -287,24 +287,24 @@ public class DefaultUploadService implements UploadService, Runnable {
     // Private classes
 
     /**
-     * Video progress listener.
+     * Capture progress listener.
      */
     private static class VideoUploadProgressListener implements ProgressListener {
 
         // Injected fields
 
-        private final VideoDao videoDao;
-        private final Video video;
+        private final CaptureDao captureDao;
+        private final Capture capture;
         private final long updateIntervalMillis;
 
         // Other fields
 
         private long curTimeMillis;
 
-        public VideoUploadProgressListener(VideoDao videoDao, Video video,
+        public VideoUploadProgressListener(CaptureDao captureDao, Capture capture,
             long updateIntervalMillis) {
-            this.videoDao = videoDao;
-            this.video = video;
+            this.captureDao = captureDao;
+            this.capture = capture;
             this.updateIntervalMillis = updateIntervalMillis;
 
             curTimeMillis = System.currentTimeMillis();
@@ -314,9 +314,9 @@ public class DefaultUploadService implements UploadService, Runnable {
         public void progress(long transferred, long totalBytes) {
             // Only update after current time is greater than an interval of e.g. every 2 seconds.
             if ((System.currentTimeMillis() - curTimeMillis) > updateIntervalMillis) {
-                Upload upload = video.getUpload().updateProgress(transferred, totalBytes);
-                video.setUpload(upload);
-                videoDao.save(video);
+                Upload upload = capture.getUpload().updateProgress(transferred, totalBytes);
+                capture.setUpload(upload);
+                captureDao.save(capture);
 
                 curTimeMillis = System.currentTimeMillis(); // reset time
 

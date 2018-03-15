@@ -8,8 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 
 - Add `* **Simple UI:** enables manual screen capture, useful when e.g. performing exploratory UI testing.` to README.md
-- Refactor `/videos` endpoint to `/captures` for consistency
-- Investigate keyboard shortcuts to start / stop video capture.
+- Investigate keyboard shortcuts to start / stop capture.
 - Do GatsbyJS? - https://scotch.io/tutorials/zero-to-deploy-a-practical-guide-to-static-sites-with-gatsbyjs
 - Check out [ https://docs.spring.io/spring-boot/docs/current/reference/html/deployment-install.html ]
 - Implement count-down to end.
@@ -33,7 +32,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - New simple UI using react libraries which can be run in dev mode or packaged with maven into spring boot.
 
 ### Changed
-- Converted project to a multi-module project, with `api` and `ui` sub modules
+- Converted project to a multi-module project, with `api` and `ui` sub modules.
+- Changed all the `/api/videos ...` endpoints to `/api/captures ...` so it's more consistant.
 
 
 ## [0.1.0] - 2018-03-13

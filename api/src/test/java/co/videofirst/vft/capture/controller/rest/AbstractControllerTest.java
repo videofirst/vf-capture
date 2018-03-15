@@ -31,7 +31,7 @@ import co.videofirst.vft.capture.configuration.HeadlessSpringApplicationContextL
 import co.videofirst.vft.capture.configuration.properties.UploadConfig;
 import co.videofirst.vft.capture.controller.rest.AbstractControllerTest.IntegrationTestContextConfiguration;
 import co.videofirst.vft.capture.mock.MockUploadController.MockUploadService;
-import co.videofirst.vft.capture.service.VideoService;
+import co.videofirst.vft.capture.service.CaptureService;
 import co.videofirst.vft.capture.service.impl.DefaultUploadService;
 import co.videofirst.vft.capture.test.VftTesting;
 import org.junit.After;
@@ -81,7 +81,7 @@ public abstract class AbstractControllerTest {
     protected int port;
 
     @Autowired
-    protected VideoService videoService;
+    protected CaptureService captureService;
 
     @Autowired
     protected MockUploadService mockUploadService;
@@ -109,7 +109,7 @@ public abstract class AbstractControllerTest {
 
     @After
     public void tearDown() throws Exception {
-        videoService.cancel(); // Always cancel after every integration test
+        captureService.cancel(); // Always cancel after every integration test
         uploadService.cancel();
         VftTesting.cleanTestFolders(); // clean out any videos generated
     }

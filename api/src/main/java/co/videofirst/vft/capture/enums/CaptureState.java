@@ -24,11 +24,11 @@
 package co.videofirst.vft.capture.enums;
 
 /**
- * Video state enum.
+ * Capture state enum.
  *
  * @author Bob Marks
  */
-public enum VideoState {
+public enum CaptureState {
 
     idle, started, recording, stopped, finished
 

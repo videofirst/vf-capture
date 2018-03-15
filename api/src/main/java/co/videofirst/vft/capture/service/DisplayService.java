@@ -24,7 +24,7 @@
 package co.videofirst.vft.capture.service;
 
 import co.videofirst.vft.capture.model.display.DisplayUpdate;
-import co.videofirst.vft.capture.model.video.VideoStatus;
+import co.videofirst.vft.capture.model.capture.CaptureStatus;
 
 /**
  * Graphics service interface.  Should be able to draw backgrounds, border around capture area, text
@@ -35,9 +35,9 @@ import co.videofirst.vft.capture.model.video.VideoStatus;
 public interface DisplayService {
 
     /**
-     * Update display when a video has started.
+     * Update display when a capture has started.
      */
-    void update(DisplayUpdate displayUpdate, VideoStatus status);
+    void update(DisplayUpdate displayUpdate, CaptureStatus status);
 
     /**
      * Update (no video status).

@@ -23,63 +23,64 @@
  */
 package co.videofirst.vft.capture.service;
 
-import co.videofirst.vft.capture.model.params.VideoFinishParams;
-import co.videofirst.vft.capture.model.params.VideoStartParams;
-import co.videofirst.vft.capture.model.video.Video;
-import co.videofirst.vft.capture.model.video.VideoStatus;
-import co.videofirst.vft.capture.model.video.VideoSummary;
+import co.videofirst.vft.capture.model.params.CaptureFinishParams;
+import co.videofirst.vft.capture.model.params.CaptureStartParams;
+import co.videofirst.vft.capture.model.capture.Capture;
+import co.videofirst.vft.capture.model.capture.CaptureStatus;
+import co.videofirst.vft.capture.model.capture.CaptureSummary;
+import co.videofirst.vft.capture.model.capture.CaptureStatus;
 import java.util.List;
 
 /**
- * High level Video service.
+ * High level capture service.
  *
  * @author Bob Marks
  */
-public interface VideoService {
+public interface CaptureService {
 
     /**
-     * Select a video using a video id.
+     * Select a video using a capture id.
      */
-    Video select(String videoId);
+    Capture select(String captureId);
 
     /**
-     * Return a list of video summaries.
+     * Return a list of capture summaries.
      */
-    List<VideoSummary> list();
+    List<CaptureSummary> list();
 
     /**
      * Return the current status i.e. is it idle or in progress.
      */
-    VideoStatus status();
+    CaptureStatus status();
 
     /**
      * Start the capture process (but not necessarily the actual screen recording).
      */
-    VideoStatus start(VideoStartParams videoStartParams);
+    CaptureStatus start(CaptureStartParams captureStartParams);
 
     /**
      * Start recording the screen (no parameters required).
      */
-    VideoStatus record();
+    CaptureStatus record();
 
     /**
      * Stop recordinng the screen (no parameters required).
      */
-    VideoStatus stop();
+    CaptureStatus stop();
 
     /**
      * Finish capturing and finish video / test.
      */
-    VideoStatus finish(VideoFinishParams videoFinishParams);
+    CaptureStatus finish(CaptureFinishParams captureFinishParams);
 
     /**
      * Cancel any current captures.
      */
-    VideoStatus cancel();
+    CaptureStatus cancel();
 
     /**
      * Delete an existing test capture.
      */
-    void delete(String videoId);
+    void delete(String captureId);
 
 }

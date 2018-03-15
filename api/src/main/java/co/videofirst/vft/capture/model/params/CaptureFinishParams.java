@@ -21,37 +21,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package co.videofirst.vft.capture.dao;
+package co.videofirst.vft.capture.model.params;
 
-import co.videofirst.vft.capture.model.video.Video;
-import co.videofirst.vft.capture.model.video.VideoSummary;
+import co.videofirst.vft.capture.enums.TestPassStatus;
+import co.videofirst.vft.capture.model.test.TestLog;
 import java.util.List;
+import java.util.Map;
+import lombok.Builder;
+import lombok.Data;
 
 /**
- * Video DAO.
+ * Model object which defines how to finish a capture.
  *
  * @author Bob Marks
  */
-public interface VideoDao {
+@Data
+@Builder
+public class CaptureFinishParams {
 
-    /**
-     * Save video
-     */
-    void save(Video video);
+    // Mandatory
 
-    /**
-     * Find a video by a video ID.
-     */
-    Video findById(String videoId);
+    private TestPassStatus testStatus;
 
-    /**
-     * Return a list of VideoSummary classes.
-     */
-    List<VideoSummary> list();
+    // Optional
 
-    /**
-     * Delete video using ID.
-     */
-    void delete(String videoId);
+    private Map<String, String> meta; // merge / override with start parameters
+    private String description; // override start params if set
+    private String error;
+    private List<TestLog> logs;
+
+    // e.g. readyness, triggers, thresholds
 
 }

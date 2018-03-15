@@ -33,7 +33,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * All these attributes can be overriden at run-time i.e. when creating a video.
+ * All these attributes can be overriden at run-time i.e. when creating a capture.
  *
  * @author Bob Marks
  */
@@ -41,7 +41,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class VideoStartParams {
+public class CaptureStartParams {
 
     // Mandatory
 

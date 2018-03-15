@@ -57,7 +57,7 @@ user interface testing.  It has the following features: -
           "product" : ""
         }
       },
-      "video" : {
+      "captureStatus" : {
         "state" : "idle"
       },
       "uploads" : [ ]
@@ -86,10 +86,10 @@ must supply the following information: -
 
 #### Start recording
 
-To start capturing a test, use the `/api/videos/start` (POST) endpoint e.g.: -
+To start capturing a test, use the `/api/captures/start` (POST) endpoint e.g.: -
 
 ```bash
-curl -X POST http://localhost:1357/api/videos/start \
+curl -X POST http://localhost:1357/api/captures/start \
   -u 'test:password' \
   -H 'content-type: application/json' \
   -d '{
@@ -139,16 +139,16 @@ vft_default:
         product: Search
 ```
 
-The categories are then no longer required in the JSON body of the `/api/videos/start` (POST)
+The categories are then no longer required in the JSON body of the `/api/captures/start` (POST)
 endpoint.
 
 
 #### Finish recording
 
-To finish the test capture, use the `/api/videos/finish` (POST) endpoint: -
+To finish the test capture, use the `/api/captures/finish` (POST) endpoint: -
 
 ```bash
-curl -X POST http://localhost:1357/api/videos/finish \
+curl -X POST http://localhost:1357/api/captures/finish \
   -u 'test:password' \
   -H 'content-type: application/json' \
   -d '{ "testStatus" : "fail" }'
@@ -182,7 +182,7 @@ If you look inside this folder you'll see 2 files e.g.: -
 
 1. `2018-03-12_13-56-28_vxva1z.avi` - video of screen capture.
 2. `2018-03-12_13-56-28_vxva1z.json` - data file containing various information on the test (similar
-   to the JSON output of the `/api/videos/finish` (POST) endpoint).
+   to the JSON output of the `/api/captures/finish` (POST) endpoint).
 
 Congratulations - you've captured your first test!
 
@@ -226,11 +226,11 @@ vft_config:
 > **Note:** additional HTTP headers can also be specified in the `vft.yaml`configuration file e.g.
 for Basic Auth.
 
-A video can now be uploaded the configured URL via the `/api/videos/uploads/<id>` (POST) endpoint
+A capture can now be uploaded the configured URL via the `/api/captures/uploads/<id>` (POST) endpoint
 e.g.: -
 
 ```bash
-curl -X POST http://localhost:1357/api/videos/uploads/2018-03-12_13-56-28_vxva1z\
+curl -X POST http://localhost:1357/api/captures/uploads/2018-03-12_13-56-28_vxva1z\
   -u 'test:password'
 ```
 
@@ -249,7 +249,7 @@ curl -X POST http://localhost:1357/api/videos/uploads/2018-03-12_13-56-28_vxva1z
 ```
 
 If the upload is big (or connection is slow) you can view the status of the upload using the
-`/api/videos/uploads` (GET) endpoint: -
+`/api/captures/uploads` (GET) endpoint: -
 
 
 ## Configuration
@@ -272,7 +272,7 @@ possible values.
 There are 3 main ways to set the configuration of _VFT Capture_.  These are: -
 
 1. **YAML:** edit the `vft.yaml` file which comes bundled with _VFT Capture_ e.g. to update the
-temporary video storage folder, locate and update the `tempFolder` property in this file.
+temporary capture storage folder, locate and update the `tempFolder` property in this file.
 
     ```javascript
     vft_config:

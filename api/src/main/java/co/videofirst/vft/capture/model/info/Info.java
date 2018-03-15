@@ -24,8 +24,8 @@
 package co.videofirst.vft.capture.model.info;
 
 import co.videofirst.vft.capture.configuration.properties.VftDefaults;
-import co.videofirst.vft.capture.model.video.UploadStatus;
-import co.videofirst.vft.capture.model.video.VideoStatus;
+import co.videofirst.vft.capture.model.capture.CaptureStatus;
+import co.videofirst.vft.capture.model.capture.UploadStatus;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -42,12 +42,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonPropertyOrder({"info", "defaults", "video", "uploads"})
+@JsonPropertyOrder({"info", "defaults", "captureStatus", "uploads"})
 public class Info {
 
     private ConfigInfo info;
     private VftDefaults defaults;
-    private VideoStatus video;
+    private CaptureStatus captureStatus;
     private List<UploadStatus> uploads;
 
 }

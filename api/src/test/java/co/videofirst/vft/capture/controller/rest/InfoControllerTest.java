@@ -111,7 +111,7 @@ public class InfoControllerTest extends AbstractControllerTest {
             "      }" +
             "    }" +
             "  }," +
-            "  'video': {" +
+            "  'captureStatus': {" +
             "    'state': 'idle'" +
             "  }" +
             "}";

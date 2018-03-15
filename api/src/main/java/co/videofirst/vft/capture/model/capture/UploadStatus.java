@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package co.videofirst.vft.capture.model.video;
+package co.videofirst.vft.capture.model.capture;
 
 import co.videofirst.vft.capture.enums.UploadState;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -39,16 +39,16 @@ import java.time.LocalDateTime;
     "transferred", "error"})
 public class UploadStatus {
 
-    private final Video video;
+    private final Capture capture;
     private final Upload upload;
 
-    public UploadStatus(final Video video) {
-        this.video = video;
-        upload = video.getUpload();
+    public UploadStatus(final Capture capture) {
+        this.capture = capture;
+        upload = capture.getUpload();
     }
 
     public String getId() {
-        return video.getId();
+        return capture.getId();
     }
 
     public UploadState getState() {
