@@ -47,6 +47,9 @@ vft_config:
         # Lock out in seconds. Number of seconds a locked-out user must wait before retrying.
         lockOutInSeconds: 60
 
+        # Set allowed origins or CORS
+        allowedOrigins: http://localhost:3000
+
 
     # 1.2 Categories - must be set for each test. The following categories should work for
     # most software companies but these can be changed to suit different use cases.

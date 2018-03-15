@@ -39,5 +39,6 @@ public class SecurityConfig {
     private String pass;
     private long lockOutAttempts;
     private long lockOutInSeconds;
+    private String allowedOrigins;
 
 }

@@ -12,10 +12,15 @@ const Wrapper = styled.section`
 `;
 
 class NewCapture extends Component {
+
+  constructor(props) {
+    super(props);
+  }
+
   render() {
     return (
       <Wrapper>
-        <Title>New Capture</Title>
+        <Title>Create a new capture</Title>
       </Wrapper>
     );
   }
