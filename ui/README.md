@@ -21,3 +21,7 @@ be hot loaded automatically to the browser.
 
 - Folder structure is best on [React Folder Structure](https://marmelab.com/blog/2015/12/17/react-directory-structure.html)
 - Using [Styled Components](https://www.styled-components.com) + theming to compontise react components / simplify CSS.
+
+**Useful Links**
+
+- https://reacttraining.com/react-router/web/example/auth-workflow

@@ -1,46 +1,31 @@
 import React, { Component } from 'react';
-import base64 from 'base-64';
-import axios from 'axios';
+import { Route } from 'react-router-dom';
+import { MuiThemeProvider } from 'material-ui';
 
-import Header from './Header';
-import ListCaptures from '../list-captures/ListCaptures';
-import NewCapture from '../new-capture/NewCapture';
+import Login from '../login/Login';
+import Dashboard from '../dashboard/Dashboard';
 
-// How do these get set?
-const username = 'test';
-const password = 'password';
-const url = 'http://localhost:1357/api';
-const headers = {
-  'Authorization' : 'Basic ' + base64.encode(username + ":" + password)
-};
+//import ListCaptures from '../list-captures/ListCaptures';
+//import NewCapture from '../new-capture/NewCapture';
+// style components theme - not currently using
+//import { ThemeProvider } from 'styled-components';
+//<ThemeProvider theme={theme}> - styled components style
+//const theme = {
+//  pc1: "#222",
+//  pc2: "#C2B49A",
+//  bg: "white"
+//}
 
 class App extends Component {
 
-  constructor() {
-    super();
-    this.state = { 
-      info: {}, 
-      defaults: {},
-    };
-  }
-
-  componentDidMount() {
-    axios.get(url, {headers}) 
-    .then(response => {
-        this.setState({
-          defaults: response.data.defaults, 
-          info: response.data.info
-        });
-    });
-  }
-
   render() {
     return (
-      <div>
-        <Header/>
-        <NewCapture defaults={this.state.defaults} info={this.state.info}/>
-        <ListCaptures/>
-      </div>
+      <MuiThemeProvider>
+        <div id="app">
+          <Route path="/" exact component={Login} />
+          <Route path="/dashboard" exact component={Dashboard} />
+        </div>
+      </MuiThemeProvider>
     );
   }
 }

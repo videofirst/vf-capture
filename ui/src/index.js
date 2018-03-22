@@ -1,21 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { ThemeProvider } from 'styled-components';
+import { BrowserRouter, Route } from 'react-router-dom';
 
 import './index.css';
 import App from './app/App';
+import Login from './login/Login';
 import registerServiceWorker from './app/registerServiceWorker';
 
-const theme = {
-    pc1: "#222",
-    pc2: "#C2B49A",
-    bg: "white"
-}
+// https://css-tricks.com/react-router-4/
 
 ReactDOM.render(
-    <ThemeProvider theme={theme}>
-       <App />
-    </ThemeProvider>,
+    <BrowserRouter>
+        <App/>
+    </BrowserRouter>,
     document.getElementById('root')
 );
 registerServiceWorker();

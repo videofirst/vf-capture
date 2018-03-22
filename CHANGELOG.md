@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Check out [ https://docs.spring.io/spring-boot/docs/current/reference/html/deployment-install.html ]
 - Implement count-down to end.
 - Investigate [ https://hexo.io/docs ]
+- Make categories / feature / scenario all completely optional?
 - Investigate `sid` (scenario ID) - means categories, feature and scenario will all be ignored.
 - Check out Netlify ( https://www.netlify.com/ )
 - Package front-end into the Spring Boot application

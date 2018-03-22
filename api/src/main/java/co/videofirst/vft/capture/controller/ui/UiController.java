@@ -39,9 +39,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class UiController {
 
-    private final CaptureService captureService;
-
-    @GetMapping
+    @GetMapping("/")
     public String showUi() {
         return "index.html";
     }
