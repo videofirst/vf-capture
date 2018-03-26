@@ -94,6 +94,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
         .meta(ImmutableMap.of("author", "Bob", "extra", "stuff"))
         .description(" even more awesome description ")
         .error(" awesome error ")
+        .stackTrace("co.videofirst.vft.capture.exception.InvalidStateException: Current state is idle")
         .logs(asList(
             TestLog.builder().cat("browser").tier(L1).ts(TS1).log("awesome log 1").build(),
             TestLog.builder().cat("server").tier(L2).ts(TS2).log("awesome log 2").build()))
@@ -427,6 +428,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
             "    'description': 'even more awesome description'," +
             "    'testStatus': 'fail'," +
             "    'testError': 'awesome error'," +
+            "    'testStackTrace': 'co.videofirst.vft.capture.exception.InvalidStateException: Current state is idle'," +
             "    'testLogs': [{" +
             "        'ts': '2015-01-02T12:13:14'," +
             "        'cat': 'browser'," +

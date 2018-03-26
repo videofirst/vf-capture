@@ -180,7 +180,9 @@ public class CaptureStatus {
         }
 
         // 1) Check if still recording and finish if that's the case.
-        CaptureStatus stoppedCaptureStatus = state == CaptureState.recording ? stop() : this;
+        if(state == CaptureState.recording) {
+            stop();
+        }
 
         // 2) Create capture object
 
@@ -193,6 +195,7 @@ public class CaptureStatus {
                     : oldCapture.getDescription())
             .testStatus(captureFinishParams.getTestStatus())
             .testError(VftUtils.nullTrim(captureFinishParams.getError()))
+            .testStackTrace(VftUtils.nullTrim(captureFinishParams.getStackTrace()))
             .testLogs(captureFinishParams.getLogs())
             .build();
 
@@ -255,6 +258,10 @@ public class CaptureStatus {
 
     public String getTestError() {
         return capture.getTestError();
+    }
+
+    public String getTestStackTrace() {
+        return capture.getTestStackTrace();
     }
 
     public List<TestLog> getTestLogs() {

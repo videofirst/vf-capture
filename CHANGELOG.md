@@ -32,11 +32,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - New simple UI using react libraries which can be run in dev mode or packaged with maven into spring boot.
 - Add ability to _force_ a start capture using new `force` parameter (ideal for programmatic access).
+- Added new `stackTrace` field to `Capture` object + finish params.
 
 ### Changed
 - Converted project to a multi-module project, with `api` and `ui` sub modules.
 - Changed all the `/api/videos ...` endpoints to `/api/captures ...` so it's more consistent.
-
 
 ## [0.1.0] - 2018-03-13
 ### Added

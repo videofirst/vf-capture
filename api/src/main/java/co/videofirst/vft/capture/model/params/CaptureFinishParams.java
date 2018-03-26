@@ -48,6 +48,7 @@ public class CaptureFinishParams {
     private Map<String, String> meta; // merge / override with start parameters
     private String description; // override start params if set
     private String error;
+    private String stackTrace;
     private List<TestLog> logs;
 
     // e.g. readyness, triggers, thresholds
