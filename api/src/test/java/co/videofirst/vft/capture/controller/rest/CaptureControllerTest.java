@@ -273,6 +273,17 @@ public class CaptureControllerTest extends AbstractControllerTest {
         assertThat(environmentMap.get("java.awt.graphicsenv")).isNotEmpty();
     }
 
+    @Test
+    public void shouldStartWhenAlreadyStartedUsingForce() throws JSONException {
+
+        startVideo(CAPTURE_START_PARAMS_MIN);
+        ResponseEntity<String> response = startVideo(CaptureStartParams.builder()
+            .feature("Bob Feature").scenario("Dave Scenario").force("true").build());
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        JSONAssert.assertEquals("{'state': 'recording'}" , response.getBody(), false);
+    }
+
     // ===========================================
     // [ /api/captures/record ] POST
     // ===========================================

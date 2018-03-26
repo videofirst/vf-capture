@@ -61,17 +61,24 @@ public class CaptureStartParams {
     @ApiModelProperty(notes = "Optional start record (defaults to \"true\")", allowableValues = "false,true", position = 4)
     private String record;
 
-    @ApiModelProperty(notes = "Optional meta tags e.g. {\"version\" : \"0.12.4\"}", position = 5)
+    @ApiModelProperty(notes = "Force a start (will cancel existing recordings) if not in an idle state (defaults to \"false\")", allowableValues = "false,true", position = 5)
+    private String force;
+
+    @ApiModelProperty(notes = "Optional meta tags e.g. {\"version\" : \"0.12.4\"}", position = 6)
     private Map<String, String> meta;
 
-    @ApiModelProperty(notes = "Optional description of test", position = 6)
+    @ApiModelProperty(notes = "Optional description of test", position = 7)
     private String description;
 
-    @ApiModelProperty(notes = "Optional display overrides e.g. for setting borders, backgrounds, etc", position = 7)
+    @ApiModelProperty(notes = "Optional display overrides e.g. for setting borders, backgrounds, etc", position = 8)
     private DisplayConfig display;
 
     public boolean record() {
         return record == null || "true".equalsIgnoreCase(record.trim());
+    }
+
+    public boolean force() {
+        return force != null && "true".equalsIgnoreCase(force.trim());
     }
 
 }

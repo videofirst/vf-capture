@@ -47,7 +47,7 @@ public class InfoController {
     private final UploadService uploadService; // get real-time status on uploads
 
     @GetMapping
-    public Info list() {
+    public Info info() {
         Info info = infoService.getInfo();
         info.setCaptureStatus(captureService.status());
         info.setUploads(uploadService.status());

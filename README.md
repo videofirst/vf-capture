@@ -1,14 +1,12 @@
 # [VFT Capture](http://www.videofirst.co) &middot; [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/videofirst/vft-capture/blob/master/LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/videofirst/vft-capture/blob/README.md)
 
 
-
 _VFT Capture_ is a cross-platform tool which enables testers and engineers to capture video during
 user interface testing.  It has the following features: -
 
 * **JAVA:** implemented in Java, runs on systems which supports a JRE (Java Runtime Environment).
 * **REST API:** simple API enables programmatic access from most programming languages.
 * **Upload:** captured videos can be uploaded to a configurable endpoint.
-
 
 
 ## Installation

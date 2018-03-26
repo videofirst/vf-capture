@@ -86,6 +86,10 @@ public class DefaultCaptureService implements CaptureService {
 
     @Override
     public CaptureStatus start(CaptureStartParams captureStartParams) {
+        if (captureStartParams.force()) {
+            cancelCapture();
+        }
+
         validateStart(captureStartParams);
 
         captureStatus = CaptureStatus.start(infoService.getInfo(), captureStartParams);
@@ -150,8 +154,7 @@ public class DefaultCaptureService implements CaptureService {
 
     @Override
     public CaptureStatus cancel() {
-        videoRecorder.cancel();  // cancel any recording if applicable
-        captureStatus = CaptureStatus.IDLE; // re-set status
+        cancelCapture();
         refreshDisplay();
 
         return status();
@@ -163,6 +166,11 @@ public class DefaultCaptureService implements CaptureService {
     }
 
     // Private methods
+
+    private void cancelCapture() {
+        videoRecorder.cancel();  // cancel any recording if applicable
+        captureStatus = CaptureStatus.IDLE; // re-set status
+    }
 
     private Map<String, String> getCategoryMap(Map<String, String> categoryOverrides) {
         List<String> categories = infoService.getInfo().getInfo().getCategories();
