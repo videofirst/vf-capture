@@ -25,7 +25,7 @@ package co.videofirst.vft.capture.model.capture;
 
 import co.videofirst.vft.capture.enums.TestPassStatus;
 import co.videofirst.vft.capture.model.display.DisplayCapture;
-import co.videofirst.vft.capture.model.test.TestLog;
+import co.videofirst.vft.capture.model.TestLog;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;

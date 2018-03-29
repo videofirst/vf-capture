@@ -32,7 +32,7 @@ import static org.assertj.core.data.MapEntry.entry;
 
 import co.videofirst.vft.capture.enums.TestPassStatus;
 import co.videofirst.vft.capture.model.display.DisplayCapture;
-import co.videofirst.vft.capture.model.test.TestLog;
+import co.videofirst.vft.capture.model.TestLog;
 import co.videofirst.vft.capture.model.capture.Capture;
 import co.videofirst.vft.capture.model.capture.CaptureSummary;
 import co.videofirst.vft.capture.test.VftTesting;

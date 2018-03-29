@@ -21,36 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package co.videofirst.vft.capture.model.params;
+package co.videofirst.vft.capture.model;
 
-import co.videofirst.vft.capture.enums.TestPassStatus;
-import co.videofirst.vft.capture.model.test.TestLog;
-import java.util.List;
-import java.util.Map;
+import co.videofirst.vft.capture.enums.LogTier;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Data;
 
 /**
- * Model object which defines how to finish a capture.
+ * Test log object.
  *
  * @author Bob Marks
  */
 @Data
 @Builder
-public class CaptureFinishParams {
+@JsonPropertyOrder({"ts", "cat", "tier", "log"})
+public class TestLog {
 
-    // Mandatory
-
-    private TestPassStatus testStatus;
-
-    // Optional
-
-    private Map<String, String> meta; // merge / override with start parameters
-    private String description; // override start params if set
-    private String error;
-    private String stackTrace;
-    private List<TestLog> logs;
-
-    // e.g. readyness, triggers, thresholds
+    private LocalDateTime ts; // timestamp of test e.g.
+    private String cat;  // optional category e.g. "server", "browser", "database", etc
+    private LogTier tier; // tier e.g.
+    private String log;
 
 }

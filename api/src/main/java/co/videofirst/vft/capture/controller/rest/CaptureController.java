@@ -23,8 +23,8 @@
  */
 package co.videofirst.vft.capture.controller.rest;
 
-import co.videofirst.vft.capture.model.params.CaptureFinishParams;
-import co.videofirst.vft.capture.model.params.CaptureStartParams;
+import co.videofirst.vft.capture.model.capture.CaptureFinishParams;
+import co.videofirst.vft.capture.model.capture.CaptureStartParams;
 import co.videofirst.vft.capture.model.capture.Capture;
 import co.videofirst.vft.capture.model.capture.UploadStatus;
 import co.videofirst.vft.capture.model.capture.CaptureStatus;

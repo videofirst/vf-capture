@@ -6,14 +6,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-
+- Make `feature` and `sceario` fields optional.
+- Create default categories (these will always be mandatory) e.g. Acme and Moon Rocket.
+- Split docs into 2 i.e.
+   - Make `README.md` more concise.
+   - Create a new README.md in `/docs` folder.
 - Add `* **Simple UI:** enables manual screen capture, useful when e.g. performing exploratory UI testing.` to README.md
 - Investigate keyboard shortcuts to start / stop capture.
 - Do GatsbyJS? - https://scotch.io/tutorials/zero-to-deploy-a-practical-guide-to-static-sites-with-gatsbyjs
 - Check out [ https://docs.spring.io/spring-boot/docs/current/reference/html/deployment-install.html ]
 - Implement count-down to end.
 - Investigate [ https://hexo.io/docs ]
-- Make categories / feature / scenario all completely optional?
 - Investigate `sid` (scenario ID) - means categories, feature and scenario will all be ignored.
 - Check out Netlify ( https://www.netlify.com/ )
 - Package front-end into the Spring Boot application

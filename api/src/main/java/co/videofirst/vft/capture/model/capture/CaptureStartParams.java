@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package co.videofirst.vft.capture.model.params;
+package co.videofirst.vft.capture.model.capture;
 
 import co.videofirst.vft.capture.configuration.properties.DisplayConfig;
 import com.fasterxml.jackson.annotation.JsonProperty;

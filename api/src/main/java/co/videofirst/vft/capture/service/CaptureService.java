@@ -23,12 +23,11 @@
  */
 package co.videofirst.vft.capture.service;
 
-import co.videofirst.vft.capture.model.params.CaptureFinishParams;
-import co.videofirst.vft.capture.model.params.CaptureStartParams;
+import co.videofirst.vft.capture.model.capture.CaptureFinishParams;
+import co.videofirst.vft.capture.model.capture.CaptureStartParams;
 import co.videofirst.vft.capture.model.capture.Capture;
 import co.videofirst.vft.capture.model.capture.CaptureStatus;
 import co.videofirst.vft.capture.model.capture.CaptureSummary;
-import co.videofirst.vft.capture.model.capture.CaptureStatus;
 import java.util.List;
 
 /**

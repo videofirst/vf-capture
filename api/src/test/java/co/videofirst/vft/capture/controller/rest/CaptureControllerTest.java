@@ -34,9 +34,9 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
 import co.videofirst.vft.capture.enums.TestPassStatus;
-import co.videofirst.vft.capture.model.params.CaptureFinishParams;
-import co.videofirst.vft.capture.model.params.CaptureStartParams;
-import co.videofirst.vft.capture.model.test.TestLog;
+import co.videofirst.vft.capture.model.capture.CaptureFinishParams;
+import co.videofirst.vft.capture.model.capture.CaptureStartParams;
+import co.videofirst.vft.capture.model.TestLog;
 import co.videofirst.vft.capture.test.VftTesting;
 import com.google.common.collect.ImmutableMap;
 import com.jayway.jsonpath.DocumentContext;
