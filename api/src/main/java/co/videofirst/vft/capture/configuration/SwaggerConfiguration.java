@@ -44,7 +44,7 @@ public class SwaggerConfiguration {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
             .select()
-            .apis(RequestHandlerSelectors.basePackage("co.videofirst.vft.capture.controller.rest"))
+            .apis(RequestHandlerSelectors.basePackage("co.videofirst.vft.capture.controller.api"))
             .paths(PathSelectors.any())
             .build();
     }

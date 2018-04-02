@@ -30,9 +30,7 @@ import co.videofirst.vft.capture.configuration.properties.VftConfig;
 import co.videofirst.vft.capture.exception.InvalidSecurityException;
 import co.videofirst.vft.capture.security.EncryptedLockOutSupportAuthenticationProvider;
 import co.videofirst.vft.capture.security.LoginAttemptsService;
-import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -46,7 +44,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 /**
  * Spring security configuration.
@@ -93,16 +90,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // @formatter:off
-        http
-            .cors()
+         http
+             .cors()
+         .and()
+             .authorizeRequests() // api
+             .antMatchers("/index.html", "/manifest.json", "/service-worker.js",
+                 "/favicon.ico", "/asset-manifest.json",  "/static/**").permitAll() // ui (react)
+             .anyRequest().authenticated()
         .and()
-            .authorizeRequests()
-            .anyRequest()
-            .fullyAuthenticated()
+             .httpBasic()
         .and()
-            .httpBasic()
-        .and()
-            .csrf().disable();
+             .csrf().disable();
         // @formatter:on
     }
 

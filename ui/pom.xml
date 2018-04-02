@@ -12,7 +12,7 @@
     </parent>
 
     <description>
-        VFT Capture - backend section of project - implemented in Java and using Spring Boot.
+        VFT Capture - UI section of project - implemented in React.
     </description>
 
     <properties>

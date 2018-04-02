@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package co.videofirst.vft.capture.controller.rest;
+package co.videofirst.vft.capture.controller.api;
 
 import static org.mockito.Mockito.mock;
 
@@ -29,7 +29,7 @@ import co.videofirst.vft.capture.IntegrationTest;
 import co.videofirst.vft.capture.VftCapture;
 import co.videofirst.vft.capture.configuration.HeadlessSpringApplicationContextLoader;
 import co.videofirst.vft.capture.configuration.properties.UploadConfig;
-import co.videofirst.vft.capture.controller.rest.AbstractControllerTest.IntegrationTestContextConfiguration;
+import co.videofirst.vft.capture.controller.api.AbstractControllerTest.IntegrationTestContextConfiguration;
 import co.videofirst.vft.capture.mock.MockUploadController.MockUploadService;
 import co.videofirst.vft.capture.service.CaptureService;
 import co.videofirst.vft.capture.service.impl.DefaultUploadService;

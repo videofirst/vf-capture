@@ -23,7 +23,7 @@
  */
 package co.videofirst.vft.capture;
 
-import co.videofirst.vft.capture.controller.rest.AbstractControllerTest;
+import co.videofirst.vft.capture.controller.api.AbstractControllerTest;
 import org.junit.Test;
 
 /**

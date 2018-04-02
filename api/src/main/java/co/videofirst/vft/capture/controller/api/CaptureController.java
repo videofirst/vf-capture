@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package co.videofirst.vft.capture.controller.rest;
+package co.videofirst.vft.capture.controller.api;
 
 import co.videofirst.vft.capture.model.capture.CaptureFinishParams;
 import co.videofirst.vft.capture.model.capture.CaptureStartParams;

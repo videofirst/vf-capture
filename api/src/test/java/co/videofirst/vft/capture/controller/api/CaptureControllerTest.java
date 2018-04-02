@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package co.videofirst.vft.capture.controller.rest;
+package co.videofirst.vft.capture.controller.api;
 
 import static co.videofirst.vft.capture.enums.LogTier.L1;
 import static co.videofirst.vft.capture.enums.LogTier.L2;
