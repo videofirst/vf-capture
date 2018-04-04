@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
+import { withRouter } from 'react-router-dom';
 
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
@@ -53,18 +53,21 @@ class NewCapture extends Component {
     api.finishCapture(params);
   }
 
-  /*
-  finishCapture(testStatus) {
-    const params = {
-      testStatus: testStatus
-    };
-    api.finishCapture(params);
+  logOut(history) {
+    api.logout();
+    history.push('/');
   }
-  */
-
-  //failCapture () 
 
   render() {
+
+    const LogoutButton = withRouter(({ history }) => (
+      <FlatButton
+          label="Logout"
+          backgroundColor="#cccc"
+          hoverColor="#ddd"
+          onClick={this.logOut(history)} />
+    ));
+
     return (
       <div>
         <div>
@@ -113,6 +116,11 @@ class NewCapture extends Component {
           onClick={this.failedCapture}
           icon={<FontIcon className="muidocs-icon-custom-github" />}
         />
+        <br/>
+        <br/>
+
+        <LogoutButton/>
+        
       </div>
     );
   }

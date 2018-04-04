@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
-import Notifications, { notify } from 'react-notify-toast';
 
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AppBar from 'material-ui/AppBar';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
@@ -26,12 +24,25 @@ const Wrapper = styled.section`
 class Login extends Component {
   
   constructor(props) {
+    console.log(" Login constructor");
     super(props);
+    
+    // try and login to see if current auth is OK    
     this.state= {
       username:'',
       password:'',
       redirect: false
-    }
+    } 
+
+    api.getInfo()
+    .then(response => {
+      console.log ("Login success");
+      this.setState ({redirect: true})
+    })
+    .catch(error => {
+      this.setState ({redirect: false})
+      console.log("error " + error, "error");
+    });
   }
 
   handleClick(event) {

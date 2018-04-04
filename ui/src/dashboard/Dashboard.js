@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 
-import Header from '../app/Header';
 import NewCapture from './NewCapture';
 import { api } from '../utils/Api';
 

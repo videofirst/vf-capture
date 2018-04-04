@@ -32,46 +32,39 @@ class Api {
 
   logout() {
     console.log("User logged out"); // FIXME - do better solution
-    localStorage.removeItem('auth');
+    localStorage.removeItem('vftAuth');
   }
 
   getInfo() {
-    checkIsLoggedIn();
-    return this.username != '' ?
-      axios.get(apiUrl, { headers: this.headers }) : [];
+    this.checkIsLoggedIn();
+    return axios.get(apiUrl, { headers: this.headers });
   }
 
   startCapture(params) {
-    checkIsLoggedIn();
-    return this.username != '' ?
-      axios.post(capturesStartUrl, params, { headers: this.headers }) : [];
+    this.checkIsLoggedIn();
+    return axios.post(capturesStartUrl, params, { headers: this.headers });
   }
 
   recordCapture() {
-    checkIsLoggedIn();
-    return this.username != '' ?
-      axios.post(capturesRecordUrl, {}, { headers: this.headers }) : [];
+    this.checkIsLoggedIn();
+    return axios.post(capturesRecordUrl, {}, { headers: this.headers });
   }
 
   stopCapture() {
-    checkIsLoggedIn();
-    return this.username != '' ?
-      axios.post(capturesStopUrl, {}, { headers: this.headers }) : [];
+    this.checkIsLoggedIn();
+    return axios.post(capturesStopUrl, {}, { headers: this.headers });
   }
 
   finishCapture(params) {
-    checkIsLoggedIn();
-    return this.username != '' ?
-      axios.post(capturesFinishUrl, params, { headers: this.headers } ) : [];
+    this.checkIsLoggedIn();
+    return axios.post(capturesFinishUrl, params, { headers: this.headers });
   }
 
   setCredentials(username, password) {
-    this.username = username;
-    this.password = password;
     const vftAuth = base64.encode(username + ":" + password);
-    localStorage.setItem('vftAuth', token);
+    localStorage.setItem('vftAuth', vftAuth);
 
-    setHeaders ();
+    this.setHeaders ();
 
     console.log("Set credentials - " + JSON.stringify(this.headers));
   }
@@ -79,12 +72,13 @@ class Api {
   setHeaders () {
     this.headers = {
       'Authorization' : 'Basic ' + localStorage.getItem('vftAuth'),
-      'X-Requested-With', 'XMLHttpRequest'
+      'X-Requested-With' : 'XMLHttpRequest'
     };
   }
 
   checkIsLoggedIn() {
-    if (localStorage.getItem('auth') === null) {
+    this.setHeaders ();
+    if (localStorage.getItem('vftAuth') === null) {
       console.log("Not logged in !!!");   // FIXME - do a better solution
     }
   }

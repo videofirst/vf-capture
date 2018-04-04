@@ -3,7 +3,6 @@ package co.videofirst.vft.capture.controller.ui;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.boot.autoconfigure.web.ErrorController;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
  *
  * @author Bob Marks
  */
-@Controller
+//@Controller
 public class RedirectUnknownUrls implements ErrorController {
 
     // Issues where React loses it's routes - see https://stackoverflow.com/a/41249464/1692179
