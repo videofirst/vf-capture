@@ -15,6 +15,7 @@ class NewCapture extends Component {
     this.stopCapture = this.stopCapture.bind(this);
     this.failedCapture = this.failedCapture.bind(this);
     this.passedCapture = this.passedCapture.bind(this);
+    this.logOut = this.logOut.bind(this);
     // this.finishCapture = this.finishCapture.bind(this);  NOT WORKING
   }
 
@@ -65,7 +66,8 @@ class NewCapture extends Component {
           label="Logout"
           backgroundColor="#cccc"
           hoverColor="#ddd"
-          onClick={this.logOut(history)} />
+          onClick={() => { this.logOut(history) }}
+          />
     ));
 
     return (
