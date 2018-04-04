@@ -23,7 +23,6 @@
  */
 package co.videofirst.vft.capture.controller.ui;
 
-import co.videofirst.vft.capture.service.CaptureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,7 +40,7 @@ public class UiController {
 
     @GetMapping("/")
     public String showUi() {
-        return "index.html";
+        return "/index.html";
     }
 
     @GetMapping("/docs")

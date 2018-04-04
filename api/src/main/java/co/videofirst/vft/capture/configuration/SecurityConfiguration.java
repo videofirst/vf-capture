@@ -33,6 +33,7 @@ import co.videofirst.vft.capture.security.LoginAttemptsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -50,84 +51,112 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
  *
  * @author Bob Marks
  */
-@Configuration
-@RequiredArgsConstructor
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration {
 
     // Constants
 
-    public static final String ROLE_USER = "user";
     public static final int BCRYPT_STRENGTH = 10;
-
-    // Injected fields
-
-    private final VftConfig config;
-    private final LoginAttemptsService loginAttemptsService;
-
-    @Bean
-    public PasswordEncoder getPasswordEncoder() {
-        return new BCryptPasswordEncoder(BCRYPT_STRENGTH);
-    }
-
-    @Bean
-    public AuthenticationProvider getEncryptedLockOutSupportAuthenticationProvider() {
-        return new EncryptedLockOutSupportAuthenticationProvider(config, getPasswordEncoder(),
-            loginAttemptsService);
-    }
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        SecurityConfig securityConfig = config.getSecurity();
-        String username = securityConfig.getUser();
-        String password = securityConfig.getPass();
-
-        validate(username, password);
-        auth.authenticationProvider(getEncryptedLockOutSupportAuthenticationProvider());
-    }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        // @formatter:off
-         http
-             .cors()
-         .and()
-             .authorizeRequests() // api
-             .antMatchers("/index.html", "/manifest.json", "/service-worker.js",
-                 "/favicon.ico", "/asset-manifest.json",  "/static/**").permitAll() // ui (react)
-             .anyRequest().authenticated()
-        .and()
-             .httpBasic()
-        .and()
-             .csrf().disable();
-        // @formatter:on
-    }
-
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(asList(config.getSecurity().getAllowedOrigins()));
-        configuration.addAllowedHeader("*");
-        configuration.addAllowedMethod("*");
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
-
-    // Private methods
+    public static final String ROLE_USER = "user";
 
     /**
-     * Validation.
+     * API spring security.
      */
-    private void validate(String username, String password) {
-        if (username == null || username.isEmpty()) {
-            throw new InvalidSecurityException(
-                "Please specify a valid [ vft_config.security.user ]");
+    @RequiredArgsConstructor
+    @Configuration
+    @Order(1)
+    public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
+
+        // Injected fields
+
+        private final VftConfig config;
+        private final LoginAttemptsService loginAttemptsService;
+
+        @Bean
+        public PasswordEncoder getPasswordEncoder() {
+            return new BCryptPasswordEncoder(BCRYPT_STRENGTH);
         }
-        if (password == null || password.isEmpty()) {
-            throw new InvalidSecurityException(
-                "Please specify a valid [ vft_config.security.pass ]");
+
+        @Bean
+        public AuthenticationProvider getEncryptedLockOutSupportAuthenticationProvider() {
+            return new EncryptedLockOutSupportAuthenticationProvider(config, getPasswordEncoder(),
+                loginAttemptsService);
+        }
+
+        @Bean
+        CorsConfigurationSource corsConfigurationSource() {
+            CorsConfiguration configuration = new CorsConfiguration();
+            configuration.setAllowedOrigins(asList(config.getSecurity().getAllowedOrigins()));
+            configuration.addAllowedHeader("*");
+            configuration.addAllowedMethod("*");
+            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+            source.registerCorsConfiguration("/**", configuration);
+            return source;
+        }
+
+        @Override
+        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+            SecurityConfig securityConfig = config.getSecurity();
+            String username = securityConfig.getUser();
+            String password = securityConfig.getPass();
+
+            validate(username, password);
+            auth.authenticationProvider(getEncryptedLockOutSupportAuthenticationProvider());
+        }
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            // @formatter:off
+             http
+                 .cors()
+             .and()
+                 .authorizeRequests()
+                 .antMatchers("/api/**", "/docs",
+                     "/v2/api-docs", "/swagger-resources", "/swagger-resources/**",
+                     "/swagger-ui.html", "/webjars/**"
+                 ).authenticated()
+            .and()
+                 .httpBasic()
+            .and()
+                 .csrf().disable();
+            // @formatter:on
+        }
+
+        // Private methods
+
+        /**
+         * Validation.
+         */
+        private void validate(String username, String password) {
+            if (username == null || username.isEmpty()) {
+                throw new InvalidSecurityException(
+                    "Please specify a valid [ vft_config.security.user ]");
+            }
+            if (password == null || password.isEmpty()) {
+                throw new InvalidSecurityException(
+                    "Please specify a valid [ vft_config.security.pass ]");
+            }
         }
     }
+
+    /**
+     * UI security
+     */
+    @Configuration
+    @Order(2)
+    public static class UiWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            // @formatter:off
+            http
+                .cors()
+            .and()
+                .antMatcher("/**")
+                .anonymous();
+            // @formatter:on
+        }
+    }
+
 }

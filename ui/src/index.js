@@ -15,4 +15,4 @@ ReactDOM.render(
     </BrowserRouter>,
     document.getElementById('root')
 );
-registerServiceWorker();
+// registerServiceWorker();  (causing issues so removing for now)

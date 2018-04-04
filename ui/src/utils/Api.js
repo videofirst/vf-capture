@@ -17,8 +17,6 @@ class Api {
   constructor() {
     console.log("constructor");
     // Try and read from local storage
-    // this.username = 
-    // https://www.npmjs.com/package/local-storage-es6
   }
 
   async login (username, password) {
@@ -32,39 +30,63 @@ class Api {
     });
   }
 
+  logout() {
+    console.log("User logged out"); // FIXME - do better solution
+    localStorage.removeItem('auth');
+  }
+
   getInfo() {
-    console.log("Get info " + apiUrl + " - " + JSON.stringify(this.headers));
+    checkIsLoggedIn();
     return this.username != '' ?
       axios.get(apiUrl, { headers: this.headers }) : [];
   }
 
   startCapture(params) {
-    return this.username != '' ? 
+    checkIsLoggedIn();
+    return this.username != '' ?
       axios.post(capturesStartUrl, params, { headers: this.headers }) : [];
   }
 
   recordCapture() {
-    return this.username != '' ? 
+    checkIsLoggedIn();
+    return this.username != '' ?
       axios.post(capturesRecordUrl, {}, { headers: this.headers }) : [];
   }
 
   stopCapture() {
-    return this.username != '' ? 
+    checkIsLoggedIn();
+    return this.username != '' ?
       axios.post(capturesStopUrl, {}, { headers: this.headers }) : [];
   }
 
   finishCapture(params) {
-    return this.username != '' ? 
+    checkIsLoggedIn();
+    return this.username != '' ?
       axios.post(capturesFinishUrl, params, { headers: this.headers } ) : [];
   }
 
   setCredentials(username, password) {
     this.username = username;
     this.password = password;
-    this.headers = {
-      'Authorization' : 'Basic ' + base64.encode(username + ":" + password)
-    };
+    const vftAuth = base64.encode(username + ":" + password);
+    localStorage.setItem('vftAuth', token);
+
+    setHeaders ();
+
     console.log("Set credentials - " + JSON.stringify(this.headers));
+  }
+
+  setHeaders () {
+    this.headers = {
+      'Authorization' : 'Basic ' + localStorage.getItem('vftAuth'),
+      'X-Requested-With', 'XMLHttpRequest'
+    };
+  }
+
+  checkIsLoggedIn() {
+    if (localStorage.getItem('auth') === null) {
+      console.log("Not logged in !!!");   // FIXME - do a better solution
+    }
   }
 
 }
