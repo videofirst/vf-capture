@@ -87,7 +87,7 @@ public class MockUploadController {
 
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.addBinaryBody("video", videoFile, ContentType.DEFAULT_BINARY, videoFile.getName());
-        builder.addBinaryBody("data", videoFile, ContentType.DEFAULT_BINARY, dataFile.getName());
+        builder.addBinaryBody("data", dataFile, ContentType.DEFAULT_BINARY, dataFile.getName());
         HttpEntity multipart = builder.build();
 
         ProgressListener pListener = (transferredBytes, totalBytes) -> System.out.println(
