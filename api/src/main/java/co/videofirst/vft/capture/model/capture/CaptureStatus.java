@@ -23,14 +23,16 @@
  */
 package co.videofirst.vft.capture.model.capture;
 
+import static co.videofirst.vft.capture.enums.CaptureType.DEFAULT_CAPTURE_TYPE;
 import static co.videofirst.vft.capture.model.capture.Capture.FORMAT_AVI;
 
-import co.videofirst.vft.capture.enums.TestPassStatus;
 import co.videofirst.vft.capture.enums.CaptureState;
+import co.videofirst.vft.capture.enums.CaptureType;
+import co.videofirst.vft.capture.enums.TestStatus;
 import co.videofirst.vft.capture.exception.VideoStatusException;
+import co.videofirst.vft.capture.model.TestLog;
 import co.videofirst.vft.capture.model.display.DisplayCapture;
 import co.videofirst.vft.capture.model.info.Info;
-import co.videofirst.vft.capture.model.TestLog;
 import co.videofirst.vft.capture.utils.ConfigUtils;
 import co.videofirst.vft.capture.utils.VftUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -80,7 +82,8 @@ public class CaptureStatus {
     /**
      * This constructor is also private. All access to these are via a static builder method.
      */
-    private CaptureStatus(CaptureStartParams captureStartParams, Capture capture, CaptureState state) {
+    private CaptureStatus(CaptureStartParams captureStartParams, Capture capture,
+        CaptureState state) {
         this.captureStartParams = captureStartParams;
         this.capture = capture;
         this.state = state;
@@ -107,6 +110,9 @@ public class CaptureStatus {
             .categories(categoryMap)
             .feature(VftUtils.nullTrim(captureStartParams.getFeature()))
             .scenario(VftUtils.nullTrim(captureStartParams.getScenario()))
+            .type(captureStartParams.getType() == null ? DEFAULT_CAPTURE_TYPE
+                : captureStartParams.getType())
+            .scenarioId(captureStartParams.getScenarioId())
             // optional
             .meta(captureStartParams.getMeta())
             .description(VftUtils.nullTrim(captureStartParams.getDescription()))
@@ -115,7 +121,8 @@ public class CaptureStatus {
             .build();
 
         // 4) Create CaptureStatus object and return
-        CaptureStatus captureStatus = new CaptureStatus(captureStartParams, capture, CaptureState.started);
+        CaptureStatus captureStatus = new CaptureStatus(captureStartParams, capture,
+            CaptureState.started);
         return captureStatus;
     }
 
@@ -178,7 +185,7 @@ public class CaptureStatus {
         }
 
         // 1) Check if still recording and finish if that's the case.
-        if(state == CaptureState.recording) {
+        if (state == CaptureState.recording) {
             stop();
         }
 
@@ -188,7 +195,8 @@ public class CaptureStatus {
         Capture capture = oldCapture.toBuilder()
             .meta(VftUtils.mergeMaps(oldCapture.getMeta(), captureFinishParams.getMeta()))
             .description(
-                captureFinishParams.getDescription() != null && !captureFinishParams.getDescription()
+                captureFinishParams.getDescription() != null && !captureFinishParams
+                    .getDescription()
                     .isEmpty() ? captureFinishParams.getDescription().trim()
                     : oldCapture.getDescription())
             .testStatus(captureFinishParams.getTestStatus())
@@ -233,6 +241,14 @@ public class CaptureStatus {
         return capture.getId();
     }
 
+    public Long getScenarioId() {
+        return capture.getScenarioId();
+    }
+
+    public CaptureType getType() {
+        return capture.getType();
+    }
+
     @JsonProperty("capture")
     public DisplayCapture getDisplayCapture() {
         return capture.getCapture();
@@ -250,7 +266,7 @@ public class CaptureStatus {
         return capture.getDescription();
     }
 
-    public TestPassStatus getTestStatus() {
+    public TestStatus getTestStatus() {
         return capture.getTestStatus();
     }
 

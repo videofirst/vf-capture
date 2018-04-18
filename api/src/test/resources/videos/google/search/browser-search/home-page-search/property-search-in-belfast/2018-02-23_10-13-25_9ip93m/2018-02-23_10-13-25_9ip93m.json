@@ -1,32 +1,33 @@
 {
-  "id" : "2018-02-23_10-13-25_9ip93m",
-  "categories" : {
-    "organisation" : "Google",
-    "product" : "Search",
-    "module" : "Browser Search"
+  "id": "2018-02-23_10-13-25_9ip93m",
+  "categories": {
+    "organisation": "Google",
+    "product": "Search",
+    "module": "Browser Search"
   },
-  "feature" : "Home Page Search",
-  "scenario" : "Property Search in Belfast",
-  "started" : "2018-02-23T10:13:25.256",
-  "finished" : "2018-02-23T10:13:30.184",
-  "folder" : "google/search/browser-search/home-page-search/property-search-in-belfast/2018-02-23_10-13-25_9ip93m",
-  "format" : "avi",
-  "capture" : {
-    "x" : 450,
-    "y" : 250,
-    "width" : 800,
-    "height" : 600
+  "type": "manual",
+  "feature": "Home Page Search",
+  "scenario": "Property Search in Belfast",
+  "started": "2018-02-23T10:13:25.256",
+  "finished": "2018-02-23T10:13:30.184",
+  "folder": "google/search/browser-search/home-page-search/property-search-in-belfast/2018-02-23_10-13-25_9ip93m",
+  "format": "avi",
+  "capture": {
+    "x": 450,
+    "y": 250,
+    "width": 800,
+    "height": 600
   },
-  "meta" : { },
-  "environment" : {
-    "java.awt.graphicsenv" : "sun.awt.Win32GraphicsEnvironment",
-    "java.vendor" : "Oracle Corporation",
-    "java.version" : "1.8.0_121",
-    "java.vm.vendor" : "Oracle Corporation",
-    "os.arch" : "amd64",
-    "os.name" : "Windows 10",
-    "os.version" : "10.0",
-    "user.country" : "GB"
+  "meta": {},
+  "environment": {
+    "java.awt.graphicsenv": "sun.awt.Win32GraphicsEnvironment",
+    "java.vendor": "Oracle Corporation",
+    "java.version": "1.8.0_121",
+    "java.vm.vendor": "Oracle Corporation",
+    "os.arch": "amd64",
+    "os.name": "Windows 10",
+    "os.version": "10.0",
+    "user.country": "GB"
   },
-  "testStatus" : "pass"
+  "testStatus": "pass"
 }

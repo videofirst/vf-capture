@@ -30,11 +30,12 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
 
-import co.videofirst.vft.capture.enums.TestPassStatus;
-import co.videofirst.vft.capture.model.display.DisplayCapture;
+import co.videofirst.vft.capture.enums.CaptureType;
+import co.videofirst.vft.capture.enums.TestStatus;
 import co.videofirst.vft.capture.model.TestLog;
 import co.videofirst.vft.capture.model.capture.Capture;
 import co.videofirst.vft.capture.model.capture.CaptureSummary;
+import co.videofirst.vft.capture.model.display.DisplayCapture;
 import co.videofirst.vft.capture.test.VftTesting;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -98,12 +99,14 @@ public class FileSystemCaptureDaoTest {
             .scenario("Search by Country")
             .folder("google-search/login/search-by-country/2018-01-30_17-33-47_a9kea")
             .id("2018-01-30_17-33-47_a9kea")
+            .scenarioId(999L)
+            .type(CaptureType.automated)
             .format("avi")
             .capture(DisplayCapture.builder().x(1).y(2).width(3).height(4).build())
             .environment(ImmutableMap.of("os.arch", "amd64", "os.name", "Windows 10"))
             .meta(ImmutableMap.of("version", "1.2.3-beta"))
             .description("Awesome test")
-            .testStatus(TestPassStatus.error)
+            .testStatus(TestStatus.error)
             .testError("Awesome error")
             .testLogs(asList(
                 TestLog.builder().cat("browser").tier(L1).ts(ts3).log("awesome log 1").build(),
@@ -121,40 +124,42 @@ public class FileSystemCaptureDaoTest {
             "google-search/login/search-by-country/2018-01-30_17-33-47_a9kea/2018-01-30_17-33-47_a9kea.json");
         assertThat(file).exists();
         String json = new String(Files.readAllBytes(file.toPath()));
-        String expectedJson = "{\n" +
-            "    'started': '2015-01-02T12:13:14',\n" +
-            "    'finished': '2016-02-03T16:17:18',\n" +
-            "    'categories': {\n" +
-            "        'organisation': 'Google',\n" +
-            "        'product': 'Google Search',\n" +
-            "        'module': 'Web App'\n" +
-            "    },\n" +
-            "    'feature': 'Login',\n" +
-            "    'scenario': 'Search by Country',\n" +
-            "    'folder': 'google-search/login/search-by-country/2018-01-30_17-33-47_a9kea',\n" +
-            "    'id': '2018-01-30_17-33-47_a9kea',\n" +
-            "    'format': 'avi',\n" +
-            "    'capture': { 'x': 1, 'y': 2, 'width': 3, 'height': 4 }, \n" +
+        String expectedJson = "{" +
+            "    'started': '2015-01-02T12:13:14'," +
+            "    'finished': '2016-02-03T16:17:18'," +
+            "    'categories': {" +
+            "        'organisation': 'Google'," +
+            "        'product': 'Google Search'," +
+            "        'module': 'Web App'" +
+            "    }," +
+            "    'feature': 'Login'," +
+            "    'scenario': 'Search by Country'," +
+            "    'folder': 'google-search/login/search-by-country/2018-01-30_17-33-47_a9kea'," +
+            "    'id': '2018-01-30_17-33-47_a9kea'," +
+            "    'type': 'automated'," +
+            "    'scenarioId': 999," +
+            "    'format': 'avi'," +
+            "    'capture': { 'x': 1, 'y': 2, 'width': 3, 'height': 4 }, " +
             // optional
-            "    'meta': { 'version': '1.2.3-beta' },\n" +
-            "    'description': 'Awesome test',\n" +
-            "    'environment': {\n" +
-            "        'os.arch': 'amd64',\n" +
-            "        'os.name': 'Windows 10'\n" +
-            "    },\n" +
-            "    'testStatus': 'error',\n" +
-            "    'testError': 'Awesome error',\n" +
-            "    'testLogs': [{\n" +
-            "        'ts': '2017-03-04T19:20:21',\n" +
-            "        'cat': 'browser',\n" +
-            "        'tier': 'L1',\n" +
-            "        'log': 'awesome log 1'\n" +
-            "    }, {\n" +
-            "        'ts': '2018-04-05T20:21:22',\n" +
-            "        'cat': 'server',\n" +
-            "        'tier': 'L2',\n" +
-            "        'log': 'awesome log 2'\n" +
-            "    }]\n" +
+            "    'meta': { 'version': '1.2.3-beta' }," +
+            "    'description': 'Awesome test'," +
+            "    'environment': {" +
+            "        'os.arch': 'amd64'," +
+            "        'os.name': 'Windows 10'" +
+            "    }," +
+            "    'testStatus': 'error'," +
+            "    'testError': 'Awesome error'," +
+            "    'testLogs': [{" +
+            "        'ts': '2017-03-04T19:20:21'," +
+            "        'cat': 'browser'," +
+            "        'tier': 'L1'," +
+            "        'log': 'awesome log 1'" +
+            "    }, {" +
+            "        'ts': '2018-04-05T20:21:22'," +
+            "        'cat': 'server'," +
+            "        'tier': 'L2'," +
+            "        'log': 'awesome log 2'" +
+            "    }]" +
             "}";
         JSONAssert.assertEquals(expectedJson, json, true);
     }
@@ -179,9 +184,11 @@ public class FileSystemCaptureDaoTest {
         assertThat(capture.getCapture()).isEqualTo(DisplayCapture.builder()
             .x(0).y(0).width(1920).height(1200).build());
         assertThat(capture.getMeta()).isEmpty();
+        assertThat(capture.getType()).isEqualTo(CaptureType.automated);
+        assertThat(capture.getScenarioId()).isEqualTo(1234L);
         assertThat(capture.getEnvironment())
             .containsExactly(entry("java.awt.graphicsenv", "sun.awt.Win32GraphicsEnvironment"));
-        assertThat(capture.getTestStatus()).isEqualTo(TestPassStatus.fail);
+        assertThat(capture.getTestStatus()).isEqualTo(TestStatus.fail);
     }
 
     @Test
@@ -201,7 +208,7 @@ public class FileSystemCaptureDaoTest {
         assertThat(video.getStarted()).isEqualTo(LocalDateTime.of(2018, 2, 15, 12, 14, 02));
         assertThat(video.getFinished()).isEqualTo(LocalDateTime.of(2018, 2, 15, 12, 14, 03));
         assertThat(video.getFormat()).isEqualTo("avi");
-        assertThat(video.getTestStatus()).isEqualTo(TestPassStatus.fail);
+        assertThat(video.getTestStatus()).isEqualTo(TestStatus.fail);
     }
 
     @Test

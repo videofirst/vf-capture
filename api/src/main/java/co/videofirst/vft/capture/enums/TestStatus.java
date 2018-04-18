@@ -21,36 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package co.videofirst.vft.capture.model.capture;
-
-import co.videofirst.vft.capture.enums.TestStatus;
-import co.videofirst.vft.capture.model.TestLog;
-import java.util.List;
-import java.util.Map;
-import lombok.Builder;
-import lombok.Data;
+package co.videofirst.vft.capture.enums;
 
 /**
- * Model object which defines how to finish a capture.
+ * Enum which describes a test status.
  *
  * @author Bob Marks
  */
-@Data
-@Builder
-public class CaptureFinishParams {
+public enum TestStatus {
 
-    // Mandatory
-
-    private TestStatus testStatus;
-
-    // Optional
-
-    private Map<String, String> meta; // merge / override with start parameters
-    private String description; // override start params if set
-    private String error;
-    private String stackTrace;
-    private List<TestLog> logs;
-
-    // e.g. readyness, triggers, thresholds
+    pending, pass, fail, error, aborted, notApplicable
 
 }

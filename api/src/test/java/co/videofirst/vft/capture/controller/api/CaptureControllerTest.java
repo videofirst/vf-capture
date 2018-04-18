@@ -33,10 +33,11 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
-import co.videofirst.vft.capture.enums.TestPassStatus;
+import co.videofirst.vft.capture.enums.CaptureType;
+import co.videofirst.vft.capture.enums.TestStatus;
+import co.videofirst.vft.capture.model.TestLog;
 import co.videofirst.vft.capture.model.capture.CaptureFinishParams;
 import co.videofirst.vft.capture.model.capture.CaptureStartParams;
-import co.videofirst.vft.capture.model.TestLog;
 import co.videofirst.vft.capture.test.VftTesting;
 import com.google.common.collect.ImmutableMap;
 import com.jayway.jsonpath.DocumentContext;
@@ -81,20 +82,25 @@ public class CaptureControllerTest extends AbstractControllerTest {
             "product", "Search", "module", "Web App"))
         .feature("Advanced Search ")
         .scenario(" Search by Country! ")
+        .scenarioId(5678L)
+        .type(CaptureType.automated)
         .meta(DEFAULT_META)
         .description("Awesome test")
         .build();
 
     // Capture finish params
 
-    private static final CaptureFinishParams CAPTURE_FINISH_PARAMS_MIN = CaptureFinishParams.builder()
-        .testStatus(TestPassStatus.fail).build();
-    private static final CaptureFinishParams CAPTURE_FINISH_PARAMS_MAX = CaptureFinishParams.builder()
-        .testStatus(TestPassStatus.fail)
+    private static final CaptureFinishParams CAPTURE_FINISH_PARAMS_MIN = CaptureFinishParams
+        .builder()
+        .testStatus(TestStatus.fail).build();
+    private static final CaptureFinishParams CAPTURE_FINISH_PARAMS_MAX = CaptureFinishParams
+        .builder()
+        .testStatus(TestStatus.fail)
         .meta(ImmutableMap.of("author", "Bob", "extra", "stuff"))
         .description(" even more awesome description ")
         .error(" awesome error ")
-        .stackTrace("co.videofirst.vft.capture.exception.InvalidStateException: Current state is idle")
+        .stackTrace(
+            "co.videofirst.vft.capture.exception.InvalidStateException: Current state is idle")
         .logs(asList(
             TestLog.builder().cat("browser").tier(L1).ts(TS1).log("awesome log 1").build(),
             TestLog.builder().cat("server").tier(L2).ts(TS2).log("awesome log 2").build()))
@@ -112,6 +118,8 @@ public class CaptureControllerTest extends AbstractControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "[{" +
             "    'id': '2018-02-15_12-14-02_n3jwzb'," +
+            "    'type': 'automated'," +
+            "    'scenarioId': 1234," +
             "    'categories': {" +
             "        'organisation': 'Acme'," +
             "        'product': 'Moon Rocket'," +
@@ -125,8 +133,9 @@ public class CaptureControllerTest extends AbstractControllerTest {
             "    'testStatus': 'fail'" +
             "}, {" +
             "    'id': '2018-02-23_10-13-25_9ip93m'," +
+            "    'type': 'manual'," +
             "    'categories': {" +
-            "        'organisation': 'Google'," +
+            "        'organisation': 'Google'," +CaptureStartParams
             "        'product': 'Search'," +
             "        'module': 'Browser Search'" +
             "    }," +
@@ -151,30 +160,32 @@ public class CaptureControllerTest extends AbstractControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
-            "  'id': '2018-02-15_12-14-02_n3jwzb'," +
-            "  'categories': {" +
-            "    'organisation': 'Acme'," +
-            "    'product': 'Moon Rocket'," +
-            "    'module': 'UI'" +
-            "  }," +
-            "  'feature': 'Bob Feature'," +
-            "  'scenario': 'Dave Scenario'," +
-            "  'started': '2018-02-15T12:14:02'," +
-            "  'finished': '2018-02-15T12:14:03'," +
-            "  'folder': 'acme/moon-rocket/ui/bob-feature/dave-scenario/2018-02-15_12-14-02_n3jwzb',"
+            "    'id': '2018-02-15_12-14-02_n3jwzb'," +
+            "    'type': 'automated'," +
+            "    'scenarioId': 1234," +
+            "    'categories': {" +
+            "        'organisation': 'Acme'," +
+            "        'product': 'Moon Rocket'," +
+            "        'module': 'UI'" +
+            "    }," +
+            "    'feature': 'Bob Feature'," +
+            "    'scenario': 'Dave Scenario'," +
+            "    'started': '2018-02-15T12:14:02'," +
+            "    'finished': '2018-02-15T12:14:03'," +
+            "    'folder': 'acme/moon-rocket/ui/bob-feature/dave-scenario/2018-02-15_12-14-02_n3jwzb',"
             +
-            "  'format': 'avi'," +
-            "  'capture': {" +
-            "    'x': 0," +
-            "    'y': 0," +
-            "    'width': 1920," +
-            "    'height': 1200" +
-            "  }," +
-            "  'meta': {}," +
-            "  'environment': {" +
-            "    'java.awt.graphicsenv': 'sun.awt.Win32GraphicsEnvironment'" +
-            "  }," +
-            "  'testStatus': 'fail'" +
+            "    'format': 'avi'," +
+            "    'capture': {" +
+            "        'x': 0," +
+            "        'y': 0," +
+            "        'width': 1920," +
+            "        'height': 1200" +
+            "    }," +
+            "    'meta': {}," +
+            "    'environment': {" +
+            "        'java.awt.graphicsenv': 'sun.awt.Win32GraphicsEnvironment'" +
+            "    }," +
+            "    'testStatus': 'fail'" +
             "}";
         JSONAssert.assertEquals(expectedJson, response.getBody(), true);
     }
@@ -190,6 +201,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
+            "    'type': 'manual'," +
             "    'state': 'started'," +
             "    'categories': {" +
             "        'organisation': 'Acme'," +
@@ -212,6 +224,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
+            "    'type': 'manual'," +
             "    'state': 'recording'," +
             "    'categories': {" +
             "        'organisation': 'Acme'," +
@@ -244,6 +257,8 @@ public class CaptureControllerTest extends AbstractControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
+            "    'type': 'automated'," +
+            "    'scenarioId': 5678," +
             "    'state': 'recording'," +
             "    'categories': {" +
             "        'organisation': 'Google'," +
@@ -282,7 +297,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
             .feature("Bob Feature").scenario("Dave Scenario").force("true").build());
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        JSONAssert.assertEquals("{'state': 'recording'}" , response.getBody(), false);
+        JSONAssert.assertEquals("{'state': 'recording'}", response.getBody(), false);
     }
 
     // ===========================================
@@ -297,6 +312,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
+            "    'type': 'manual'," +
             "    'state': 'recording'," +
             "    'categories': {" +
             "        'organisation': 'Acme'," +
@@ -336,6 +352,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
+            "    'type': 'manual'," +
             "    'state': 'stopped'," +
             "    'categories': {" +
             "        'organisation': 'Acme'," +
@@ -376,6 +393,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
+            "    'type': 'manual'," +
             "    'state': 'finished'," +
             "    'categories': {" +
             "        'organisation': 'Acme'," +
@@ -411,6 +429,8 @@ public class CaptureControllerTest extends AbstractControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
+            "    'type': 'automated'," +
+            "    'scenarioId': 5678," +
             "    'state': 'finished'," +
             "    'categories': {" +
             "        'organisation': 'Google'," +
@@ -428,7 +448,8 @@ public class CaptureControllerTest extends AbstractControllerTest {
             "    'description': 'even more awesome description'," +
             "    'testStatus': 'fail'," +
             "    'testError': 'awesome error'," +
-            "    'testStackTrace': 'co.videofirst.vft.capture.exception.InvalidStateException: Current state is idle'," +
+            "    'testStackTrace': 'co.videofirst.vft.capture.exception.InvalidStateException: Current state is idle',"
+            +
             "    'testLogs': [{" +
             "        'ts': '2015-01-02T12:13:14'," +
             "        'cat': 'browser'," +
@@ -470,6 +491,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
+            "    'type': 'manual'," +
             "    'state': 'started'," +
             "    'categories': {" +
             "        'organisation': 'Acme'," +
@@ -668,7 +690,8 @@ public class CaptureControllerTest extends AbstractControllerTest {
     private ResponseEntity<Void> deleteVideo(String captureId) {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         return restTemplate
-            .exchange(urlWithPort("/api/captures/" + captureId), HttpMethod.DELETE, entity, Void.class);
+            .exchange(urlWithPort("/api/captures/" + captureId), HttpMethod.DELETE, entity,
+                Void.class);
     }
 
     /**
@@ -677,7 +700,8 @@ public class CaptureControllerTest extends AbstractControllerTest {
     private ResponseEntity<String> uploadById(String captureId) {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(
-            urlWithPort("/api/captures/upload/" + captureId), HttpMethod.POST, entity, String.class);
+            urlWithPort("/api/captures/upload/" + captureId), HttpMethod.POST, entity,
+            String.class);
     }
 
     /**

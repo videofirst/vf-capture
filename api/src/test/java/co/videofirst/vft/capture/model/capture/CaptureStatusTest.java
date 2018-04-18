@@ -30,12 +30,12 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import co.videofirst.vft.capture.configuration.properties.VftDefaults;
-import co.videofirst.vft.capture.enums.TestPassStatus;
 import co.videofirst.vft.capture.enums.CaptureState;
+import co.videofirst.vft.capture.enums.TestStatus;
+import co.videofirst.vft.capture.model.TestLog;
 import co.videofirst.vft.capture.model.display.DisplayCapture;
 import co.videofirst.vft.capture.model.info.ConfigInfo;
 import co.videofirst.vft.capture.model.info.Info;
-import co.videofirst.vft.capture.model.TestLog;
 import com.google.common.collect.ImmutableMap;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -164,9 +164,11 @@ public class CaptureStatusTest {
         assertThat(capture.getFinished()).isNull();
         assertThat(capture.getFolder()).matches(
             "google/search/web-app/advanced-search/search-by-country/\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
-        assertThat(capture.getId()).matches("\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
+        assertThat(capture.getId())
+            .matches("\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
         assertThat(capture.getCapture()).isEqualTo(CAPTURE);
-        assertThat(capture.getFormat()).isEqualTo(FORMAT_AVI); // all that is supported at the minute
+        assertThat(capture.getFormat())
+            .isEqualTo(FORMAT_AVI); // all that is supported at the minute
 
         assertThat(capture.getMeta()).isEqualTo(DEFAULT_META);
         assertThat(capture.getDescription()).isEqualTo("Awesome test");
@@ -198,9 +200,11 @@ public class CaptureStatusTest {
         assertThat(capture.getFinished()).isNotNull();
         assertThat(capture.getFolder()).matches(
             "google/search/web-app/advanced-search/search-by-country/\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
-        assertThat(capture.getId()).matches("\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
+        assertThat(capture.getId())
+            .matches("\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
         assertThat(capture.getCapture()).isEqualTo(CAPTURE);
-        assertThat(capture.getFormat()).isEqualTo(FORMAT_AVI); // all that is supported at the minute
+        assertThat(capture.getFormat())
+            .isEqualTo(FORMAT_AVI); // all that is supported at the minute
 
         assertThat(capture.getMeta()).isEqualTo(DEFAULT_META);
         assertThat(capture.getDescription()).isEqualTo("Awesome test");
@@ -216,7 +220,7 @@ public class CaptureStatusTest {
             TestLog.builder().cat("browser").tier(L1).ts(ts1).log("awesome log 1").build(),
             TestLog.builder().cat("server").tier(L2).ts(ts2).log("awesome log 2").build());
         CaptureFinishParams captureFinishParams = CaptureFinishParams.builder()
-            .testStatus(TestPassStatus.fail)
+            .testStatus(TestStatus.fail)
             .meta(ImmutableMap.of("author", "Bob"))
             .description(" even more awesome description ")
             .error(" awesome error ")
@@ -243,13 +247,15 @@ public class CaptureStatusTest {
         assertThat(capture.getFinished()).isNotNull();
         assertThat(capture.getFolder()).matches(
             "google/search/web-app/advanced-search/search-by-country/\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
-        assertThat(capture.getId()).matches("\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
+        assertThat(capture.getId())
+            .matches("\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
         assertThat(capture.getCapture()).isEqualTo(CAPTURE);
-        assertThat(capture.getFormat()).isEqualTo(FORMAT_AVI); // all that is supported at the minute
+        assertThat(capture.getFormat())
+            .isEqualTo(FORMAT_AVI); // all that is supported at the minute
         assertThat(capture.getMeta()).isEqualTo(ImmutableMap
             .of("version", "1.2.3-beta", "author", "Bob"));
         assertThat(capture.getEnvironment()).isEqualTo(DEFAULT_ENVIRONMENT);
-        assertThat(capture.getTestStatus()).isEqualTo(TestPassStatus.fail);
+        assertThat(capture.getTestStatus()).isEqualTo(TestStatus.fail);
         assertThat(capture.getTestError()).isEqualTo("awesome error");
         assertThat(capture.getTestLogs()).isEqualTo(logs);
     }

@@ -24,12 +24,14 @@
 package co.videofirst.vft.capture.enums;
 
 /**
- * Enum which describes
+ * Capture state enum.
  *
  * @author Bob Marks
  */
-public enum TestPassStatus {
+public enum CaptureType {
 
-    pass, fail, error, aborted
+    manual, automated, other;
+
+    public static CaptureType DEFAULT_CAPTURE_TYPE = manual;
 
 }

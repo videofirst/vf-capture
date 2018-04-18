@@ -23,7 +23,8 @@
  */
 package co.videofirst.vft.capture.model.capture;
 
-import co.videofirst.vft.capture.enums.TestPassStatus;
+import co.videofirst.vft.capture.enums.CaptureType;
+import co.videofirst.vft.capture.enums.TestStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -43,18 +44,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(Include.NON_NULL)
-@JsonPropertyOrder({"id", "categories", "feature", "scenario", "started", "finished",
-    "format", "testStatus"})
+@JsonPropertyOrder({"id", "type", "scenarioId", "categories", "feature", "scenario", "started",
+    "finished", "format", "testStatus"})
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CaptureSummary {
 
     private String id;
+    private CaptureType type;
+    private Long scenarioId;
     private Map<String, String> categories;
     private String feature;
     private String scenario;
     private LocalDateTime started;
     private LocalDateTime finished;
     private String format;
-    private TestPassStatus testStatus;
+    private TestStatus testStatus;
 
 }

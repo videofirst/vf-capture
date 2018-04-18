@@ -23,9 +23,10 @@
  */
 package co.videofirst.vft.capture.model.capture;
 
-import co.videofirst.vft.capture.enums.TestPassStatus;
-import co.videofirst.vft.capture.model.display.DisplayCapture;
+import co.videofirst.vft.capture.enums.CaptureType;
+import co.videofirst.vft.capture.enums.TestStatus;
 import co.videofirst.vft.capture.model.TestLog;
+import co.videofirst.vft.capture.model.display.DisplayCapture;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -49,17 +50,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(Include.NON_NULL)
-@JsonPropertyOrder({"id", "categories", "feature", "scenario", "description", "started", "finished",
-    "folder", "format", "capture", "meta", "environment", "testStatus", "testError", "testStackTrace",
-    "testLogs", "upload"})
+@JsonPropertyOrder({"id", "scenarioId", "categories", "feature", "scenario", "type", "description",
+    "started", "finished", "folder", "format", "capture", "meta", "environment", "testStatus",
+    "testError", "testStackTrace", "testLogs", "upload"})
 public class Capture {
 
     public static final String FORMAT_AVI = "avi"; // only supported format at minute
 
     private String id;
+    private Long scenarioId;
     private Map<String, String> categories;
     private String feature;
     private String scenario;
+    private CaptureType type;
     private String description;
     private LocalDateTime started;
     private LocalDateTime finished;
@@ -68,7 +71,7 @@ public class Capture {
     private DisplayCapture capture;
     private Map<String, String> meta;
     private Map<String, String> environment;
-    private TestPassStatus testStatus;
+    private TestStatus testStatus;
     private String testError;
     private String testStackTrace;
     private List<TestLog> testLogs;

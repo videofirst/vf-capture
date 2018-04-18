@@ -1,15 +1,17 @@
 {
+  "id": "2018-02-15_12-14-02_n3jwzb",
   "categories": {
     "organisation": "Acme",
     "product": "Moon Rocket",
     "module": "UI"
   },
+  "type": "automated",
+  "scenarioId": 1234,
   "feature": "Bob Feature",
   "scenario": "Dave Scenario",
   "started": "2018-02-15T12:14:02",
   "finished": "2018-02-15T12:14:03",
   "folder": "acme/moon-rocket/ui/bob-feature/dave-scenario/2018-02-15_12-14-02_n3jwzb",
-  "id": "2018-02-15_12-14-02_n3jwzb",
   "format": "avi",
   "capture": {
     "x": 0,

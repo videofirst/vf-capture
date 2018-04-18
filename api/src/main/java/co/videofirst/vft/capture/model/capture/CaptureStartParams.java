@@ -24,8 +24,7 @@
 package co.videofirst.vft.capture.model.capture;
 
 import co.videofirst.vft.capture.configuration.properties.DisplayConfig;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import co.videofirst.vft.capture.enums.CaptureType;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,40 +44,26 @@ public class CaptureStartParams {
 
     // Mandatory
 
-    @JsonProperty(required = true)
-    @ApiModelProperty(notes = "Feature e.g. \"Search\"", required = true, position = 1)
     private String feature;
-
-    @JsonProperty(required = true)
-    @ApiModelProperty(notes = "Scenario of the feature e.g. \"Search by Country\"", required = true, position = 2)
     private String scenario;
 
     // Optional
 
-    @ApiModelProperty(notes = "Categories map of string keys / string values", position = 3)
+    private CaptureType type;
+    private Long scenarioId;
     private Map<String, String> categories;
-
-    @ApiModelProperty(notes = "Optional start record (defaults to \"true\")", allowableValues = "false,true", position = 4)
     private String record;
-
-    @ApiModelProperty(notes = "Force a start (will cancel existing recordings) if not in an idle state (defaults to \"false\")", allowableValues = "false,true", position = 5)
     private String force;
-
-    @ApiModelProperty(notes = "Optional meta tags e.g. {\"version\" : \"0.12.4\"}", position = 6)
     private Map<String, String> meta;
-
-    @ApiModelProperty(notes = "Optional description of test", position = 7)
     private String description;
-
-    @ApiModelProperty(notes = "Optional display overrides e.g. for setting borders, backgrounds, etc", position = 8)
     private DisplayConfig display;
 
     public boolean record() {
-        return record == null || "true".equalsIgnoreCase(record.trim());
+        return record == null || "true" .equalsIgnoreCase(record.trim());
     }
 
     public boolean force() {
-        return force != null && "true".equalsIgnoreCase(force.trim());
+        return force != null && "true" .equalsIgnoreCase(force.trim());
     }
 
 }
