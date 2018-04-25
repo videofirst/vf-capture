@@ -24,7 +24,7 @@
 package co.videofirst.vft.capture.enums;
 
 /**
- * Capture state enum.
+ * Capture type enum.
  *
  * @author Bob Marks
  */
