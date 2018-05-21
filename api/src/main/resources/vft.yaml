@@ -28,13 +28,16 @@ vft_config:
     # 1.1 Security settings - do not use the defaults in production!
     security:
 
-        # Type of security. Can be (1) `plain` or (2) `encrypted` (encrypted password). If using
-        # encrypted run `VftAgentApplication` with the `-pwd` arg to generate encrypted entries.
-        type: plain
+        # Type of security. Can be (1) `none`, (2) `plain` or (3) `encrypted` (encrypted password).
+        # It is higly recommended not to use `none`.  If using `encrypted` run `VftAgentApplication`
+        # with the `-pwd` arg to generate encrypted entries.
+        type: none
+        #type: plain
         #type: encrypted
 
         # Username. NOTE - if type = 'encrypted' then this must be encrypted.
-        user: test
+        user:
+        #user: test
         #user: "$2a$10$.XmVZBw2ap.hyEF7UEW9k.wbwwBLYMYu1ZCxdf.poXg1rxHJnuAIS"
 
         # Password. NOTE - if type = 'encrypted' then this must be encrypted.
@@ -50,13 +53,7 @@ vft_config:
         allowedOrigins: http://localhost:3000
 
 
-    # 1.2 Categories - must be set for each test. The following categories should work for
-    # most software companies but these can be changed to suit different use cases.
-    # NOTE - the categories are separated with the pipe `|` character.
-    categories: organisation | product
-
-
-    # 1.3 Storage properties - define where temporary and actual videos/data are stored.
+    # 1.2 Storage properties - define where temporary and actual videos/data are stored.
     storage:
         # Temporary folder where videos get stored when they are being recorded
         tempFolder: ${java.io.tmpdir}/vft/temp
@@ -64,7 +61,7 @@ vft_config:
         videoFolder: ${user.home}/vft/videos
 
 
-    # 1.4 Upload configuration - when a test finishes then the captured video / data can then be
+    # 1.3 Upload configuration - when a test finishes then the captured video / data can then be
     # uploaded to the endpoint defined.  To use this functionality  we require `enable=true`.
     # It's currently quite basic and requires headers being set - will improve soon.
     upload:
@@ -90,7 +87,7 @@ vft_config:
         keepFinishedUploadsInSecs: 30
 
 
-    # 1.5 JVM system properties to include in the info environment
+    # 1.4 JVM system properties to include in the info environment
     environment:
         - java.awt.graphicsenv
         - java.vendor
@@ -108,17 +105,14 @@ vft_config:
 #
 #    These are configuration properties which set default values.  These can all
 #    be overridden at run-time via parameters in various REST calls e.g. setting
-#    the default category values or display capture area.
+#    the default project or display capture area.
 #
 # --------------------------------------------------------------------------------------------------
 
 vft_default:
 
-    # 2.1 Category defaults.  In reality categories may not change between testing so useful to set
-    # these here e.g. `organisation: Google, product: Search`
-    categories:
-        organisation:
-        product:
+    # 2.1 Project default (defaults to my-project)
+    project:
 
     # 2.2 Display defaults.  These are used to defined the capture area, define a border on the
     # screen (which shows the capture area), set a background (create a consist colour between tests

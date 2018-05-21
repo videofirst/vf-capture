@@ -26,7 +26,6 @@ package co.videofirst.vft.capture.configuration.properties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -46,10 +45,10 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties("vft_default")
 @JsonInclude(Include.NON_NULL)
-@JsonPropertyOrder({"categories", "display"})
+@JsonPropertyOrder({"project", "display"})
 public class VftDefaults {
 
-    private Map<String, String> categories;
+    private String project;
     private DisplayConfig display;
 
 }

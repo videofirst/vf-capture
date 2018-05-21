@@ -30,7 +30,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDateTime;
-import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -44,7 +43,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(Include.NON_NULL)
-@JsonPropertyOrder({"id", "type", "scenarioId", "categories", "feature", "scenario", "started",
+@JsonPropertyOrder({"id", "type", "scenarioId", "project", "feature", "scenario", "started",
     "finished", "format", "testStatus"})
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CaptureSummary {
@@ -52,7 +51,7 @@ public class CaptureSummary {
     private String id;
     private CaptureType type;
     private Long scenarioId;
-    private Map<String, String> categories;
+    private String project;
     private String feature;
     private String scenario;
     private LocalDateTime started;

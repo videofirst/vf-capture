@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ApiControllerAdvice {
 
     @ExceptionHandler(InvalidParameterException.class)
-    public ResponseEntity<String> missingCategories(final InvalidParameterException e) {
+    public ResponseEntity<String> invalidParameters(final InvalidParameterException e) {
         return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 

@@ -25,7 +25,6 @@ package co.videofirst.vft.capture.utils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -96,22 +95,16 @@ public class VftUtils {
     }
 
     /**
-     * Convert a map of categories + feature, scenario and id parameters into a list of Strings
-     * describing a folder structure.
+     * Convert a list of folder parameters into a friendly list of Strings describing a folder
+     * structure.
      */
-    public static List<String> getFolderFriendlyCategories(Map<String, String> categoryMap,
-        String feature, String scenario, String id) {
-        List<String> categories = new ArrayList<>();
-        for (String category : categoryMap.values()) {
-            if (category != null && !category.isEmpty()) {
-                category = getFolderFriendly(category);
-                categories.add(category);
-            }
-        }
-        categories.add(getFolderFriendly(feature));
-        categories.add(getFolderFriendly(scenario));
-        categories.add(getFolderFriendly(id));
-        return categories;
+    public static List<String> getFolderFriendlyList(String... folders) {
+        List<String> friendlyFolders = Arrays.stream(folders)
+            .filter(Objects::nonNull)
+            .filter(folder -> !folder.trim().isEmpty())
+            .map(folder -> getFolderFriendly(folder))
+            .collect(Collectors.toList());
+        return friendlyFolders;
     }
 
     /**

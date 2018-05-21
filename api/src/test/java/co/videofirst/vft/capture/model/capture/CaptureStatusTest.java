@@ -51,9 +51,7 @@ public class CaptureStatusTest {
 
     // Constants
 
-    private static final List<String> CATEGORIES = asList("organisation", "product", "module");
-    private static final Map<String, String> DEFAULT_CATEGORIES = ImmutableMap
-        .of("organisation", "Google", "product", "Maps");
+    private static final String DEFAULT_PROJECT = "Google Maps";
     private static final DisplayCapture CAPTURE = DisplayCapture.builder().x(1).y(2).width(3)
         .height(4)
         .build();
@@ -67,13 +65,12 @@ public class CaptureStatusTest {
     private static final Info DEFAULT_INFO = Info.builder()
         .info(ConfigInfo.builder()
             .environment(DEFAULT_ENVIRONMENT)
-            .categories(CATEGORIES).build())
-        .defaults(VftDefaults.builder().categories(DEFAULT_CATEGORIES).build())
+            .build())
+        .defaults(VftDefaults.builder().project(DEFAULT_PROJECT).build())
         .build();
 
     private static final CaptureStartParams VIDEO_START_PARAMS = CaptureStartParams.builder()
-        .categories(ImmutableMap.of("organisation", "Google",
-            "product", "Search", "module", "Web App"))
+        .project("Google Search")
         .feature("Advanced Search ")
         .scenario(" Search by Country! ")
         .meta(DEFAULT_META)
@@ -88,8 +85,7 @@ public class CaptureStatusTest {
         Capture capture = captureStatus.getCapture();
         assertThat(captureStatus.getState()).isEqualTo(CaptureState.idle);
 
-        assertThat(captureStatus.getCategories()).isNull(); // everything else is null
-        assertThat(capture.getCategories()).isNull();
+        assertThat(captureStatus.getProject()).isNull(); // everything else is null
         assertThat(capture.getFeature()).isNull();
         assertThat(captureStatus.getFeature()).isNull();
         assertThat(capture.getScenario()).isNull();
@@ -106,7 +102,6 @@ public class CaptureStatusTest {
         assertThat(capture.getTestError()).isNull();
         assertThat(capture.getTestLogs()).isNull();
         assertThat(capture.getEnvironment()).isNull();
-
     }
 
     @Test
@@ -116,12 +111,8 @@ public class CaptureStatusTest {
 
         Capture capture = captureStatus.getCapture();
         assertThat(captureStatus.getState()).isEqualTo(CaptureState.started);
-        assertThat(captureStatus.getCategories())
-            .isEqualTo(ImmutableMap
-                .of("organisation", "Google", "product", "Search", "module", "Web App"));
-        assertThat(capture.getCategories())
-            .isEqualTo(ImmutableMap
-                .of("organisation", "Google", "product", "Search", "module", "Web App"));
+        assertThat(capture.getProject()).isEqualTo("Google Search");
+        assertThat(captureStatus.getProject()).isEqualTo("Google Search");
         assertThat(capture.getFeature()).isEqualTo("Advanced Search");
         assertThat(captureStatus.getFeature()).isEqualTo("Advanced Search");
         assertThat(capture.getScenario()).isEqualTo("Search by Country!");
@@ -149,12 +140,8 @@ public class CaptureStatusTest {
 
         Capture capture = captureStatus.getCapture();
         assertThat(captureStatus.getState()).isEqualTo(CaptureState.recording);
-        assertThat(captureStatus.getCategories())
-            .isEqualTo(ImmutableMap
-                .of("organisation", "Google", "product", "Search", "module", "Web App"));
-        assertThat(capture.getCategories())
-            .isEqualTo(ImmutableMap
-                .of("organisation", "Google", "product", "Search", "module", "Web App"));
+        assertThat(capture.getProject()).isEqualTo("Google Search");
+        assertThat(captureStatus.getProject()).isEqualTo("Google Search");
         assertThat(capture.getFeature()).isEqualTo("Advanced Search");
         assertThat(captureStatus.getFeature()).isEqualTo("Advanced Search");
         assertThat(capture.getScenario()).isEqualTo("Search by Country!");
@@ -163,7 +150,7 @@ public class CaptureStatusTest {
         assertThat(capture.getStarted()).isNotNull();
         assertThat(capture.getFinished()).isNull();
         assertThat(capture.getFolder()).matches(
-            "google/search/web-app/advanced-search/search-by-country/\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
+            "google-search/advanced-search/search-by-country/\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
         assertThat(capture.getId())
             .matches("\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
         assertThat(capture.getCapture()).isEqualTo(CAPTURE);
@@ -185,12 +172,8 @@ public class CaptureStatusTest {
 
         Capture capture = captureStatus.getCapture();
         assertThat(captureStatus.getState()).isEqualTo(CaptureState.stopped);
-        assertThat(captureStatus.getCategories())
-            .isEqualTo(ImmutableMap
-                .of("organisation", "Google", "product", "Search", "module", "Web App"));
-        assertThat(capture.getCategories())
-            .isEqualTo(ImmutableMap
-                .of("organisation", "Google", "product", "Search", "module", "Web App"));
+        assertThat(capture.getProject()).isEqualTo("Google Search");
+        assertThat(captureStatus.getProject()).isEqualTo("Google Search");
         assertThat(capture.getFeature()).isEqualTo("Advanced Search");
         assertThat(captureStatus.getFeature()).isEqualTo("Advanced Search");
         assertThat(capture.getScenario()).isEqualTo("Search by Country!");
@@ -199,7 +182,7 @@ public class CaptureStatusTest {
         assertThat(capture.getStarted()).isNotNull();
         assertThat(capture.getFinished()).isNotNull();
         assertThat(capture.getFolder()).matches(
-            "google/search/web-app/advanced-search/search-by-country/\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
+            "google-search/advanced-search/search-by-country/\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
         assertThat(capture.getId())
             .matches("\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
         assertThat(capture.getCapture()).isEqualTo(CAPTURE);
@@ -232,12 +215,8 @@ public class CaptureStatusTest {
 
         Capture capture = captureStatus.getCapture();
         assertThat(captureStatus.getState()).isEqualTo(CaptureState.finished);
-        assertThat(captureStatus.getCategories())
-            .isEqualTo(ImmutableMap
-                .of("organisation", "Google", "product", "Search", "module", "Web App"));
-        assertThat(capture.getCategories())
-            .isEqualTo(ImmutableMap
-                .of("organisation", "Google", "product", "Search", "module", "Web App"));
+        assertThat(capture.getProject()).isEqualTo("Google Search");
+        assertThat(captureStatus.getProject()).isEqualTo("Google Search");
         assertThat(capture.getFeature()).isEqualTo("Advanced Search");
         assertThat(captureStatus.getFeature()).isEqualTo("Advanced Search");
         assertThat(capture.getScenario()).isEqualTo("Search by Country!");
@@ -246,7 +225,7 @@ public class CaptureStatusTest {
         assertThat(capture.getStarted()).isNotNull();
         assertThat(capture.getFinished()).isNotNull();
         assertThat(capture.getFolder()).matches(
-            "google/search/web-app/advanced-search/search-by-country/\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
+            "google-search/advanced-search/search-by-country/\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
         assertThat(capture.getId())
             .matches("\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
         assertThat(capture.getCapture()).isEqualTo(CAPTURE);

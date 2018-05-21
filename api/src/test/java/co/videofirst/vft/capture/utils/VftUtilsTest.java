@@ -108,17 +108,23 @@ public class VftUtilsTest {
     }
 
     // ---------------------------------------------------------------------------------------------
-    // VftUtils.getFolderFriendlyCategories
+    // VftUtils.getFolderFriendlyList
     // ---------------------------------------------------------------------------------------------
 
     @Test
-    public void shouldGetFolderFriendlyCategories() {
-        List<String> categories = VftUtils.getFolderFriendlyCategories(
-            ImmutableMap.of("organistaion", "IBM", "product", "Search", "module ", "Web App"),
-            " Advanced-Search ", "Search by country!!!", "2015-01-02_12-13-14_abcd12");
+    public void shouldGetFolderFriendlyList() {
+        List<String> folders = VftUtils.getFolderFriendlyList(
+            " IBM Search ", " Advanced-Search ", "Search by country!!!",
+            "2015-01-02_12-13-14_abcd12");
 
-        assertThat(categories).isEqualTo(asList("ibm", "search", "web-app", "advanced-search",
+        assertThat(folders).isEqualTo(asList("ibm-search", "advanced-search",
             "search-by-country", "2015-01-02_12-13-14_abcd12"));
+    }
+
+    @Test
+    public void shouldGetFolderFriendlyListNullsAndEmpty() {
+        assertThat(VftUtils.getFolderFriendlyList(null, " a ", "", " b ", null, " c ", " "))
+            .isEqualTo(asList("a", "b", "c"));
     }
 
     // ---------------------------------------------------------------------------------------------

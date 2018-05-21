@@ -93,8 +93,7 @@ public class FileSystemCaptureDaoTest {
         Capture capture = Capture.builder()
             .started(ts1)
             .finished(ts2)
-            .categories(ImmutableMap
-                .of("organisation", "Google", "product", "Google Search", "module", "Web App"))
+            .project("Google Search")
             .feature("Login")
             .scenario("Search by Country")
             .folder("google-search/login/search-by-country/2018-01-30_17-33-47_a9kea")
@@ -127,11 +126,7 @@ public class FileSystemCaptureDaoTest {
         String expectedJson = "{" +
             "    'started': '2015-01-02T12:13:14'," +
             "    'finished': '2016-02-03T16:17:18'," +
-            "    'categories': {" +
-            "        'organisation': 'Google'," +
-            "        'product': 'Google Search'," +
-            "        'module': 'Web App'" +
-            "    }," +
+            "    'project': 'Google Search'," +
             "    'feature': 'Login'," +
             "    'scenario': 'Search by Country'," +
             "    'folder': 'google-search/login/search-by-country/2018-01-30_17-33-47_a9kea'," +
@@ -172,14 +167,13 @@ public class FileSystemCaptureDaoTest {
         Capture capture = target.findById(id);
 
         assertThat(capture.getId()).isEqualTo(id);
-        assertThat(capture.getCategories()).containsExactly(entry("organisation", "Acme"),
-            entry("product", "Moon Rocket"), entry("module", "UI"));
+        assertThat(capture.getProject()).isEqualTo("Moon Rocket");
         assertThat(capture.getFeature()).isEqualTo("Bob Feature");
         assertThat(capture.getScenario()).isEqualTo("Dave Scenario");
         assertThat(capture.getStarted()).isEqualTo(LocalDateTime.of(2018, 2, 15, 12, 14, 02));
         assertThat(capture.getFinished()).isEqualTo(LocalDateTime.of(2018, 2, 15, 12, 14, 03));
         assertThat(capture.getFolder())
-            .isEqualTo("acme/moon-rocket/ui/bob-feature/dave-scenario/2018-02-15_12-14-02_n3jwzb");
+            .isEqualTo("moon-rocket/bob-feature/dave-scenario/2018-02-15_12-14-02_n3jwzb");
         assertThat(capture.getFormat()).isEqualTo("avi");
         assertThat(capture.getCapture()).isEqualTo(DisplayCapture.builder()
             .x(0).y(0).width(1920).height(1200).build());
@@ -199,10 +193,9 @@ public class FileSystemCaptureDaoTest {
         List<CaptureSummary> videos = target.list();
 
         assertThat(videos).hasSize(2);
-        CaptureSummary video = videos.get(0);  // Detailed test on the first video
+        CaptureSummary video = videos.get(1);  // Detailed assertions
         assertThat(video.getId()).isEqualTo(id);
-        assertThat(video.getCategories()).containsExactly(entry("organisation", "Acme"),
-            entry("product", "Moon Rocket"), entry("module", "UI"));
+        assertThat(video.getProject()).isEqualTo("Moon Rocket");
         assertThat(video.getFeature()).isEqualTo("Bob Feature");
         assertThat(video.getScenario()).isEqualTo("Dave Scenario");
         assertThat(video.getStarted()).isEqualTo(LocalDateTime.of(2018, 2, 15, 12, 14, 02));
@@ -217,7 +210,7 @@ public class FileSystemCaptureDaoTest {
         String id = "2018-02-15_12-14-02_n3jwzb";
         // Check video exists
         File folder = new File(VftTesting.VFT_VIDEO_FOLDER,
-            "acme/moon-rocket/ui/bob-feature/dave-scenario/2018-02-15_12-14-02_n3jwzb");
+            "moon-rocket/bob-feature/dave-scenario/2018-02-15_12-14-02_n3jwzb");
         File dataFile = new File(folder, id + ".json");
         File videoFile = new File(folder, id + ".avi");
         assertThat(dataFile).exists();

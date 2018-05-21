@@ -23,14 +23,14 @@
  */
 package co.videofirst.vft.capture.controller.api;
 
+import co.videofirst.vft.capture.model.capture.Capture;
 import co.videofirst.vft.capture.model.capture.CaptureFinishParams;
 import co.videofirst.vft.capture.model.capture.CaptureStartParams;
-import co.videofirst.vft.capture.model.capture.Capture;
-import co.videofirst.vft.capture.model.capture.UploadStatus;
 import co.videofirst.vft.capture.model.capture.CaptureStatus;
 import co.videofirst.vft.capture.model.capture.CaptureSummary;
-import co.videofirst.vft.capture.service.UploadService;
+import co.videofirst.vft.capture.model.capture.UploadStatus;
 import co.videofirst.vft.capture.service.CaptureService;
+import co.videofirst.vft.capture.service.UploadService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -68,7 +68,7 @@ public class CaptureController {
     }
 
     @PostMapping("/start")
-    public CaptureStatus start(@RequestBody CaptureStartParams param) {
+    public CaptureStatus start(@RequestBody(required = false) CaptureStartParams param) {
         CaptureStatus status = captureService.start(param);
         return status;
     }

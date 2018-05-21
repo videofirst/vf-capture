@@ -23,11 +23,10 @@
  */
 package co.videofirst.vft.capture.configuration.properties;
 
-import co.videofirst.vft.capture.utils.VftUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation .JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,14 +49,13 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties("vft_config")
 @JsonInclude(Include.NON_NULL)
-@JsonPropertyOrder({"categories", "storage", "upload", "system"})
+@JsonPropertyOrder({"storage", "upload", "system"})
 public class VftConfig {
 
     @Setter
     private SecurityConfig security;
 
     @Getter
-    private List<String> categories;
     private StorageConfig storage;
     private UploadConfig upload;
     private List<String> environment;
@@ -65,10 +63,6 @@ public class VftConfig {
     @JsonIgnore // defo don't want to show this field
     public SecurityConfig getSecurity() {
         return security;
-    }
-
-    public void setCategories(String categoriesStr) {
-        categories = VftUtils.convertToList(categoriesStr);
     }
 
 }

@@ -72,15 +72,16 @@ public class CaptureControllerTest extends AbstractControllerTest {
 
     // Capture start params
 
+    private static final CaptureStartParams CAPTURE_START_PARAMS_NONE = CaptureStartParams.builder()
+        .build();
     private static final CaptureStartParams CAPTURE_START_PARAMS_MIN = CaptureStartParams.builder()
         .feature("Bob Feature").scenario("Dave Scenario").build();
     private static final CaptureStartParams CAPTURE_START_PARAMS_MIN_NO_RECORD = CaptureStartParams
         .builder()
         .feature("Bob Feature").scenario("Dave Scenario").record("false").build();
     private static final CaptureStartParams CAPTURE_START_PARAMS_MAX = CaptureStartParams.builder()
-        .categories(ImmutableMap.of("organisation", "Google",
-            "product", "Search", "module", "Web App"))
-        .feature("Advanced Search ")
+        .project(" Google Search ")
+        .feature(" Advanced Search ")
         .scenario(" Search by Country! ")
         .scenarioId(5678L)
         .type(CaptureType.automated)
@@ -117,34 +118,26 @@ public class CaptureControllerTest extends AbstractControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "[{" +
-            "    'id': '2018-02-15_12-14-02_n3jwzb'," +
-            "    'type': 'automated'," +
-            "    'scenarioId': 1234," +
-            "    'categories': {" +
-            "        'organisation': 'Acme'," +
-            "        'product': 'Moon Rocket'," +
-            "        'module': 'UI'" +
-            "    }," +
-            "    'feature': 'Bob Feature'," +
-            "    'scenario': 'Dave Scenario'," +
-            "    'started': '2018-02-15T12:14:02'," +
-            "    'finished': '2018-02-15T12:14:03'," +
-            "    'format': 'avi'," +
-            "    'testStatus': 'fail'" +
-            "}, {" +
             "    'id': '2018-02-23_10-13-25_9ip93m'," +
             "    'type': 'manual'," +
-            "    'categories': {" +
-            "        'organisation': 'Google'," +CaptureStartParams
-            "        'product': 'Search'," +
-            "        'module': 'Browser Search'" +
-            "    }," +
+            "    'project': 'Google Search'," +
             "    'feature': 'Home Page Search'," +
             "    'scenario': 'Property Search in Belfast'," +
             "    'started': '2018-02-23T10:13:25.256'," +
             "    'finished': '2018-02-23T10:13:30.184'," +
             "    'format': 'avi'," +
             "    'testStatus': 'pass'" +
+            "}, {" +
+            "    'id': '2018-02-15_12-14-02_n3jwzb'," +
+            "    'type': 'automated'," +
+            "    'scenarioId': 1234," +
+            "    'project': 'Moon Rocket'," +
+            "    'feature': 'Bob Feature'," +
+            "    'scenario': 'Dave Scenario'," +
+            "    'started': '2018-02-15T12:14:02'," +
+            "    'finished': '2018-02-15T12:14:03'," +
+            "    'format': 'avi'," +
+            "    'testStatus': 'fail'" +
             "}]";
         JSONAssert.assertEquals(expectedJson, response.getBody(), true);
     }
@@ -163,16 +156,12 @@ public class CaptureControllerTest extends AbstractControllerTest {
             "    'id': '2018-02-15_12-14-02_n3jwzb'," +
             "    'type': 'automated'," +
             "    'scenarioId': 1234," +
-            "    'categories': {" +
-            "        'organisation': 'Acme'," +
-            "        'product': 'Moon Rocket'," +
-            "        'module': 'UI'" +
-            "    }," +
+            "    'project': 'Moon Rocket'," +
             "    'feature': 'Bob Feature'," +
             "    'scenario': 'Dave Scenario'," +
             "    'started': '2018-02-15T12:14:02'," +
             "    'finished': '2018-02-15T12:14:03'," +
-            "    'folder': 'acme/moon-rocket/ui/bob-feature/dave-scenario/2018-02-15_12-14-02_n3jwzb',"
+            "    'folder': 'moon-rocket/bob-feature/dave-scenario/2018-02-15_12-14-02_n3jwzb',"
             +
             "    'format': 'avi'," +
             "    'capture': {" +
@@ -203,11 +192,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
         String expectedJson = "{" +
             "    'type': 'manual'," +
             "    'state': 'started'," +
-            "    'categories': {" +
-            "        'organisation': 'Acme'," +
-            "        'product': 'Moon Rocket'," +
-            "        'module': 'UI'" +
-            "    }," +
+            "    'project': 'Moon Rocket'," +
             "    'feature': 'Bob Feature'," +
             "    'scenario': 'Dave Scenario'" +
             "}";
@@ -226,11 +211,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
         String expectedJson = "{" +
             "    'type': 'manual'," +
             "    'state': 'recording'," +
-            "    'categories': {" +
-            "        'organisation': 'Acme'," +
-            "        'product': 'Moon Rocket'," +
-            "        'module': 'UI'" +
-            "    }," +
+            "    'project': 'Moon Rocket'," +
             "    'feature': 'Bob Feature'," +
             "    'scenario': 'Dave Scenario'," +
             "    'format': 'avi'" +
@@ -240,7 +221,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
         JsonPathAssert.assertThat(json).jsonPathAsString("$.started").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.durationSeconds").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.folder")
-            .startsWith("acme/moon-rocket/ui/bob-feature/dave-scenario/");
+            .startsWith("moon-rocket/bob-feature/dave-scenario/");
         JsonPathAssert.assertThat(json).jsonPathAsString("$.id").isNotNull().hasSize(26);
         JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.x").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.y").isNotNull();
@@ -248,6 +229,45 @@ public class CaptureControllerTest extends AbstractControllerTest {
         JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.height").isNotNull();
         Map<String, String> environmentMap = json.read("$.environment");
         assertThat(environmentMap.get("java.awt.graphicsenv")).isNotEmpty();
+    }
+
+    @Test
+    public void shouldStartNoParams() throws JSONException {
+
+        ResponseEntity<String> response = startVideo();
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        String expectedJson = "{" +
+            "    'type': 'manual'," +
+            "    'state': 'recording'," +
+            "    'project': 'Moon Rocket'," +
+            "    'format': 'avi'" +
+            "}";
+        JSONAssert.assertEquals(expectedJson, response.getBody(), false);
+        DocumentContext json = JsonPath.parse(response.getBody());
+        JsonPathAssert.assertThat(json).jsonPathAsString("$.started").isNotNull();
+        JsonPathAssert.assertThat(json).jsonPathAsString("$.durationSeconds").isNotNull();
+        JsonPathAssert.assertThat(json).jsonPathAsString("$.folder")
+            .matches("moon-rocket/\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
+        JsonPathAssert.assertThat(json).jsonPathAsString("$.id").isNotNull().hasSize(26);
+        JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.x").isNotNull();
+        JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.y").isNotNull();
+        JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.width").isNotNull();
+        JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.height").isNotNull();
+        Map<String, String> environmentMap = json.read("$.environment");
+        assertThat(environmentMap.get("java.awt.graphicsenv")).isNotEmpty();
+    }
+
+    @Test
+    public void shouldFailWithNoProject() throws JSONException {
+        String project = infoService.getInfo().getDefaults().getProject();
+        infoService.getInfo().getDefaults().setProject(""); // remove project for this test
+
+        ResponseEntity<String> response = startVideo();
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+
+        infoService.getInfo().getDefaults().setProject(project);  // put project back in again
     }
 
     @Test
@@ -260,11 +280,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
             "    'type': 'automated'," +
             "    'scenarioId': 5678," +
             "    'state': 'recording'," +
-            "    'categories': {" +
-            "        'organisation': 'Google'," +
-            "        'product': 'Search'," +
-            "        'module': 'Web App'" +
-            "    }," +
+            "    'project': 'Google Search'," +
             "    'feature': 'Advanced Search'," +
             "    'scenario': 'Search by Country!'," +
             "    'format': 'avi'," +
@@ -279,7 +295,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
         JsonPathAssert.assertThat(json).jsonPathAsString("$.started").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.durationSeconds").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.folder")
-            .startsWith("google/search/web-app/advanced-search/search-by-country/");
+            .startsWith("google-search/advanced-search/search-by-country/");
         JsonPathAssert.assertThat(json).jsonPathAsString("$.id").isNotNull().hasSize(26);
         JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.x").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.y").isNotNull();
@@ -314,11 +330,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
         String expectedJson = "{" +
             "    'type': 'manual'," +
             "    'state': 'recording'," +
-            "    'categories': {" +
-            "        'organisation': 'Acme'," +
-            "        'product': 'Moon Rocket'," +
-            "        'module': 'UI'" +
-            "    }," +
+            "    'project': 'Moon Rocket'," +
             "    'feature': 'Bob Feature'," +
             "    'scenario': 'Dave Scenario'," +
             "    'format': 'avi'" +
@@ -328,7 +340,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
         JsonPathAssert.assertThat(json).jsonPathAsString("$.started").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.durationSeconds").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.folder")
-            .startsWith("acme/moon-rocket/ui/bob-feature/dave-scenario/");
+            .startsWith("moon-rocket/bob-feature/dave-scenario/");
         JsonPathAssert.assertThat(json).jsonPathAsString("$.id").isNotNull().hasSize(26);
         JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.x").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.y").isNotNull();
@@ -354,11 +366,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
         String expectedJson = "{" +
             "    'type': 'manual'," +
             "    'state': 'stopped'," +
-            "    'categories': {" +
-            "        'organisation': 'Acme'," +
-            "        'product': 'Moon Rocket'," +
-            "        'module': 'UI'" +
-            "    }," +
+            "    'project': 'Moon Rocket'," +
             "    'feature': 'Bob Feature'," +
             "    'scenario': 'Dave Scenario'," +
             "    'format': 'avi'" +
@@ -369,7 +377,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
         JsonPathAssert.assertThat(json).jsonPathAsString("$.finished").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.durationSeconds").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.folder")
-            .startsWith("acme/moon-rocket/ui/bob-feature/dave-scenario/");
+            .startsWith("moon-rocket/bob-feature/dave-scenario/");
         JsonPathAssert.assertThat(json).jsonPathAsString("$.id").isNotNull().hasSize(26);
         JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.x").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.y").isNotNull();
@@ -395,11 +403,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
         String expectedJson = "{" +
             "    'type': 'manual'," +
             "    'state': 'finished'," +
-            "    'categories': {" +
-            "        'organisation': 'Acme'," +
-            "        'product': 'Moon Rocket'," +
-            "        'module': 'UI'" +
-            "    }," +
+            "    'project': 'Moon Rocket'," +
             "    'feature': 'Bob Feature'," +
             "    'scenario': 'Dave Scenario'," +
             "    'format': 'avi'," +
@@ -411,7 +415,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
         JsonPathAssert.assertThat(json).jsonPathAsString("$.finished").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.durationSeconds").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.folder")
-            .startsWith("acme/moon-rocket/ui/bob-feature/dave-scenario/");
+            .startsWith("moon-rocket/bob-feature/dave-scenario/");
         JsonPathAssert.assertThat(json).jsonPathAsString("$.id").isNotNull().hasSize(26);
         JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.x").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.y").isNotNull();
@@ -432,11 +436,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
             "    'type': 'automated'," +
             "    'scenarioId': 5678," +
             "    'state': 'finished'," +
-            "    'categories': {" +
-            "        'organisation': 'Google'," +
-            "        'product': 'Search'," +
-            "        'module': 'Web App'" +
-            "    }," +
+            "    'project': 'Google Search'," +
             "    'feature': 'Advanced Search'," +
             "    'scenario': 'Search by Country!'," +
             "    'format': 'avi'," +
@@ -468,8 +468,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
         JsonPathAssert.assertThat(json).jsonPathAsString("$.finished").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.durationSeconds").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.folder")
-            .startsWith(
-                "google/search/web-app/advanced-search/search-by-country/");
+            .startsWith("google-search/advanced-search/search-by-country/");
         JsonPathAssert.assertThat(json).jsonPathAsString("$.id").isNotNull().hasSize(26);
         JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.x").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.y").isNotNull();
@@ -493,11 +492,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
         String expectedJson = "{" +
             "    'type': 'manual'," +
             "    'state': 'started'," +
-            "    'categories': {" +
-            "        'organisation': 'Acme'," +
-            "        'product': 'Moon Rocket'," +
-            "        'module': 'UI'" +
-            "    }," +
+            "    'project': 'Moon Rocket'," +
             "    'feature': 'Bob Feature'," +
             "    'scenario': 'Dave Scenario'" +
             "}";
@@ -516,7 +511,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
 
         // Check video exists
         File folder = new File(VftTesting.VFT_VIDEO_FOLDER,
-            "acme/moon-rocket/ui/bob-feature/dave-scenario/2018-02-15_12-14-02_n3jwzb");
+            "moon-rocket/bob-feature/dave-scenario/2018-02-15_12-14-02_n3jwzb");
         File dataFile = new File(folder, MOCK_CAPTURE_ID + ".json");
         File videoFile = new File(folder, MOCK_CAPTURE_ID + ".avi");
         assertThat(dataFile).exists();
@@ -635,6 +630,12 @@ public class CaptureControllerTest extends AbstractControllerTest {
      */
     private ResponseEntity<String> startVideo(CaptureStartParams captureStartParams) {
         HttpEntity<CaptureStartParams> entity = new HttpEntity<>(captureStartParams, headers);
+        return restTemplate.exchange(
+            urlWithPort("/api/captures/start"), HttpMethod.POST, entity, String.class);
+    }
+
+    private ResponseEntity<String> startVideo() {
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(
             urlWithPort("/api/captures/start"), HttpMethod.POST, entity, String.class);
     }

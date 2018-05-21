@@ -8,13 +8,10 @@ vft_config:
         user: test
         pass: password
 
-    # Test categories
-    categories: organisation|product|module
-
     # Test storage
     storage:
-        tempFolder: ${java.io.tmpdir}/vft-testing/temp
-        videoFolder: ${java.io.tmpdir}/vft-testing/videos
+        tempFolder: ${java.io.tmpdir}/vft-capture-test/temp
+        videoFolder: ${java.io.tmpdir}/vft-capture-test/videos
 
     # Test upload - uses a mock endpoint which only exists in `/src/test/java`
     upload:
@@ -35,8 +32,5 @@ vft_config:
 # Test defaults
 vft_default:
 
-    # Test category defaults
-    categories:
-        organisation: Acme
-        product: Moon Rocket
-        module: UI
+    # Test project defaults
+    project: Moon Rocket

@@ -1,16 +1,12 @@
 {
   "id": "2018-02-23_10-13-25_9ip93m",
-  "categories": {
-    "organisation": "Google",
-    "product": "Search",
-    "module": "Browser Search"
-  },
   "type": "manual",
+  "project": "Google Search",
   "feature": "Home Page Search",
   "scenario": "Property Search in Belfast",
   "started": "2018-02-23T10:13:25.256",
   "finished": "2018-02-23T10:13:30.184",
-  "folder": "google/search/browser-search/home-page-search/property-search-in-belfast/2018-02-23_10-13-25_9ip93m",
+  "folder": "google-search/home-page-search/property-search-in-belfast/2018-02-23_10-13-25_9ip93m",
   "format": "avi",
   "capture": {
     "x": 450,

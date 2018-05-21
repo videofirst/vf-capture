@@ -27,21 +27,18 @@ import co.videofirst.vft.capture.dao.CaptureDao;
 import co.videofirst.vft.capture.enums.CaptureState;
 import co.videofirst.vft.capture.exception.InvalidParameterException;
 import co.videofirst.vft.capture.exception.InvalidStateException;
-import co.videofirst.vft.capture.model.display.DisplayUpdate;
+import co.videofirst.vft.capture.model.capture.Capture;
 import co.videofirst.vft.capture.model.capture.CaptureFinishParams;
 import co.videofirst.vft.capture.model.capture.CaptureStartParams;
-import co.videofirst.vft.capture.model.capture.Capture;
 import co.videofirst.vft.capture.model.capture.CaptureStatus;
 import co.videofirst.vft.capture.model.capture.CaptureSummary;
+import co.videofirst.vft.capture.model.display.DisplayUpdate;
 import co.videofirst.vft.capture.recorder.VideoRecord;
 import co.videofirst.vft.capture.recorder.VideoRecorder;
 import co.videofirst.vft.capture.service.CaptureService;
 import co.videofirst.vft.capture.service.DisplayService;
 import co.videofirst.vft.capture.service.InfoService;
-import co.videofirst.vft.capture.utils.ConfigUtils;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -86,6 +83,9 @@ public class DefaultCaptureService implements CaptureService {
 
     @Override
     public CaptureStatus start(CaptureStartParams captureStartParams) {
+        if (captureStartParams == null) {
+            captureStartParams = CaptureStartParams.builder().build();
+        }
         if (captureStartParams.force()) {
             cancelCapture();
         }
@@ -105,8 +105,9 @@ public class DefaultCaptureService implements CaptureService {
     @Override
     public CaptureStatus record() {
         if (captureStatus.getState() != CaptureState.started) {
-            throw new InvalidStateException("Current state is '" + captureStatus.getState() + "' - " +
-                "video can only be recoded when state is  'started'.");
+            throw new InvalidStateException(
+                "Current state is '" + captureStatus.getState() + "' - " +
+                    "video can only be recoded when state is  'started'.");
         }
 
         DisplayUpdate displayUpdate = getDisplayUpdate();
@@ -172,14 +173,6 @@ public class DefaultCaptureService implements CaptureService {
         captureStatus = CaptureStatus.IDLE; // re-set status
     }
 
-    private Map<String, String> getCategoryMap(Map<String, String> categoryOverrides) {
-        List<String> categories = infoService.getInfo().getInfo().getCategories();
-        Map<String, String> categoryDefaults = infoService.getInfo().getDefaults().getCategories();
-        Map<String, String> categoryMap = ConfigUtils
-            .parseCategoryMap(categories, categoryDefaults, categoryOverrides);
-        return categoryMap;
-    }
-
     /**
      * Validate start parameters.
      */
@@ -187,27 +180,10 @@ public class DefaultCaptureService implements CaptureService {
 
         if (captureStatus.getState() != CaptureState.idle
             && captureStatus.getState() != CaptureState.started) {
-            throw new InvalidStateException("Current state is '" + captureStatus.getState() + "' - " +
-                "video can only be started when state is 'idle', 'uploaded' or re-started when it is in a state is 'started'. "
-                + "Please finish recording or cancel.");
-        }
-
-        Map<String, String> getCategoryMap = getCategoryMap(captureStartParams.getCategories());
-
-        String categories = getCategoryMap.entrySet().stream()
-            .filter(category -> category.getValue() == null || category.getValue().isEmpty())
-            .map(category -> category.getKey())
-            .collect(Collectors.joining(", "));
-        if (!categories.isEmpty()) {
-            throw new InvalidParameterException(
-                "Please fill in missing categories [ " + categories + " ]");
-        }
-
-        if (captureStartParams.getFeature() == null || captureStartParams.getFeature().isEmpty()) {
-            throw new InvalidParameterException("Please fill in missing 'feature' attribute");
-        }
-        if (captureStartParams.getScenario() == null || captureStartParams.getScenario().isEmpty()) {
-            throw new InvalidParameterException("Please fill in missing 'scenario' attribute");
+            throw new InvalidStateException(
+                "Current state is '" + captureStatus.getState() + "' - " +
+                    "video can only be started when state is 'idle', 'uploaded' or re-started when it is in a state is 'started'. "
+                    + "Please finish recording or cancel.");
         }
     }
 
@@ -215,8 +191,9 @@ public class DefaultCaptureService implements CaptureService {
         // Check state first of all
         if (captureStatus.getState() != CaptureState.recording
             && captureStatus.getState() != CaptureState.stopped) {
-            throw new InvalidStateException("Current state is '" + captureStatus.getState() + "' - " +
-                "videos can only be finished which is state is `recording` OR `stopped`.");
+            throw new InvalidStateException(
+                "Current state is '" + captureStatus.getState() + "' - " +
+                    "videos can only be finished which is state is `recording` OR `stopped`.");
         }
 
         if (finishVideoParams.getTestStatus() == null) {

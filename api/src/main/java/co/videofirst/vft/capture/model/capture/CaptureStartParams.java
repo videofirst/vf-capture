@@ -42,16 +42,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CaptureStartParams {
 
-    // Mandatory
+    // Optional
 
     private String feature;
     private String scenario;
-
-    // Optional
-
     private CaptureType type;
     private Long scenarioId;
-    private Map<String, String> categories;
+    private String project;
     private String record;
     private String force;
     private Map<String, String> meta;
@@ -59,11 +56,11 @@ public class CaptureStartParams {
     private DisplayConfig display;
 
     public boolean record() {
-        return record == null || "true" .equalsIgnoreCase(record.trim());
+        return record == null || "true".equalsIgnoreCase(record.trim());
     }
 
     public boolean force() {
-        return force != null && "true" .equalsIgnoreCase(force.trim());
+        return force != null && "true".equalsIgnoreCase(force.trim());
     }
 
 }

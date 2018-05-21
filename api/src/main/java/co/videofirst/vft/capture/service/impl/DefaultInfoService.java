@@ -88,7 +88,6 @@ public class DefaultInfoService implements InfoService {
 
         ConfigInfo systemInfo = ConfigInfo.builder()
             .started(LocalDateTime.now())
-            .categories(vftConfig.getCategories())
             .storage(vftConfig.getStorage())
             .upload(vftConfig.getUpload())
             .display(DisplayInfo.builder()

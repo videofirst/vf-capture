@@ -26,9 +26,11 @@ package co.videofirst.vft.capture.model.capture;
 import static co.videofirst.vft.capture.enums.CaptureType.DEFAULT_CAPTURE_TYPE;
 import static co.videofirst.vft.capture.model.capture.Capture.FORMAT_AVI;
 
+import co.videofirst.vft.capture.configuration.properties.VftDefaults;
 import co.videofirst.vft.capture.enums.CaptureState;
 import co.videofirst.vft.capture.enums.CaptureType;
 import co.videofirst.vft.capture.enums.TestStatus;
+import co.videofirst.vft.capture.exception.InvalidParameterException;
 import co.videofirst.vft.capture.exception.VideoStatusException;
 import co.videofirst.vft.capture.model.TestLog;
 import co.videofirst.vft.capture.model.display.DisplayCapture;
@@ -52,7 +54,7 @@ import lombok.Getter;
  * @author Bob Marks
  */
 @JsonInclude(Include.NON_NULL)
-@JsonPropertyOrder({"state", "categories", "feature", "scenario", "started", "finished",
+@JsonPropertyOrder({"state", "project", "feature", "scenario", "started", "finished",
     "durationSeconds", "folder", "id", "capture", "format", "meta", "description", "environment",
     "testStatus", "testError", "testLogs"})
 public class CaptureStatus {
@@ -98,16 +100,15 @@ public class CaptureStatus {
 
         // 1) Validation
         validateInfo(info);
+        validateProject(captureStartParams.getProject(), info.getDefaults());
         if (captureStartParams == null) {
             throw new VideoStatusException("Please supply a valid capture start parameter");
-        }
-
-        // 2) Create definitive category map
-        Map<String, String> categoryMap = getCategoryMap(info, captureStartParams.getCategories());
+        } // is this correct?
 
         // 3) Create and return capture object
         Capture capture = Capture.builder()
-            .categories(categoryMap)
+            .project(ConfigUtils
+                .parseString(captureStartParams.getProject(), info.getDefaults().getProject()))
             .feature(VftUtils.nullTrim(captureStartParams.getFeature()))
             .scenario(VftUtils.nullTrim(captureStartParams.getScenario()))
             .type(captureStartParams.getType() == null ? DEFAULT_CAPTURE_TYPE
@@ -137,11 +138,10 @@ public class CaptureStatus {
             // 2) Create id from started time + random string
             String id = VftUtils.generateId(started);
 
-            // 3) Create folder (from categories)
-            List<String> categoryFolders = VftUtils.getFolderFriendlyCategories(
-                getCategories(), getFeature(), getScenario(),
-                id);
-            String folder = String.join("/", categoryFolders);
+            // 3) Create folder
+            List<String> folders = VftUtils.getFolderFriendlyList(
+                getProject(), getFeature(), getScenario(), id);
+            String folder = String.join("/", folders);
 
             // 4) Create and return capture object from existing one
             Capture capture = this.getCapture().toBuilder()
@@ -213,8 +213,8 @@ public class CaptureStatus {
 
     // Public getters (for JSON)
 
-    public Map<String, String> getCategories() {
-        return capture.getCategories();
+    public String getProject() {
+        return capture.getProject();
     }
 
     public String getFeature() {
@@ -297,18 +297,18 @@ public class CaptureStatus {
 
     // Private static methods
 
-    private static Map<String, String> getCategoryMap(Info info,
-        Map<String, String> userCategories) {
-        List<String> categories = info.getInfo().getCategories();
-        Map<String, String> categoryDefaults = info.getDefaults().getCategories();
-        Map<String, String> categoryMap = ConfigUtils
-            .parseCategoryMap(categories, categoryDefaults, userCategories);
-        return categoryMap;
-    }
-
     private static void validateInfo(Info info) {
         if (info == null || info.getInfo() == null || info.getDefaults() == null) {
             throw new VideoStatusException("Please supply a valid info object");
         }
     }
+
+    private static void validateProject(String project, VftDefaults defaults) {
+        if ((project == null || project.isEmpty()) && (defaults.getProject() == null || defaults
+            .getProject().trim().isEmpty())) {
+            throw new InvalidParameterException(
+                "Please fill in missing project, either in start params OR in the configuration default section");
+        }
+    }
+
 }

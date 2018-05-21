@@ -23,15 +23,12 @@
  */
 package co.videofirst.vft.capture.utils;
 
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.data.MapEntry.entry;
 import static org.junit.Assert.fail;
 
 import co.videofirst.vft.capture.exception.VideoConfigurationException;
 import com.google.common.collect.ImmutableMap;
 import java.awt.Color;
-import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 
@@ -269,22 +266,26 @@ public class ConfigUtilsTest {
     }
 
     // ---------------------------------------------------------------------------------------------
-    // ConfigUtils.parseCategoryMap
+    // ConfigUtils.parseString
     // ---------------------------------------------------------------------------------------------
 
+
     @Test
-    public void shouldParseCategoryMap() {
+    public void shouldParseString() {
 
-        List<String> categoryList = asList("organisation", "product", "module");
-        Map<String, String> categoryDefaults = ImmutableMap
-            .of("organisation", "Google", "product", "Search");
-        Map<String, String> categoryOverrides = ImmutableMap
-            .of("product", "Maps", "module", "Mobile");
+        assertThat(ConfigUtils.parseString("a", "b")).isEqualTo("a");
+        assertThat(ConfigUtils.parseString(" a ", " b ")).isEqualTo("a");
+        assertThat(ConfigUtils.parseString(" a ", "")).isEqualTo("a");
+        assertThat(ConfigUtils.parseString(" a ", null)).isEqualTo("a");
 
-        Map<String, String> categories = ConfigUtils
-            .parseCategoryMap(categoryList, categoryDefaults, categoryOverrides);
-        assertThat(categories).containsExactly(entry("organisation", "Google"),
-            entry("product", "Maps"), entry("module", "Mobile"));
+        assertThat(ConfigUtils.parseString("", "b")).isEqualTo("b");
+        assertThat(ConfigUtils.parseString("", " b ")).isEqualTo("b");
+        assertThat(ConfigUtils.parseString(null, " b ")).isEqualTo("b");
+
+        assertThat(ConfigUtils.parseString("  ", "   ")).isNull();
+        assertThat(ConfigUtils.parseString(null, "   ")).isNull();
+        assertThat(ConfigUtils.parseString("  ", null)).isNull();
+        assertThat(ConfigUtils.parseString(null, null)).isNull();
     }
 
     // Private methods

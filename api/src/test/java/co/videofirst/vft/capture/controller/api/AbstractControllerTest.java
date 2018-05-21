@@ -32,6 +32,7 @@ import co.videofirst.vft.capture.configuration.properties.UploadConfig;
 import co.videofirst.vft.capture.controller.api.AbstractControllerTest.IntegrationTestContextConfiguration;
 import co.videofirst.vft.capture.mock.MockUploadController.MockUploadService;
 import co.videofirst.vft.capture.service.CaptureService;
+import co.videofirst.vft.capture.service.impl.DefaultInfoService;
 import co.videofirst.vft.capture.service.impl.DefaultUploadService;
 import co.videofirst.vft.capture.test.VftTesting;
 import org.junit.After;
@@ -88,6 +89,9 @@ public abstract class AbstractControllerTest {
 
     @Autowired
     protected DefaultUploadService uploadService;
+
+    @Autowired
+    protected DefaultInfoService infoService;
 
     // Internal fields
 

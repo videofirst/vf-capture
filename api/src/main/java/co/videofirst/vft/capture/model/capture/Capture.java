@@ -50,7 +50,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(Include.NON_NULL)
-@JsonPropertyOrder({"id", "scenarioId", "categories", "feature", "scenario", "type", "description",
+@JsonPropertyOrder({"id", "scenarioId", "project", "feature", "scenario", "type", "description",
     "started", "finished", "folder", "format", "capture", "meta", "environment", "testStatus",
     "testError", "testStackTrace", "testLogs", "upload"})
 public class Capture {
@@ -59,7 +59,7 @@ public class Capture {
 
     private String id;
     private Long scenarioId;
-    private Map<String, String> categories;
+    private String project;
     private String feature;
     private String scenario;
     private CaptureType type;

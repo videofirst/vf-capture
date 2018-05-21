@@ -57,7 +57,6 @@ public class InfoControllerTest extends AbstractControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
             "  'info': {" +
-            "    'categories': ['organisation', 'product', 'module']," +
             "    'storage': {}," +
             "    'upload': {" +
             "      'enable': true," +
@@ -75,11 +74,7 @@ public class InfoControllerTest extends AbstractControllerTest {
             "    'environment': {}" +
             "  }," +
             "  'defaults': {" +
-            "    'categories': {" +
-            "      'organisation': 'Acme'," +
-            "      'product': 'Moon Rocket'," +
-            "      'module': 'UI'" +
-            "    }," +
+            "    'project': 'Moon Rocket'," +
             "    'display': {" +
             "      'alwaysOnTop': 'false'," +
             "      'capture': {" +

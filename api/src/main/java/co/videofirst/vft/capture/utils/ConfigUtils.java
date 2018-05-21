@@ -27,9 +27,6 @@ import co.videofirst.vft.capture.exception.VideoConfigurationException;
 import com.udojava.evalex.Expression;
 import java.awt.Color;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -160,27 +157,19 @@ public class ConfigUtils {
     }
 
     // ---------------------------------------------------------------------------------------------
-    // Parse categories
+    // Parse String
     // ---------------------------------------------------------------------------------------------
 
-    public static Map<String, String> parseCategoryMap(List<String> categories,
-        Map<String, String> categoryDefaults, Map<String, String> categoriesOverrides) {
-        Map<String, String> categoryMap = new LinkedHashMap<>();
+    public static String parseString(String baseString, String overrideString) {
+        if (baseString == null || baseString.trim().isEmpty()) {
 
-        if (categories != null) {
-            // if category defaults is null then create an empty map
-            if (categoryDefaults == null) {
-                categoryDefaults = new HashMap<>();
+            if (overrideString == null || overrideString.trim().isEmpty()) {
+                return null;
             }
-
-            for (String category : categories) {
-                String categoryValue =
-                    categoriesOverrides != null && categoriesOverrides.containsKey(category)
-                        ? categoriesOverrides.get(category) : categoryDefaults.get(category);
-                categoryMap.put(category, categoryValue);
-            }
+            return overrideString.trim();
         }
-        return categoryMap;
+
+        return baseString.trim();
     }
 
 }

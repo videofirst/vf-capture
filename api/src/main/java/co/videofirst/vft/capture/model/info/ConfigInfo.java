@@ -28,7 +28,6 @@ import co.videofirst.vft.capture.configuration.properties.UploadConfig;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.Map;
 import lombok.Builder;
 import lombok.Data;
@@ -40,12 +39,11 @@ import lombok.Data;
  */
 @Data
 @Builder
-@JsonPropertyOrder({"started", "uptimeSeconds", "categories", "storage", "upload", "display",
+@JsonPropertyOrder({"started", "uptimeSeconds", "storage", "upload", "display",
     "environment"})
 public class ConfigInfo {
 
     private LocalDateTime started;
-    private List<String> categories;
     private StorageConfig storage;
     private UploadConfig upload;
     private DisplayInfo display;

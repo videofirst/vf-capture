@@ -35,14 +35,15 @@ import org.apache.commons.io.FileUtils;
 public class VftTesting {
 
     public static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
-    public static final File VFT_TEMP_FOLDER = new File(TEMP_DIR, "vft-testing/temp");
-    public static final File VFT_VIDEO_FOLDER = new File(TEMP_DIR, "vft-testing/videos");
+    public static final File VFT_CAPTURE_TEST_FOLDER = new File(TEMP_DIR, "vft-capture-test");
+    public static final File VFT_TEMP_FOLDER = new File(VFT_CAPTURE_TEST_FOLDER, "temp");
+    public static final File VFT_VIDEO_FOLDER = new File(VFT_CAPTURE_TEST_FOLDER, "videos");
     public static final File TEST_VIDEOS = new File("src/test/resources/videos");
 
     public static void initTestFolders() throws IOException {
         cleanTestFolders();
 
-        // copy files from `src/test/resources/videos` to `vft-testing/videos` folder
+        // copy files from `src/test/resources/videos` to `vft-capture-test/videos` folder
         FileUtils.copyDirectory(TEST_VIDEOS, VFT_VIDEO_FOLDER);
     }
 
