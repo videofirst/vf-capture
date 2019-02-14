@@ -113,7 +113,7 @@ public class CaptureStatus {
             .scenario(VftUtils.nullTrim(captureStartParams.getScenario()))
             .type(captureStartParams.getType() == null ? DEFAULT_CAPTURE_TYPE
                 : captureStartParams.getType())
-            .scenarioId(captureStartParams.getScenarioId())
+            .sid(captureStartParams.getSid())
             // optional
             .meta(captureStartParams.getMeta())
             .description(VftUtils.nullTrim(captureStartParams.getDescription()))
@@ -138,9 +138,12 @@ public class CaptureStatus {
             // 2) Create id from started time + random string
             String id = VftUtils.generateId(started);
 
-            // 3) Create folder
-            List<String> folders = VftUtils.getFolderFriendlyList(
-                getProject(), getFeature(), getScenario(), id);
+            // 3) Create folder (check if sid is set)
+            boolean useSid = captureStartParams.getSid() != null;
+            List<String> folders = useSid ?
+                VftUtils.getFolderFriendlyList(getProject(),
+                    String.valueOf(captureStartParams.getSid()), id) :
+                VftUtils.getFolderFriendlyList(getProject(), getFeature(), getScenario(), id);
             String folder = String.join("/", folders);
 
             // 4) Create and return capture object from existing one
@@ -241,8 +244,8 @@ public class CaptureStatus {
         return capture.getId();
     }
 
-    public Long getScenarioId() {
-        return capture.getScenarioId();
+    public Long getSid() {
+        return capture.getSid();
     }
 
     public CaptureType getType() {

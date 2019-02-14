@@ -83,7 +83,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
         .project(" Google Search ")
         .feature(" Advanced Search ")
         .scenario(" Search by Country! ")
-        .scenarioId(5678L)
+        .sid(5678L)
         .type(CaptureType.automated)
         .meta(DEFAULT_META)
         .description("Awesome test")
@@ -129,8 +129,8 @@ public class CaptureControllerTest extends AbstractControllerTest {
             "    'testStatus': 'pass'" +
             "}, {" +
             "    'id': '2018-02-15_12-14-02_n3jwzb'," +
+            "    'sid': 1234," +
             "    'type': 'automated'," +
-            "    'scenarioId': 1234," +
             "    'project': 'Moon Rocket'," +
             "    'feature': 'Bob Feature'," +
             "    'scenario': 'Dave Scenario'," +
@@ -155,7 +155,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
         String expectedJson = "{" +
             "    'id': '2018-02-15_12-14-02_n3jwzb'," +
             "    'type': 'automated'," +
-            "    'scenarioId': 1234," +
+            "    'sid': 1234," +
             "    'project': 'Moon Rocket'," +
             "    'feature': 'Bob Feature'," +
             "    'scenario': 'Dave Scenario'," +
@@ -278,7 +278,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
             "    'type': 'automated'," +
-            "    'scenarioId': 5678," +
+            "    'sid': 5678," +
             "    'state': 'recording'," +
             "    'project': 'Google Search'," +
             "    'feature': 'Advanced Search'," +
@@ -295,7 +295,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
         JsonPathAssert.assertThat(json).jsonPathAsString("$.started").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.durationSeconds").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.folder")
-            .startsWith("google-search/advanced-search/search-by-country/");
+            .matches("^google-search/5678/\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[\\w\\d]{6}$");
         JsonPathAssert.assertThat(json).jsonPathAsString("$.id").isNotNull().hasSize(26);
         JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.x").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.y").isNotNull();
@@ -434,7 +434,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
             "    'type': 'automated'," +
-            "    'scenarioId': 5678," +
+            "    'sid': 5678," +
             "    'state': 'finished'," +
             "    'project': 'Google Search'," +
             "    'feature': 'Advanced Search'," +
@@ -468,7 +468,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
         JsonPathAssert.assertThat(json).jsonPathAsString("$.finished").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.durationSeconds").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.folder")
-            .startsWith("google-search/advanced-search/search-by-country/");
+            .matches("^google-search/5678/\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[\\w\\d]{6}$");
         JsonPathAssert.assertThat(json).jsonPathAsString("$.id").isNotNull().hasSize(26);
         JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.x").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.y").isNotNull();

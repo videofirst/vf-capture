@@ -98,7 +98,7 @@ public class FileSystemCaptureDaoTest {
             .scenario("Search by Country")
             .folder("google-search/login/search-by-country/2018-01-30_17-33-47_a9kea")
             .id("2018-01-30_17-33-47_a9kea")
-            .scenarioId(999L)
+            .sid(999L)
             .type(CaptureType.automated)
             .format("avi")
             .capture(DisplayCapture.builder().x(1).y(2).width(3).height(4).build())
@@ -132,7 +132,7 @@ public class FileSystemCaptureDaoTest {
             "    'folder': 'google-search/login/search-by-country/2018-01-30_17-33-47_a9kea'," +
             "    'id': '2018-01-30_17-33-47_a9kea'," +
             "    'type': 'automated'," +
-            "    'scenarioId': 999," +
+            "    'sid': 999," +
             "    'format': 'avi'," +
             "    'capture': { 'x': 1, 'y': 2, 'width': 3, 'height': 4 }, " +
             // optional
@@ -179,7 +179,7 @@ public class FileSystemCaptureDaoTest {
             .x(0).y(0).width(1920).height(1200).build());
         assertThat(capture.getMeta()).isEmpty();
         assertThat(capture.getType()).isEqualTo(CaptureType.automated);
-        assertThat(capture.getScenarioId()).isEqualTo(1234L);
+        assertThat(capture.getSid()).isEqualTo(1234L);
         assertThat(capture.getEnvironment())
             .containsExactly(entry("java.awt.graphicsenv", "sun.awt.Win32GraphicsEnvironment"));
         assertThat(capture.getTestStatus()).isEqualTo(TestStatus.fail);

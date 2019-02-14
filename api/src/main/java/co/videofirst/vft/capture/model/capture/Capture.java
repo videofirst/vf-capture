@@ -50,7 +50,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(Include.NON_NULL)
-@JsonPropertyOrder({"id", "scenarioId", "project", "feature", "scenario", "type", "description",
+@JsonPropertyOrder({"id", "sid", "project", "feature", "scenario", "type", "description",
     "started", "finished", "folder", "format", "capture", "meta", "environment", "testStatus",
     "testError", "testStackTrace", "testLogs", "upload"})
 public class Capture {
@@ -58,7 +58,7 @@ public class Capture {
     public static final String FORMAT_AVI = "avi"; // only supported format at minute
 
     private String id;
-    private Long scenarioId;
+    private Long sid;
     private String project;
     private String feature;
     private String scenario;

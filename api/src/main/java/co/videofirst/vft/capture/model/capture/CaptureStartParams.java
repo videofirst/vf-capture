@@ -44,16 +44,17 @@ public class CaptureStartParams {
 
     // Optional
 
+    private String project;
     private String feature;
     private String scenario;
     private CaptureType type;
-    private Long scenarioId;
-    private String project;
-    private String record;
-    private String force;
+    private Long sid;
     private Map<String, String> meta;
     private String description;
     private DisplayConfig display;
+    private String author;
+    private String record;
+    private String force;
 
     public boolean record() {
         return record == null || "true".equalsIgnoreCase(record.trim());

@@ -1,7 +1,7 @@
 {
   "id": "2018-02-15_12-14-02_n3jwzb",
   "type": "automated",
-  "scenarioId": 1234,
+  "sid": 1234,
   "project": "Moon Rocket",
   "feature": "Bob Feature",
   "scenario": "Dave Scenario",

@@ -31,17 +31,17 @@ vft_config:
         # Type of security. Can be (1) `none`, (2) `plain` or (3) `encrypted` (encrypted password).
         # It is higly recommended not to use `none`.  If using `encrypted` run `VftAgentApplication`
         # with the `-pwd` arg to generate encrypted entries.
-        type: none
+        type: plain
         #type: plain
         #type: encrypted
 
         # Username. NOTE - if type = 'encrypted' then this must be encrypted.
-        user:
+        user: test
         #user: test
         #user: "$2a$10$.XmVZBw2ap.hyEF7UEW9k.wbwwBLYMYu1ZCxdf.poXg1rxHJnuAIS"
 
         # Password. NOTE - if type = 'encrypted' then this must be encrypted.
-        pass:
+        pass: test
 
         # Lock out attempts. Number of attempts before access is locked.
         lockOutAttempts: 3
@@ -58,7 +58,8 @@ vft_config:
         # Temporary folder where videos get stored when they are being recorded
         tempFolder: ${java.io.tmpdir}/vft/temp
         # Output video folder where videos + meta-data are stored
-        videoFolder: ${user.home}/vft/videos
+        #videoFolder: ${user.home}/vft/captures
+        videoFolder: c:/vft-captures   # Don't check in!
 
 
     # 1.3 Upload configuration - when a test finishes then the captured video / data can then be
@@ -67,18 +68,20 @@ vft_config:
     upload:
 
         # Enable / disable uploading functionality (defaults to false).
-        enable: false
-        #enable: true
+        #enable: false    DON'T CHECK IN
+        enable: true
 
         # Specify a REST end-point to upload to (must be of type POST)
-        url: https://app.videofirst.co/upload
+        #url: https://app.videofirst.co/upload
+        url: http://localhost:1359/uploads
 
         # Define additional HTTP headers (recommended for security)
         headers:
 
             # Example header for HTTP Basic authentication with "test:password" base64 encoded.
             # Go to https://www.base64encode.org to encode / decode Base64 Strings
-            Authorization: "Basic dGVzdDpwYXNzd29yZA=="
+            #Authorization: "Basic dGVzdDpwYXNzd29yZA=="
+            Authorization: "115ee133b0964eed:3b298dac715431ea55fc9652e21a0b61"
 
         # Number of uploads which can be occur simultaneously
         threads: 5
@@ -112,7 +115,7 @@ vft_config:
 vft_default:
 
     # 2.1 Project default (defaults to my-project)
-    project:
+    project: my-project
 
     # 2.2 Display defaults.  These are used to defined the capture area, define a border on the
     # screen (which shows the capture area), set a background (create a consist colour between tests

@@ -43,14 +43,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(Include.NON_NULL)
-@JsonPropertyOrder({"id", "type", "scenarioId", "project", "feature", "scenario", "started",
+@JsonPropertyOrder({"id", "type", "sid", "project", "feature", "scenario", "started",
     "finished", "format", "testStatus"})
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CaptureSummary {
 
     private String id;
     private CaptureType type;
-    private Long scenarioId;
+    private Long sid;
     private String project;
     private String feature;
     private String scenario;
