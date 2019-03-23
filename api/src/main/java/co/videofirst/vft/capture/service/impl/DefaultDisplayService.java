@@ -24,18 +24,21 @@
 package co.videofirst.vft.capture.service.impl;
 
 import co.videofirst.vft.capture.configuration.properties.VftConfig;
+import co.videofirst.vft.capture.model.capture.CaptureStatus;
 import co.videofirst.vft.capture.model.display.DisplayBackground;
 import co.videofirst.vft.capture.model.display.DisplayBorder;
 import co.videofirst.vft.capture.model.display.DisplayCapture;
 import co.videofirst.vft.capture.model.display.DisplayText;
 import co.videofirst.vft.capture.model.display.DisplayUpdate;
-import co.videofirst.vft.capture.model.capture.CaptureStatus;
 import co.videofirst.vft.capture.service.DisplayService;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import javax.swing.JFrame;
 import javax.swing.JWindow;
+import javax.swing.WindowConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -66,6 +69,12 @@ public class DefaultDisplayService extends JWindow implements DisplayService {
         setBounds(getGraphicsConfiguration().getBounds());
         setBackground(new Color(0, true));
         setVisible(true);
+
+        JFrame frame = new JFrame("Video First - Capture");
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setPreferredSize(new Dimension(400, 200));
+        frame.pack();
+        frame.setVisible(true);
     }
 
     @Override
