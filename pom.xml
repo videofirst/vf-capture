@@ -5,12 +5,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <description>
-    VFT Capture - a test tool which can screen capture. It supports both manually testing (via a UI)
-    or programmatically (via a REST API).
+    VF Capture - user interface screen capture tool. It supports video cappture either manually (via
+    a UI)
+    or programmatically (via a REST API / libraries).
   </description>
 
-  <groupId>co.videofirst</groupId>
-  <artifactId>vft.capture</artifactId>
+  <groupId>io.videofirst</groupId>
+  <artifactId>capture</artifactId>
   <version>0.2.0-SNAPSHOT</version>
 
   <packaging>jar</packaging>
@@ -199,7 +200,7 @@
   </repositories>
 
   <build>
-    <finalName>vft</finalName>
+    <finalName>capture</finalName>
 
     <plugins>
 
@@ -220,7 +221,7 @@
         <version>3.1.0</version>
         <configuration>
           <descriptors>
-            <descriptor>src/assembly/vft-assembly.xml</descriptor>
+            <descriptor>src/assembly/vf-capture-assembly.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>
