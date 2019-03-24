@@ -44,6 +44,8 @@ public class VftCapture {
 
     public static void main(String[] args) {
 
+        // https://stackoverflow.com/questions/36634281/list-of-swagger-ui-alternatives
+
         checkCreatePassword(args);
 
         SpringApplicationBuilder builder = new SpringApplicationBuilder(VftCapture.class);

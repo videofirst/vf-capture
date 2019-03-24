@@ -5,21 +5,13 @@ import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Image;
-import java.awt.MenuItem;
 import java.awt.Point;
-import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.net.URL;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 /**
@@ -54,42 +46,45 @@ public class HideToSystemTray extends JFrame {
         } catch (Exception e) {
             System.out.println("Unable to set LookAndFeel");
         }
-        if (SystemTray.isSupported()) {
-            System.out.println("system tray supported");
-            tray = SystemTray.getSystemTray();
 
-            Image image = Toolkit.getDefaultToolkit().getImage(captureIcon16);
-            ActionListener exitListener = new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    System.out.println("Exiting....");
-                    System.exit(0);
-                }
-            };
-            PopupMenu popup = new PopupMenu();
-            MenuItem defaultItem = new MenuItem("Exit");
-            defaultItem.addActionListener(exitListener);
-            popup.add(defaultItem);
-            defaultItem = new MenuItem("Open");
-            defaultItem.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    setVisible(true);
-                    setExtendedState(JFrame.NORMAL);
-                }
-            });
-            popup.add(defaultItem);
-            trayIcon = new TrayIcon(image, "Video First Capture", popup);
-            trayIcon.setImageAutoSize(true);
-            trayIcon.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    JOptionPane
-                        .showMessageDialog(null, "This shows after a left-click on tray icon");
-                }
-            });
-
-        } else {
-            System.out.println("system tray not supported");
-        }
+//        if (SystemTray.isSupported()) {
+//            System.out.println("system tray supported");
+//            tray = SystemTray.getSystemTray();
+//
+//            Image image = Toolkit.getDefaultToolkit().getImage(captureIcon16);
+//            ActionListener exitListener = new ActionListener() {
+//                public void actionPerformed(ActionEvent e) {
+//                    System.out.println("Exiting....");
+//                    System.exit(0);
+//                }
+//            };
+//            PopupMenu popup = new PopupMenu();
+//            MenuItem defaultItem = new MenuItem("Exit");
+//            defaultItem.addActionListener(exitListener);
+//            popup.add(defaultItem);
+//            defaultItem = new MenuItem("Open");
+//            defaultItem.addActionListener(new ActionListener() {
+//                public void actionPerformed(ActionEvent e) {
+//                    setVisible(true);
+//                    setExtendedState(JFrame.NORMAL);
+//                }
+//            });
+//            popup.add(defaultItem);
+//            trayIcon = new TrayIcon(image, "Video First Capture", popup);
+//            trayIcon.setImageAutoSize(true);
+//
+//            trayIcon.addMouseListener(new MouseAdapter() {
+//                public void mouseClicked(MouseEvent e) {
+//                    if (SwingUtilities.isLeftMouseButton(e)) {
+//                        setVisible(true);
+//                        setExtendedState(JFrame.NORMAL);
+//                    }
+//                }
+//
+//            });
+//        } else {
+//            System.out.println("system tray not supported");
+//        }
         addWindowStateListener(e -> {
             if (e.getNewState() == ICONIFIED) {
                 try {
@@ -138,7 +133,7 @@ public class HideToSystemTray extends JFrame {
         System.out.println(sb.toString());
 
         //int currentScreenWidth = gs[0].getDisplayMode().getWidth();
-        //int currentScreenHeight = gs[0].getDisplayMode().getWidth();
+        //        //int currentScreenHeight = gs[0].getDisplayMode().getWidth();
 
         Dimension screenSize = window.getToolkit().getScreenSize();
         Point p = new Point(
