@@ -28,7 +28,7 @@ package co.videofirst.vft.capture.exception;
  *
  * @author Bob Marks
  */
-public class InvalidParameterException extends RuntimeException {
+public class InvalidParameterException extends CaptureException {
 
     public InvalidParameterException(String message) {
         super(message);

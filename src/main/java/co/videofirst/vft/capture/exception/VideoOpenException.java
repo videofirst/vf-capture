@@ -28,7 +28,7 @@ package co.videofirst.vft.capture.exception;
  *
  * @author Bob Marks
  */
-public class VideoOpenException extends RuntimeException {
+public class VideoOpenException extends CaptureException {
 
     public VideoOpenException(String message) {
         this(message, null);

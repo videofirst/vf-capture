@@ -28,7 +28,7 @@ package co.videofirst.vft.capture.exception;
  *
  * @author Bob Marks
  */
-public class InvalidStateException extends RuntimeException {
+public class InvalidStateException extends CaptureException {
 
     public InvalidStateException(String message) {
         super(message);

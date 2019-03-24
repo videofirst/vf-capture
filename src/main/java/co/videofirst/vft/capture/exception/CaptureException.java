@@ -24,14 +24,22 @@
 package co.videofirst.vft.capture.exception;
 
 /**
- * Video upload exception.
+ * Abstract capture exception.
  *
  * @author Bob Marks
  */
-public class VideoUploadException extends CaptureException {
+public class CaptureException extends RuntimeException {
 
-    public VideoUploadException(String message) {
+    public CaptureException(String message) {
         super(message);
+    }
+
+    public CaptureException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public CaptureException(Throwable cause) {
+        super(cause);
     }
 
 }

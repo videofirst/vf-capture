@@ -24,9 +24,14 @@
 package co.videofirst.vft.capture;
 
 import co.videofirst.vft.capture.configuration.SecurityConfiguration;
+import co.videofirst.vft.capture.exception.CaptureException;
+import com.bulenkov.darcula.DarculaLaf;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.basic.BasicLookAndFeel;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -46,10 +51,24 @@ public class VftCapture {
 
         // https://stackoverflow.com/questions/36634281/list-of-swagger-ui-alternatives
 
+        setUiLookAndFeel();
+
         checkCreatePassword(args);
 
         SpringApplicationBuilder builder = new SpringApplicationBuilder(VftCapture.class);
         builder.headless(false).properties("spring.config.name:vft").run(args);
+    }
+
+    /**
+     * Set look and feel (needs to be done before application loads up).
+     */
+    private static void setUiLookAndFeel() {
+        try {
+            BasicLookAndFeel darcula = new DarculaLaf();
+            UIManager.setLookAndFeel(darcula);
+        } catch (UnsupportedLookAndFeelException ex) {
+            throw new CaptureException("Look and feel not supported");
+        }
     }
 
     /**

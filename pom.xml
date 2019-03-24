@@ -132,6 +132,22 @@
       <version>4.5.5</version>
     </dependency>
 
+    <!-- Layout manager for creating user interfaces -->
+
+    <dependency>
+      <groupId>info.clearthought</groupId>
+      <artifactId>table-layout</artifactId>
+      <version>4.3.0</version>
+    </dependency>
+
+    <!-- Darcula look and feel theme (same as IntelliJ IDEA) -->
+
+    <dependency>
+      <groupId>com.bulenkov</groupId>
+      <artifactId>darcula</artifactId>
+      <version>2018.2</version>
+    </dependency>
+
     <!-- ===================================================================== -->
     <!-- Test dependencies -->
     <!-- ===================================================================== -->
@@ -171,6 +187,16 @@
     </dependency>
 
   </dependencies>
+
+  <repositories>
+    <repository>
+      <id>spring-release</id>
+      <url>http://repo.spring.io/libs-release</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
   <build>
     <finalName>vft</finalName>

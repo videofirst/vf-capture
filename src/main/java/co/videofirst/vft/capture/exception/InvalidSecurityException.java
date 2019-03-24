@@ -28,7 +28,7 @@ package co.videofirst.vft.capture.exception;
  *
  * @author Bob Marks
  */
-public class InvalidSecurityException extends RuntimeException {
+public class InvalidSecurityException extends CaptureException {
 
     public InvalidSecurityException(String message) {
         super(message);

@@ -30,7 +30,7 @@ package co.videofirst.vft.capture.exception;
  *
  * @author Bob Marks
  */
-public class LockOutException extends RuntimeException {
+public class LockOutException extends CaptureException {
 
     public LockOutException(String message) {
         super(message);

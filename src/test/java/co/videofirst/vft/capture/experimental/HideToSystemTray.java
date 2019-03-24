@@ -1,18 +1,28 @@
 package co.videofirst.vft.capture.experimental;
 
+import com.bulenkov.darcula.DarculaLaf;
 import java.awt.AWTException;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.MenuItem;
 import java.awt.Point;
+import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.URL;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.plaf.basic.BasicLookAndFeel;
 
 /**
  * @author Bob Marks
@@ -47,44 +57,44 @@ public class HideToSystemTray extends JFrame {
             System.out.println("Unable to set LookAndFeel");
         }
 
-//        if (SystemTray.isSupported()) {
-//            System.out.println("system tray supported");
-//            tray = SystemTray.getSystemTray();
-//
-//            Image image = Toolkit.getDefaultToolkit().getImage(captureIcon16);
-//            ActionListener exitListener = new ActionListener() {
-//                public void actionPerformed(ActionEvent e) {
-//                    System.out.println("Exiting....");
-//                    System.exit(0);
-//                }
-//            };
-//            PopupMenu popup = new PopupMenu();
-//            MenuItem defaultItem = new MenuItem("Exit");
-//            defaultItem.addActionListener(exitListener);
-//            popup.add(defaultItem);
-//            defaultItem = new MenuItem("Open");
-//            defaultItem.addActionListener(new ActionListener() {
-//                public void actionPerformed(ActionEvent e) {
-//                    setVisible(true);
-//                    setExtendedState(JFrame.NORMAL);
-//                }
-//            });
-//            popup.add(defaultItem);
-//            trayIcon = new TrayIcon(image, "Video First Capture", popup);
-//            trayIcon.setImageAutoSize(true);
-//
-//            trayIcon.addMouseListener(new MouseAdapter() {
-//                public void mouseClicked(MouseEvent e) {
-//                    if (SwingUtilities.isLeftMouseButton(e)) {
-//                        setVisible(true);
-//                        setExtendedState(JFrame.NORMAL);
-//                    }
-//                }
-//
-//            });
-//        } else {
-//            System.out.println("system tray not supported");
-//        }
+        if (SystemTray.isSupported()) {
+            System.out.println("system tray supported");
+            tray = SystemTray.getSystemTray();
+
+            Image image = Toolkit.getDefaultToolkit().getImage(captureIcon16);
+            ActionListener exitListener = new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("Exiting....");
+                    System.exit(0);
+                }
+            };
+            PopupMenu popup = new PopupMenu();
+            MenuItem defaultItem = new MenuItem("Exit");
+            defaultItem.addActionListener(exitListener);
+            popup.add(defaultItem);
+            defaultItem = new MenuItem("Open");
+            defaultItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    setVisible(true);
+                    setExtendedState(JFrame.NORMAL);
+                }
+            });
+            popup.add(defaultItem);
+            trayIcon = new TrayIcon(image, "Video First Capture", popup);
+            trayIcon.setImageAutoSize(true);
+
+            trayIcon.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    if (SwingUtilities.isLeftMouseButton(e)) {
+                        setVisible(true);
+                        setExtendedState(JFrame.NORMAL);
+                    }
+                }
+
+            });
+        } else {
+            System.out.println("system tray not supported");
+        }
         addWindowStateListener(e -> {
             if (e.getNewState() == ICONIFIED) {
                 try {
@@ -117,7 +127,10 @@ public class HideToSystemTray extends JFrame {
         });
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        BasicLookAndFeel darcula = new DarculaLaf();
+        UIManager.setLookAndFeel(darcula);
+
         new HideToSystemTray();
     }
 
