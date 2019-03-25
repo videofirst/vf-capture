@@ -84,7 +84,7 @@ public class EncryptedLockOutSupportAuthenticationProvider implements Authentica
         // ... or `encrypted`
         else if (securityType == SecurityType.encrypted &&
             passwordEncoder.matches(providedUser, securityUser) &&
-            passwordEncoder.matches(providedUser, providedPass)) {
+            passwordEncoder.matches(providedPass, securityPass)) {
             return validAuth(securityUser, authentication);
         }
 

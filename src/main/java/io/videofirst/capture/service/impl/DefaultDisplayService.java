@@ -63,7 +63,6 @@ public class DefaultDisplayService extends JWindow implements DisplayService {
 
     @Autowired
     public DefaultDisplayService(CaptureConfig captureConfig) {
-        //super(null); // only required for Window, not JWindow
         this.captureConfig = captureConfig;
 
         setBounds(getGraphicsConfiguration().getBounds());
