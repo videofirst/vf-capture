@@ -28,7 +28,9 @@ import io.videofirst.capture.model.capture.CaptureFinishParams;
 import io.videofirst.capture.model.capture.CaptureStartParams;
 import io.videofirst.capture.model.capture.CaptureStatus;
 import io.videofirst.capture.model.capture.CaptureSummary;
+import io.videofirst.capture.model.display.DisplayUpdate;
 import java.util.List;
+import java.util.Observer;
 
 /**
  * High level capture service.
@@ -81,5 +83,15 @@ public interface CaptureService {
      * Delete an existing test capture.
      */
     void delete(String captureId);
+
+    /**
+     * Generate display update.
+     */
+    DisplayUpdate getDisplayUpdate();
+
+    /**
+     * Add observer so that changes can be reflected in multiple places.
+     */
+    void addObserver(Observer observer);
 
 }

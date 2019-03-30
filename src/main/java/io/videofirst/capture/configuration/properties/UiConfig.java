@@ -23,48 +23,16 @@
  */
 package io.videofirst.capture.configuration.properties;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 /**
- * Main configuration which maps to the `config` section of the `capture.yaml` file.
+ * UI configuration.
  *
  * @author Bob Marks
  */
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@Component
-@ConfigurationProperties("capture_config")
-@JsonInclude(Include.NON_NULL)
-@JsonPropertyOrder({"ui", "storage", "upload", "system", "environment"})
-public class CaptureConfig {
+public class UiConfig {
 
-    private UiConfig ui;
-
-    @Setter
-    private SecurityConfig security;
-
-    @Getter
-    private StorageConfig storage;
-    private UploadConfig upload;
-    private List<String> environment;
-
-    @JsonIgnore // defo don't want to show this field
-    public SecurityConfig getSecurity() {
-        return security;
-    }
-
+    private boolean display;
+    
 }

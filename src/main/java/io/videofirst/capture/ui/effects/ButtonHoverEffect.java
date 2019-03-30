@@ -21,30 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.videofirst.capture;
+package io.videofirst.capture.ui.effects;
 
-import io.videofirst.capture.utils.SecurityUtils;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import static io.videofirst.capture.ui.constants.UiConstants.COLOR_WHITE;
+
+import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JButton;
 
 /**
- * Main application class for VF Capture.
+ * Button hover effect. Sets the text of the button when it's hovered to give a better UX.
  *
  * @author Bob Marks
  */
-@EnableScheduling
-@SpringBootApplication
-public class VfCapture {
+public class ButtonHoverEffect extends MouseAdapter {
 
-    public static void main(String[] args) {
+    private JButton component;
+    private Color initialColor;
 
-        // Check to see if we're creating a password
-        SecurityUtils.checkCreatePassword(args);
+    public ButtonHoverEffect(JButton component) {
+        this.component = component;
+        this.initialColor = component.getForeground();
+    }
 
-        // Create application
-        SpringApplicationBuilder builder = new SpringApplicationBuilder(VfCapture.class);
-        builder.headless(false).properties("spring.config.name:capture").run(args);
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        if (this.component.isEnabled()) {
+            this.component.setForeground(COLOR_WHITE);
+        }
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        e.getComponent().setForeground(initialColor);
     }
 
 }

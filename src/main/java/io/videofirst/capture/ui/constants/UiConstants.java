@@ -21,30 +21,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.videofirst.capture;
+package io.videofirst.capture.ui.constants;
 
-import io.videofirst.capture.utils.SecurityUtils;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import info.clearthought.layout.TableLayout;
+import java.awt.Color;
+import java.net.URL;
 
 /**
- * Main application class for VF Capture.
+ * UI constants.
  *
  * @author Bob Marks
  */
-@EnableScheduling
-@SpringBootApplication
-public class VfCapture {
+public interface UiConstants {
 
-    public static void main(String[] args) {
+    double P = TableLayout.PREFERRED;
+    double F = TableLayout.FILL;
+    double M_1 = 10;
 
-        // Check to see if we're creating a password
-        SecurityUtils.checkCreatePassword(args);
+    // Icons
 
-        // Create application
-        SpringApplicationBuilder builder = new SpringApplicationBuilder(VfCapture.class);
-        builder.headless(false).properties("spring.config.name:capture").run(args);
-    }
+    URL CAPTURE_ICON_16 = UiConstants.class.getResource("/icons/icon-capture-16.gif");
+
+    // Colors
+
+    Color COLOR_PRIMARY = new Color(0, 150, 250);
+    Color COLOR_LIGHT_GREY = new Color(245, 245, 245);
+    Color COLOR_WHITE = new Color(255, 255, 255);
 
 }

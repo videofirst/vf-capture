@@ -36,9 +36,9 @@ import io.videofirst.capture.model.display.DisplayUpdate;
 import io.videofirst.capture.recorder.VideoRecord;
 import io.videofirst.capture.recorder.VideoRecorder;
 import io.videofirst.capture.service.CaptureService;
-import io.videofirst.capture.service.DisplayService;
 import io.videofirst.capture.service.InfoService;
 import java.util.List;
+import java.util.Observable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -51,12 +51,11 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class DefaultCaptureService implements CaptureService {
+public class DefaultCaptureService extends Observable implements CaptureService {
 
     // Injected fields
 
     private final VideoRecorder videoRecorder;
-    private final DisplayService displayService;
     private final InfoService infoService;
     private final CaptureDao captureDao;
 
@@ -98,7 +97,7 @@ public class DefaultCaptureService implements CaptureService {
             record();
         }
 
-        refreshDisplay();
+        refreshObservers();
         return status();
     }
 
@@ -115,8 +114,7 @@ public class DefaultCaptureService implements CaptureService {
         captureStatus = captureStatus.record(displayUpdate.getCapture());
         videoRecorder.record(getVideoRecord());
 
-        refreshDisplay();
-
+        refreshObservers();
         return status();
     }
 
@@ -130,8 +128,8 @@ public class DefaultCaptureService implements CaptureService {
 
         captureStatus = captureStatus.stop();
         videoRecorder.stop();
-        refreshDisplay();
 
+        refreshObservers();
         return status();
     }
 
@@ -148,22 +146,33 @@ public class DefaultCaptureService implements CaptureService {
         captureDao.save(finishedCaptureStatus.getCapture());
 
         captureStatus = CaptureStatus.IDLE; // mark current status as stopped ..
-        refreshDisplay();
 
+        refreshObservers();
         return finishedCaptureStatus;  // ... although return the finished status to the user
     }
 
     @Override
     public CaptureStatus cancel() {
         cancelCapture();
-        refreshDisplay();
 
+        refreshObservers();
         return status();
     }
 
     @Override
     public void delete(String captureId) {
         captureDao.delete(captureId);
+
+        refreshObservers();
+    }
+
+    /**
+     * Generate display update.
+     */
+    @Override
+    public DisplayUpdate getDisplayUpdate() {
+        return DisplayUpdate
+            .build(infoService.getInfo(), captureStatus.getCaptureStartParams().getDisplay());
     }
 
     // Private methods
@@ -177,7 +186,6 @@ public class DefaultCaptureService implements CaptureService {
      * Validate start parameters.
      */
     private void validateStart(CaptureStartParams captureStartParams) {
-
         if (captureStatus.getState() != CaptureState.idle
             && captureStatus.getState() != CaptureState.started) {
             throw new InvalidStateException(
@@ -202,14 +210,6 @@ public class DefaultCaptureService implements CaptureService {
     }
 
     /**
-     * Generate display update.
-     */
-    private DisplayUpdate getDisplayUpdate() {
-        return DisplayUpdate
-            .build(infoService.getInfo(), captureStatus.getCaptureStartParams().getDisplay());
-    }
-
-    /**
      * Return video record.
      */
     private VideoRecord getVideoRecord() {
@@ -227,12 +227,9 @@ public class DefaultCaptureService implements CaptureService {
             .build();
     }
 
-    /**
-     * Refresh display.
-     */
-    private void refreshDisplay() {
-        DisplayUpdate displayUpdate = getDisplayUpdate();
-        displayService.update(displayUpdate, captureStatus);
+    private void refreshObservers() {
+        setChanged();
+        notifyObservers();    // notify any class which observe this class
     }
 
 }

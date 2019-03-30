@@ -21,16 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.videofirst.capture.ui.store;
+package io.videofirst.capture.ui.components;
 
-import java.util.Observable;
+import io.videofirst.capture.ui.effects.ButtonHoverEffect;
+import javax.swing.JButton;
 
 /**
- * User interface store - single source of truth of how the UI should render itself.
+ * Video First JButton - has a hover effect and automatically sets the name field (so it can be used
+ * in listeners to identify the component).
  *
  * @author Bob Marks
  */
-public class UiStore extends Observable {
+public class VfButton extends JButton {
 
+    public VfButton(String label) {
+        super(label);
+        setName(label);
+        addMouseListener(new ButtonHoverEffect(this));
+    }
 
 }

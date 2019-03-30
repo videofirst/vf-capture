@@ -23,22 +23,20 @@
  */
 package io.videofirst.capture.service.impl;
 
-import io.videofirst.capture.configuration.properties.CaptureConfig;
 import io.videofirst.capture.model.capture.CaptureStatus;
 import io.videofirst.capture.model.display.DisplayBackground;
 import io.videofirst.capture.model.display.DisplayBorder;
 import io.videofirst.capture.model.display.DisplayCapture;
 import io.videofirst.capture.model.display.DisplayText;
 import io.videofirst.capture.model.display.DisplayUpdate;
-import io.videofirst.capture.service.DisplayService;
+import io.videofirst.capture.service.CaptureService;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import javax.swing.JFrame;
+import java.util.Observable;
+import java.util.Observer;
 import javax.swing.JWindow;
-import javax.swing.WindowConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,41 +50,23 @@ import org.springframework.stereotype.Component;
  * @author Bob Marks
  */
 @Component
-public class DefaultDisplayService extends JWindow implements DisplayService {
+public class DefaultDisplayService extends JWindow implements Observer {
 
     // Injected fields
-    private final CaptureConfig captureConfig;
+    private final CaptureService captureService;
 
     // Stateful field
+    private CaptureStatus captureStatus;
     private DisplayUpdate displayUpdate;
-    private CaptureStatus status;
 
     @Autowired
-    public DefaultDisplayService(CaptureConfig captureConfig) {
-        this.captureConfig = captureConfig;
+    public DefaultDisplayService(CaptureService captureService) {
+        this.captureService = captureService;
+        this.captureService.addObserver(this);
 
         setBounds(getGraphicsConfiguration().getBounds());
         setBackground(new Color(0, true));
         setVisible(true);
-
-        JFrame frame = new JFrame("Video First - Capture");
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(400, 200));
-        frame.pack();
-        frame.setVisible(true);
-    }
-
-    @Override
-    public void update(DisplayUpdate displayUpdate, CaptureStatus status) {
-        this.displayUpdate = displayUpdate;
-        this.status = status;
-
-        repaint();
-    }
-
-    @Override
-    public void update(DisplayUpdate displayUpdate) {
-        update(displayUpdate, null);
     }
 
     @Override
@@ -133,15 +113,28 @@ public class DefaultDisplayService extends JWindow implements DisplayService {
     }
 
     private void drawText(Graphics g) {
+        if (captureStatus == null) {
+            return;
+        }
         DisplayText displayText = displayUpdate.getText();
         final Font font = getFont().deriveFont(displayText.getFontSize());
         g.setFont(font);
 
         g.setColor(displayText.getColor());
         final String message =
-            status != null ? ("Status : " + status.getState().toString()) : ""; // FIXME improve
+            captureStatus != null ? ("Status : " + captureStatus.getState().toString())
+                : ""; // FIXME improve
         FontMetrics metrics = g.getFontMetrics();
         g.drawString(message, displayText.getX(), displayText.getY() + metrics.getHeight());
+    }
+
+    @Override
+    public void update(Observable observable, Object arg) {
+        // Set fields, then repaint
+        this.displayUpdate = captureService.getDisplayUpdate();
+        this.captureStatus = captureService.status();
+
+        repaint();
     }
 
 }

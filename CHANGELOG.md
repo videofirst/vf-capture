@@ -6,9 +6,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+- Remove `/api/captures/start` endpoint and merge into `/record` (optional parameter).
+- Remove `/api/capturesfinish` endpoint and merge into `/stop` (optional parameter).
+- Create a new `/api/captures/preview` endpoint which displays borders etc (but doesn't record). Note, cancel endpoint will also cancel preview.
+- Simplify capture state by removing states [ stopped, finished ] so we have 3 states [ idle, recording, stopped ]
+- Create `/edit` endpoint which can edit the test data associated with a capture?
 - New UI screen which only loads of configuration mode is not headless - record, stop
-- New UI screen to show a table of uploads
+- New UI panel to show a table of uploads.
 - Change uploading so it works out of the box with Video First App.
+- Remove "alwaysOnTop" - make border always on top and background always in background.
 - Split docs into 2 i.e.
    - Make `README.md` more concise.
    - Create a new README.md in `/docs` folder.
@@ -17,11 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Check out [ https://docs.spring.io/spring-boot/docs/current/reference/html/deployment-install.html ]
 - Implement count-down to end.
 - Check out Netlify ( https://www.netlify.com/ )
-- Package front-end into the Spring Boot application
-     - [ https://www.blackpepper.co.uk/what-we-think/blog/using-create-react-app-with-spring ]
-     - [ https://github.com/pugnascotia/spring-cra-demo ]
-- Create annotation (separate project / folder maybe)
-- Create `vf-capture-lib-java` ?
+- Finish off `vf-capture-lib-java` ?
 - `vf-capture-lib-js`
 - `vf-capture-lib-cs`
 - `vf-capture-lib-go`

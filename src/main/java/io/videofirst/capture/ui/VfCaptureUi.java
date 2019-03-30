@@ -23,9 +23,57 @@
  */
 package io.videofirst.capture.ui;
 
+import com.bulenkov.darcula.DarculaLaf;
+import io.videofirst.capture.configuration.properties.CaptureConfig;
+import io.videofirst.capture.exception.CaptureException;
+import io.videofirst.capture.service.CaptureService;
+import io.videofirst.capture.ui.components.VfCaptureFrame;
+import javax.annotation.PostConstruct;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.basic.BasicLookAndFeel;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
 /**
+ * Main class for the VF-Capture UI (user interface).
+ *
  * @author Bob Marks
  */
+@Slf4j
+@RequiredArgsConstructor
+@Component
 public class VfCaptureUi {
+
+    private final CaptureConfig captureConfig;
+    private final CaptureService captureService;
+
+    @PostConstruct
+    public void init() {
+        if (captureConfig.getUi().isDisplay()) {
+            createUi();
+        }
+    }
+
+    // Private methods
+
+    private void createUi() {
+        setUiLookAndFeel();
+
+        new VfCaptureFrame(captureService);
+    }
+
+    /**
+     * Set look and feel (needs to be done before application loads up).
+     */
+    private void setUiLookAndFeel() {
+        try {
+            BasicLookAndFeel darcula = new DarculaLaf();
+            UIManager.setLookAndFeel(darcula);
+        } catch (UnsupportedLookAndFeelException ex) {
+            throw new CaptureException("Look and feel not supported");
+        }
+    }
 
 }

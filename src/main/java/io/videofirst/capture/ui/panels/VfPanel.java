@@ -21,27 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.videofirst.capture.service;
+package io.videofirst.capture.ui.panels;
 
-import io.videofirst.capture.model.capture.CaptureStatus;
-import io.videofirst.capture.model.display.DisplayUpdate;
+import static io.videofirst.capture.ui.constants.UiConstants.F;
+
+import info.clearthought.layout.TableLayout;
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
 
 /**
- * Graphics service interface.  Should be able to draw backgrounds, border around capture area, text
- * etc.
- *
  * @author Bob Marks
  */
-public interface DisplayService {
+public class VfPanel extends JPanel {
 
-    /**
-     * Update display when a capture has started.
-     */
-    void update(DisplayUpdate displayUpdate, CaptureStatus status);
+    public static final double[][] SIZES_F_F = {{F}, {F}};
 
-    /**
-     * Update (no video status).
-     */
-    void update(DisplayUpdate displayUpdate);
+    public VfPanel(double[][] sizes) {
+        this(sizes, null);
+    }
+
+    public VfPanel(double[][] sizes, String title) {
+        super();
+
+        setLayout(new TableLayout(sizes));
+
+        if (title != null) {
+            this.setBorder(BorderFactory.createTitledBorder(title));
+        }
+    }
 
 }
