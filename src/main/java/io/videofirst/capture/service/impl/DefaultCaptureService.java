@@ -24,13 +24,11 @@
 package io.videofirst.capture.service.impl;
 
 import io.videofirst.capture.dao.CaptureDao;
-import io.videofirst.capture.enums.CaptureState;
 import io.videofirst.capture.exception.InvalidParameterException;
-import io.videofirst.capture.exception.InvalidStateException;
 import io.videofirst.capture.model.capture.Capture;
-import io.videofirst.capture.model.capture.CaptureFinishParams;
-import io.videofirst.capture.model.capture.CaptureStartParams;
+import io.videofirst.capture.model.capture.CaptureRecordParams;
 import io.videofirst.capture.model.capture.CaptureStatus;
+import io.videofirst.capture.model.capture.CaptureStopParams;
 import io.videofirst.capture.model.capture.CaptureSummary;
 import io.videofirst.capture.model.display.DisplayUpdate;
 import io.videofirst.capture.recorder.VideoRecord;
@@ -61,7 +59,7 @@ public class DefaultCaptureService extends Observable implements CaptureService 
 
     // Local fields
 
-    private CaptureStatus captureStatus = CaptureStatus.IDLE;  // only stateful object
+    private CaptureStatus captureStatus = CaptureStatus.STOPPED;  // only stateful object
 
     @Override
     public Capture select(String captureId) {
@@ -81,37 +79,15 @@ public class DefaultCaptureService extends Observable implements CaptureService 
     }
 
     @Override
-    public CaptureStatus start(CaptureStartParams captureStartParams) {
-        if (captureStartParams == null) {
-            captureStartParams = CaptureStartParams.builder().build();
-        }
-        if (captureStartParams.force()) {
+    public CaptureStatus record(CaptureRecordParams captureRecordParams) {
+        if (captureRecordParams.force()) {
             cancelCapture();
         }
 
-        validateStart(captureStartParams);
+        DisplayUpdate displayUpdate = getDisplayUpdate(); // move to
+        captureStatus = captureStatus
+            .record(infoService.getInfo(), captureRecordParams, displayUpdate.getCapture());
 
-        captureStatus = CaptureStatus.start(infoService.getInfo(), captureStartParams);
-
-        if (captureStartParams.record()) {
-            record();
-        }
-
-        refreshObservers();
-        return status();
-    }
-
-    @Override
-    public CaptureStatus record() {
-        if (captureStatus.getState() != CaptureState.started) {
-            throw new InvalidStateException(
-                "Current state is '" + captureStatus.getState() + "' - " +
-                    "video can only be recoded when state is  'started'.");
-        }
-
-        DisplayUpdate displayUpdate = getDisplayUpdate();
-
-        captureStatus = captureStatus.record(displayUpdate.getCapture());
         videoRecorder.record(getVideoRecord());
 
         refreshObservers();
@@ -119,36 +95,20 @@ public class DefaultCaptureService extends Observable implements CaptureService 
     }
 
     @Override
-    public CaptureStatus stop() {
-        if (captureStatus.getState() != CaptureState.recording) {
+    public CaptureStatus stop(CaptureStopParams captureStopParams) {
+        if (!captureStatus.isRecording()) {
             throw new InvalidParameterException(
-                "Current state is '" + captureStatus.getState() + "' - " +
-                    "You can only stop a video when it is in a state is 'recording'.");
+                "You can only stop a video when [ isRecording=true ]");
         }
 
-        captureStatus = captureStatus.stop();
+        captureStatus = captureStatus.stop(captureStopParams);
+
         videoRecorder.stop();
+
+        captureDao.save(captureStatus.getCapture());
 
         refreshObservers();
         return status();
-    }
-
-    @Override
-    public CaptureStatus finish(CaptureFinishParams finishVideo) {
-
-        validateFinish(finishVideo);
-
-        if (captureStatus.getState() == CaptureState.recording) {
-            stop();
-        }
-
-        CaptureStatus finishedCaptureStatus = captureStatus.finish(finishVideo);
-        captureDao.save(finishedCaptureStatus.getCapture());
-
-        captureStatus = CaptureStatus.IDLE; // mark current status as stopped ..
-
-        refreshObservers();
-        return finishedCaptureStatus;  // ... although return the finished status to the user
     }
 
     @Override
@@ -172,42 +132,16 @@ public class DefaultCaptureService extends Observable implements CaptureService 
     @Override
     public DisplayUpdate getDisplayUpdate() {
         return DisplayUpdate
-            .build(infoService.getInfo(), captureStatus.getCaptureStartParams().getDisplay());
+            .build(infoService.getInfo(), captureStatus.getCaptureRecordParams().getDisplay());
     }
 
     // Private methods
 
     private void cancelCapture() {
         videoRecorder.cancel();  // cancel any recording if applicable
-        captureStatus = CaptureStatus.IDLE; // re-set status
+        captureStatus = CaptureStatus.STOPPED; // re-set status
     }
 
-    /**
-     * Validate start parameters.
-     */
-    private void validateStart(CaptureStartParams captureStartParams) {
-        if (captureStatus.getState() != CaptureState.idle
-            && captureStatus.getState() != CaptureState.started) {
-            throw new InvalidStateException(
-                "Current state is '" + captureStatus.getState() + "' - " +
-                    "video can only be started when state is 'idle', 'uploaded' or re-started when it is in a state is 'started'. "
-                    + "Please finish recording or cancel.");
-        }
-    }
-
-    private void validateFinish(CaptureFinishParams finishVideoParams) {
-        // Check state first of all
-        if (captureStatus.getState() != CaptureState.recording
-            && captureStatus.getState() != CaptureState.stopped) {
-            throw new InvalidStateException(
-                "Current state is '" + captureStatus.getState() + "' - " +
-                    "videos can only be finished which is state is `recording` OR `stopped`.");
-        }
-
-        if (finishVideoParams.getTestStatus() == null) {
-            throw new InvalidParameterException("Please fill in missing 'testStatus' attribute");
-        }
-    }
 
     /**
      * Return video record.

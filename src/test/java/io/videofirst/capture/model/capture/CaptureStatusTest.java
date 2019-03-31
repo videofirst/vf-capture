@@ -30,7 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.common.collect.ImmutableMap;
 import io.videofirst.capture.configuration.properties.CaptureDefaults;
-import io.videofirst.capture.enums.CaptureState;
 import io.videofirst.capture.enums.TestStatus;
 import io.videofirst.capture.model.TestLog;
 import io.videofirst.capture.model.display.DisplayCapture;
@@ -69,7 +68,7 @@ public class CaptureStatusTest {
         .defaults(CaptureDefaults.builder().project(DEFAULT_PROJECT).build())
         .build();
 
-    private static final CaptureStartParams VIDEO_START_PARAMS = CaptureStartParams.builder()
+    private static final CaptureRecordParams VIDEO_RECORD_PARAMS = CaptureRecordParams.builder()
         .project("Google Search")
         .feature("Advanced Search ")
         .scenario(" Search by Country! ")
@@ -80,10 +79,10 @@ public class CaptureStatusTest {
     @Test
     public void shouldIdle() {
 
-        CaptureStatus captureStatus = CaptureStatus.IDLE;
+        CaptureStatus captureStatus = CaptureStatus.STOPPED;
 
         Capture capture = captureStatus.getCapture();
-        assertThat(captureStatus.getState()).isEqualTo(CaptureState.idle);
+        assertThat(captureStatus.isRecording()).isFalse();
 
         assertThat(captureStatus.getProject()).isNull(); // everything else is null
         assertThat(capture.getFeature()).isNull();
@@ -105,41 +104,13 @@ public class CaptureStatusTest {
     }
 
     @Test
-    public void shouldStart() {
-
-        CaptureStatus captureStatus = CaptureStatus.start(DEFAULT_INFO, VIDEO_START_PARAMS);
-
-        Capture capture = captureStatus.getCapture();
-        assertThat(captureStatus.getState()).isEqualTo(CaptureState.started);
-        assertThat(capture.getProject()).isEqualTo("Google Search");
-        assertThat(captureStatus.getProject()).isEqualTo("Google Search");
-        assertThat(capture.getFeature()).isEqualTo("Advanced Search");
-        assertThat(captureStatus.getFeature()).isEqualTo("Advanced Search");
-        assertThat(capture.getScenario()).isEqualTo("Search by Country!");
-        assertThat(captureStatus.getScenario()).isEqualTo("Search by Country!");
-        assertThat(capture.getTestStatus()).isNull();
-        assertThat(capture.getStarted()).isNull();
-        assertThat(capture.getFinished()).isNull();
-        assertThat(capture.getFolder()).isNull();
-        assertThat(capture.getId()).isNull();
-        Assertions.assertThat(capture.getCapture()).isNull();
-        assertThat(capture.getFormat()).isNull();
-
-        assertThat(capture.getMeta()).isEqualTo(DEFAULT_META);
-        assertThat(capture.getDescription()).isEqualTo("Awesome test");
-        assertThat(capture.getTestError()).isNull();
-        assertThat(capture.getTestLogs()).isNull();
-        assertThat(capture.getEnvironment()).isEqualTo(DEFAULT_ENVIRONMENT);
-    }
-
-    @Test
     public void shouldRecord() {
 
-        CaptureStatus captureStatus = CaptureStatus.start(DEFAULT_INFO, VIDEO_START_PARAMS)
-            .record(CAPTURE);
+        CaptureStatus captureStatus = CaptureStatus.STOPPED
+            .record(DEFAULT_INFO, VIDEO_RECORD_PARAMS, CAPTURE);
 
         Capture capture = captureStatus.getCapture();
-        assertThat(captureStatus.getState()).isEqualTo(CaptureState.recording);
+        assertThat(captureStatus.isRecording()).isTrue();
         assertThat(capture.getProject()).isEqualTo("Google Search");
         assertThat(captureStatus.getProject()).isEqualTo("Google Search");
         assertThat(capture.getFeature()).isEqualTo("Advanced Search");
@@ -167,42 +138,10 @@ public class CaptureStatusTest {
     @Test
     public void shouldStop() {
 
-        CaptureStatus captureStatus = CaptureStatus.start(DEFAULT_INFO, VIDEO_START_PARAMS)
-            .record(CAPTURE).stop();
-
-        Capture capture = captureStatus.getCapture();
-        assertThat(captureStatus.getState()).isEqualTo(CaptureState.stopped);
-        assertThat(capture.getProject()).isEqualTo("Google Search");
-        assertThat(captureStatus.getProject()).isEqualTo("Google Search");
-        assertThat(capture.getFeature()).isEqualTo("Advanced Search");
-        assertThat(captureStatus.getFeature()).isEqualTo("Advanced Search");
-        assertThat(capture.getScenario()).isEqualTo("Search by Country!");
-        assertThat(captureStatus.getScenario()).isEqualTo("Search by Country!");
-        assertThat(capture.getTestStatus()).isNull();
-        assertThat(capture.getStarted()).isNotNull();
-        assertThat(capture.getFinished()).isNotNull();
-        assertThat(capture.getFolder()).matches(
-            "google-search/advanced-search/search-by-country/\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
-        assertThat(capture.getId())
-            .matches("\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
-        Assertions.assertThat(capture.getCapture()).isEqualTo(CAPTURE);
-        assertThat(capture.getFormat())
-            .isEqualTo(Capture.FORMAT_AVI); // all that is supported at the minute
-
-        assertThat(capture.getMeta()).isEqualTo(DEFAULT_META);
-        assertThat(capture.getDescription()).isEqualTo("Awesome test");
-        assertThat(capture.getTestError()).isNull();
-        assertThat(capture.getTestLogs()).isNull();
-        assertThat(capture.getEnvironment()).isEqualTo(DEFAULT_ENVIRONMENT);
-    }
-
-    @Test
-    public void shouldFinish() {
-
         List<TestLog> logs = asList(
             TestLog.builder().cat("browser").tier(L1).ts(ts1).log("awesome log 1").build(),
             TestLog.builder().cat("server").tier(L2).ts(ts2).log("awesome log 2").build());
-        CaptureFinishParams captureFinishParams = CaptureFinishParams.builder()
+        CaptureStopParams captureStopParams = CaptureStopParams.builder()
             .testStatus(TestStatus.fail)
             .meta(ImmutableMap.of("author", "Bob"))
             .description(" even more awesome description ")
@@ -210,11 +149,12 @@ public class CaptureStatusTest {
             .logs(logs)
             .build();
 
-        CaptureStatus captureStatus = CaptureStatus.start(DEFAULT_INFO, VIDEO_START_PARAMS)
-            .record(CAPTURE).stop().finish(captureFinishParams);
+        CaptureStatus captureStatus = CaptureStatus.STOPPED
+            .record(DEFAULT_INFO, VIDEO_RECORD_PARAMS, CAPTURE)
+            .stop(captureStopParams);
 
         Capture capture = captureStatus.getCapture();
-        assertThat(captureStatus.getState()).isEqualTo(CaptureState.finished);
+        assertThat(captureStatus.isRecording()).isFalse();
         assertThat(capture.getProject()).isEqualTo("Google Search");
         assertThat(captureStatus.getProject()).isEqualTo("Google Search");
         assertThat(capture.getFeature()).isEqualTo("Advanced Search");

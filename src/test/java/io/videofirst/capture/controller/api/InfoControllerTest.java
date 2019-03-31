@@ -107,7 +107,7 @@ public class InfoControllerTest extends AbstractControllerTest {
             "    }" +
             "  }," +
             "  'captureStatus': {" +
-            "    'state': 'idle'" +
+            "    'recording': false" +
             "  }" +
             "}";
         JSONAssert.assertEquals(expectedJson, response.getBody(), false);

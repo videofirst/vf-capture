@@ -40,8 +40,8 @@ import com.revinate.assertj.json.JsonPathAssert;
 import io.videofirst.capture.enums.CaptureType;
 import io.videofirst.capture.enums.TestStatus;
 import io.videofirst.capture.model.TestLog;
-import io.videofirst.capture.model.capture.CaptureFinishParams;
-import io.videofirst.capture.model.capture.CaptureStartParams;
+import io.videofirst.capture.model.capture.CaptureRecordParams;
+import io.videofirst.capture.model.capture.CaptureStopParams;
 import io.videofirst.capture.test.VfCaptureTesting;
 import java.io.File;
 import java.time.LocalDateTime;
@@ -72,14 +72,14 @@ public class CaptureControllerTest extends AbstractControllerTest {
 
     // Capture start params
 
-    private static final CaptureStartParams CAPTURE_START_PARAMS_NONE = CaptureStartParams.builder()
-        .build();
-    private static final CaptureStartParams CAPTURE_START_PARAMS_MIN = CaptureStartParams.builder()
-        .feature("Bob Feature").scenario("Dave Scenario").build();
-    private static final CaptureStartParams CAPTURE_START_PARAMS_MIN_NO_RECORD = CaptureStartParams
+    private static final CaptureRecordParams CAPTURE_RECORD_PARAMS_NONE = CaptureRecordParams
         .builder()
-        .feature("Bob Feature").scenario("Dave Scenario").record("false").build();
-    private static final CaptureStartParams CAPTURE_START_PARAMS_MAX = CaptureStartParams.builder()
+        .build();
+    private static final CaptureRecordParams CAPTURE_RECORD_PARAMS_MIN = CaptureRecordParams
+        .builder()
+        .feature("Bob Feature").scenario("Dave Scenario").build();
+    private static final CaptureRecordParams CAPTURE_RECORD_PARAMS_MAX = CaptureRecordParams
+        .builder()
         .project(" Google Search ")
         .feature(" Advanced Search ")
         .scenario(" Search by Country! ")
@@ -91,10 +91,9 @@ public class CaptureControllerTest extends AbstractControllerTest {
 
     // Capture finish params
 
-    private static final CaptureFinishParams CAPTURE_FINISH_PARAMS_MIN = CaptureFinishParams
-        .builder()
-        .testStatus(TestStatus.fail).build();
-    private static final CaptureFinishParams CAPTURE_FINISH_PARAMS_MAX = CaptureFinishParams
+    private static final CaptureStopParams CAPTURE_STOP_PARAMS_MIN = CaptureStopParams
+        .builder().build();
+    private static final CaptureStopParams CAPTURE_STOP_PARAMS_MAX = CaptureStopParams
         .builder()
         .testStatus(TestStatus.fail)
         .meta(ImmutableMap.of("author", "Bob", "extra", "stuff"))
@@ -112,7 +111,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
     // ===========================================
 
     @Test
-    public void shouldRetrieveVideos() throws JSONException {
+    public void shouldRetrieveCaptures() throws JSONException {
 
         ResponseEntity<String> response = videos();
 
@@ -140,6 +139,17 @@ public class CaptureControllerTest extends AbstractControllerTest {
             "    'testStatus': 'fail'" +
             "}]";
         JSONAssert.assertEquals(expectedJson, response.getBody(), true);
+    }
+
+    // Private methods
+
+    /**
+     * Call /api/captures GET endpoint.
+     */
+    private ResponseEntity<String> videos() {
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        return restTemplate
+            .exchange(urlWithPort("/api/captures"), HttpMethod.GET, entity, String.class);
     }
 
     // ===========================================
@@ -179,67 +189,30 @@ public class CaptureControllerTest extends AbstractControllerTest {
         JSONAssert.assertEquals(expectedJson, response.getBody(), true);
     }
 
-    // ===========================================
-    // [ /api/captures/start ] POST
-    // ===========================================
+    // Private methods
 
-    @Test
-    public void shouldStartMinParamsWithNoRecord() throws JSONException {
-
-        ResponseEntity<String> response = startVideo(CAPTURE_START_PARAMS_MIN_NO_RECORD);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        String expectedJson = "{" +
-            "    'type': 'manual'," +
-            "    'state': 'started'," +
-            "    'project': 'Moon Rocket'," +
-            "    'feature': 'Bob Feature'," +
-            "    'scenario': 'Dave Scenario'" +
-            "}";
-        JSONAssert.assertEquals(expectedJson, response.getBody(), false);
-        DocumentContext json = JsonPath.parse(response.getBody());
-        Map<String, String> environmentMap = json.read("$.environment");
-        assertThat(environmentMap.get("java.awt.graphicsenv")).isNotEmpty();
+    /**
+     * Call /api/captures/[captureId] GET endpoint.
+     */
+    private ResponseEntity<String> video(String captureId) {
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        return restTemplate.exchange(
+            urlWithPort("/api/captures/" + captureId), HttpMethod.GET, entity, String.class);
     }
 
-    @Test
-    public void shouldStartMinParamsWithRecord() throws JSONException {
+    // ===========================================
+    // [ /api/captures/record ] POST
+    // ===========================================
 
-        ResponseEntity<String> response = startVideo(CAPTURE_START_PARAMS_MIN);
+    @Test
+    public void shouldRecordNoParams() throws JSONException {
+
+        ResponseEntity<String> response = recordVideo();
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
             "    'type': 'manual'," +
-            "    'state': 'recording'," +
-            "    'project': 'Moon Rocket'," +
-            "    'feature': 'Bob Feature'," +
-            "    'scenario': 'Dave Scenario'," +
-            "    'format': 'avi'" +
-            "}";
-        JSONAssert.assertEquals(expectedJson, response.getBody(), false);
-        DocumentContext json = JsonPath.parse(response.getBody());
-        JsonPathAssert.assertThat(json).jsonPathAsString("$.started").isNotNull();
-        JsonPathAssert.assertThat(json).jsonPathAsString("$.durationSeconds").isNotNull();
-        JsonPathAssert.assertThat(json).jsonPathAsString("$.folder")
-            .startsWith("moon-rocket/bob-feature/dave-scenario/");
-        JsonPathAssert.assertThat(json).jsonPathAsString("$.id").isNotNull().hasSize(26);
-        JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.x").isNotNull();
-        JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.y").isNotNull();
-        JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.width").isNotNull();
-        JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.height").isNotNull();
-        Map<String, String> environmentMap = json.read("$.environment");
-        assertThat(environmentMap.get("java.awt.graphicsenv")).isNotEmpty();
-    }
-
-    @Test
-    public void shouldStartNoParams() throws JSONException {
-
-        ResponseEntity<String> response = startVideo();
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        String expectedJson = "{" +
-            "    'type': 'manual'," +
-            "    'state': 'recording'," +
+            "    'recording': true," +
             "    'project': 'Moon Rocket'," +
             "    'format': 'avi'" +
             "}";
@@ -259,11 +232,57 @@ public class CaptureControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void shouldFailWithNoProject() throws JSONException {
+    public void shouldRecordBlankParams() throws JSONException {
+
+        ResponseEntity<String> response = recordVideo(CAPTURE_RECORD_PARAMS_NONE);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        String expectedJson = "{" +
+            "    'type': 'manual'," +
+            "    'recording': true," +
+            "    'project': 'Moon Rocket'," +
+            "    'format': 'avi'" +
+            "}";
+        JSONAssert.assertEquals(expectedJson, response.getBody(), false);
+        DocumentContext json = JsonPath.parse(response.getBody());
+        JsonPathAssert.assertThat(json).jsonPathAsString("$.started").isNotNull();
+        JsonPathAssert.assertThat(json).jsonPathAsString("$.durationSeconds").isNotNull();
+        JsonPathAssert.assertThat(json).jsonPathAsString("$.folder")
+            .matches("moon-rocket/\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{6}");
+        JsonPathAssert.assertThat(json).jsonPathAsString("$.id").isNotNull().hasSize(26);
+        JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.x").isNotNull();
+        JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.y").isNotNull();
+        JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.width").isNotNull();
+        JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.height").isNotNull();
+        Map<String, String> environmentMap = json.read("$.environment");
+        assertThat(environmentMap.get("java.awt.graphicsenv")).isNotEmpty();
+    }
+
+    @Test
+    public void shouldRecordMinParams() throws JSONException {
+
+        ResponseEntity<String> response = recordVideo(CAPTURE_RECORD_PARAMS_MIN);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        String expectedJson = "{" +
+            "    'type': 'manual'," +
+            "    'recording': true," +
+            "    'project': 'Moon Rocket'," +
+            "    'feature': 'Bob Feature'," +
+            "    'scenario': 'Dave Scenario'" +
+            "}";
+        JSONAssert.assertEquals(expectedJson, response.getBody(), false);
+        DocumentContext json = JsonPath.parse(response.getBody());
+        Map<String, String> environmentMap = json.read("$.environment");
+        assertThat(environmentMap.get("java.awt.graphicsenv")).isNotEmpty();
+    }
+
+    @Test
+    public void shouldFailRecordWithNoProject() throws JSONException {
         String project = infoService.getInfo().getDefaults().getProject();
         infoService.getInfo().getDefaults().setProject(""); // remove project for this test
 
-        ResponseEntity<String> response = startVideo();
+        ResponseEntity<String> response = recordVideo();
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 
@@ -271,15 +290,15 @@ public class CaptureControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void shouldStartWithMaximumParams() throws JSONException {
+    public void shouldRecordWithMaximumParams() throws JSONException {
 
-        ResponseEntity<String> response = startVideo(CAPTURE_START_PARAMS_MAX);
+        ResponseEntity<String> response = recordVideo(CAPTURE_RECORD_PARAMS_MAX);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
             "    'type': 'automated'," +
             "    'sid': 5678," +
-            "    'state': 'recording'," +
+            "    'recording': true," +
             "    'project': 'Google Search'," +
             "    'feature': 'Advanced Search'," +
             "    'scenario': 'Search by Country!'," +
@@ -294,8 +313,9 @@ public class CaptureControllerTest extends AbstractControllerTest {
         DocumentContext json = JsonPath.parse(response.getBody());
         JsonPathAssert.assertThat(json).jsonPathAsString("$.started").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.durationSeconds").isNotNull();
-        JsonPathAssert.assertThat(json).jsonPathAsString("$.folder")
-            .matches("^google-search/5678/\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[\\w\\d]{6}$");
+        JsonPathAssert.assertThat(json)
+            .jsonPathAsString("$.folder") // 5678/2019-03-31_13-44-03_s6tkwo
+            .matches("^5678/\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[\\w\\d]{6}$");
         JsonPathAssert.assertThat(json).jsonPathAsString("$.id").isNotNull().hasSize(26);
         JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.x").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.y").isNotNull();
@@ -306,66 +326,44 @@ public class CaptureControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void shouldStartWhenAlreadyStartedUsingForce() throws JSONException {
+    public void shouldRecordWhenAlreadyStartedUsingForce() throws JSONException {
 
-        startVideo(CAPTURE_START_PARAMS_MIN);
-        ResponseEntity<String> response = startVideo(CaptureStartParams.builder()
+        recordVideo(CAPTURE_RECORD_PARAMS_MIN);
+        ResponseEntity<String> response = recordVideo(CaptureRecordParams.builder()
             .feature("Bob Feature").scenario("Dave Scenario").force("true").build());
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        JSONAssert.assertEquals("{'state': 'recording'}", response.getBody(), false);
+        JSONAssert.assertEquals("{'recording': true}", response.getBody(), false);
     }
 
-    // ===========================================
-    // [ /api/captures/record ] POST
-    // ===========================================
+    // Private methods
 
-    @Test
-    public void shouldRecord() throws JSONException {
-
-        startVideo(CAPTURE_START_PARAMS_MIN_NO_RECORD); // must specify record, otherwise no need
-        ResponseEntity<String> response = recordVideo();
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        String expectedJson = "{" +
-            "    'type': 'manual'," +
-            "    'state': 'recording'," +
-            "    'project': 'Moon Rocket'," +
-            "    'feature': 'Bob Feature'," +
-            "    'scenario': 'Dave Scenario'," +
-            "    'format': 'avi'" +
-            "}";
-        JSONAssert.assertEquals(expectedJson, response.getBody(), false);
-        DocumentContext json = JsonPath.parse(response.getBody());
-        JsonPathAssert.assertThat(json).jsonPathAsString("$.started").isNotNull();
-        JsonPathAssert.assertThat(json).jsonPathAsString("$.durationSeconds").isNotNull();
-        JsonPathAssert.assertThat(json).jsonPathAsString("$.folder")
-            .startsWith("moon-rocket/bob-feature/dave-scenario/");
-        JsonPathAssert.assertThat(json).jsonPathAsString("$.id").isNotNull().hasSize(26);
-        JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.x").isNotNull();
-        JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.y").isNotNull();
-        JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.width").isNotNull();
-        JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.height").isNotNull();
-        Map<String, String> environmentMap = json.read("$.environment");
-        assertThat(environmentMap.get("java.awt.graphicsenv")).isNotEmpty();
+    private ResponseEntity<String> recordVideo() {
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        return restTemplate.exchange(
+            urlWithPort("/api/captures/record"), HttpMethod.POST, entity, String.class);
     }
 
-    // FIXME - error states
+    private ResponseEntity<String> recordVideo(CaptureRecordParams captureRecordParams) {
+        HttpEntity<CaptureRecordParams> entity = new HttpEntity<>(captureRecordParams, headers);
+        return restTemplate.exchange(
+            urlWithPort("/api/captures/record"), HttpMethod.POST, entity, String.class);
+    }
 
     // ===========================================
     // [ /api/captures/stop ] POST
     // ===========================================
 
     @Test
-    public void shouldStop() throws JSONException {
+    public void shouldStopNoParams() throws JSONException {
 
-        startVideo(CAPTURE_START_PARAMS_MIN);
+        recordVideo(CAPTURE_RECORD_PARAMS_MIN);
         ResponseEntity<String> response = stopVideo();
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
             "    'type': 'manual'," +
-            "    'state': 'stopped'," +
+            "    'recording': false," +
             "    'project': 'Moon Rocket'," +
             "    'feature': 'Bob Feature'," +
             "    'scenario': 'Dave Scenario'," +
@@ -387,22 +385,16 @@ public class CaptureControllerTest extends AbstractControllerTest {
         assertThat(environmentMap.get("java.awt.graphicsenv")).isNotEmpty();
     }
 
-    // FIXME - error states
-
-    // ===========================================
-    // [ /api/captures/finish ] POST
-    // ===========================================
-
     @Test
-    public void shouldFinishWithMinParams() throws JSONException {
+    public void shouldStopWithMinParams() throws JSONException {
 
-        startVideo(CAPTURE_START_PARAMS_MIN);
-        ResponseEntity<String> response = finishVideo(CAPTURE_FINISH_PARAMS_MIN);
+        recordVideo(CAPTURE_RECORD_PARAMS_MIN);
+        ResponseEntity<String> response = stopVideo(CAPTURE_STOP_PARAMS_MIN);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
             "    'type': 'manual'," +
-            "    'state': 'finished'," +
+            "    'recording': false," +
             "    'project': 'Moon Rocket'," +
             "    'feature': 'Bob Feature'," +
             "    'scenario': 'Dave Scenario'," +
@@ -426,16 +418,16 @@ public class CaptureControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void shouldFinishWithMaxParams() throws JSONException {
+    public void shouldStopWithMaxParams() throws JSONException {
 
-        startVideo(CAPTURE_START_PARAMS_MAX);
-        ResponseEntity<String> response = finishVideo(CAPTURE_FINISH_PARAMS_MAX);
+        recordVideo(CAPTURE_RECORD_PARAMS_MAX);
+        ResponseEntity<String> response = stopVideo(CAPTURE_STOP_PARAMS_MAX);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
             "    'type': 'automated'," +
             "    'sid': 5678," +
-            "    'state': 'finished'," +
+            "    'recording': false," +
             "    'project': 'Google Search'," +
             "    'feature': 'Advanced Search'," +
             "    'scenario': 'Search by Country!'," +
@@ -468,7 +460,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
         JsonPathAssert.assertThat(json).jsonPathAsString("$.finished").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.durationSeconds").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.folder")
-            .matches("^google-search/5678/\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[\\w\\d]{6}$");
+            .matches("^5678/\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[\\w\\d]{6}$");
         JsonPathAssert.assertThat(json).jsonPathAsString("$.id").isNotNull().hasSize(26);
         JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.x").isNotNull();
         JsonPathAssert.assertThat(json).jsonPathAsString("$.capture.y").isNotNull();
@@ -478,20 +470,34 @@ public class CaptureControllerTest extends AbstractControllerTest {
         assertThat(environmentMap.get("java.awt.graphicsenv")).isNotEmpty();
     }
 
+    // Private methods
+
+    private ResponseEntity<String> stopVideo() {
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        return restTemplate.exchange(
+            urlWithPort("/api/captures/stop"), HttpMethod.POST, entity, String.class);
+    }
+
+    private ResponseEntity<String> stopVideo(CaptureStopParams captureStopParams) {
+        HttpEntity<CaptureStopParams> entity = new HttpEntity<>(captureStopParams, headers);
+        return restTemplate.exchange(
+            urlWithPort("/api/captures/stop"), HttpMethod.POST, entity, String.class);
+    }
+
     // ===========================================
     // [ /api/captures/status ] GET
     // ===========================================
 
     @Test
-    public void shouldGetsStatusWithStartedUsingMinParamsAndNoRecord() throws JSONException {
+    public void shouldGetsStatusWithStartedUsingMinParams() throws JSONException {
 
-        startVideo(CAPTURE_START_PARAMS_MIN_NO_RECORD);
+        recordVideo(CAPTURE_RECORD_PARAMS_MIN);
         ResponseEntity<String> response = statusVideo();
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +
             "    'type': 'manual'," +
-            "    'state': 'started'," +
+            "    'recording': true," +
             "    'project': 'Moon Rocket'," +
             "    'feature': 'Bob Feature'," +
             "    'scenario': 'Dave Scenario'" +
@@ -500,6 +506,14 @@ public class CaptureControllerTest extends AbstractControllerTest {
         DocumentContext json = JsonPath.parse(response.getBody());
         Map<String, String> environmentMap = json.read("$.environment");
         assertThat(environmentMap.get("java.awt.graphicsenv")).isNotEmpty();
+    }
+
+    // Private methods
+
+    private ResponseEntity<String> statusVideo() {
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        return restTemplate.exchange(
+            urlWithPort("/api/captures/status"), HttpMethod.GET, entity, String.class);
     }
 
     // ===========================================
@@ -523,6 +537,15 @@ public class CaptureControllerTest extends AbstractControllerTest {
         assertThat(videoFile).doesNotExist();
     }
 
+    // Private methods
+
+    private ResponseEntity<Void> deleteVideo(String captureId) {
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        return restTemplate
+            .exchange(urlWithPort("/api/captures/" + captureId), HttpMethod.DELETE, entity,
+                Void.class);
+    }
+
     // ===========================================
     // [ /api/captures/cancel ]
     // ===========================================
@@ -531,26 +554,26 @@ public class CaptureControllerTest extends AbstractControllerTest {
     public void shouldCancelFromIdleState() throws JSONException {
         ResponseEntity<String> response = statusVideo();
 
-        cancelAndAssertStatusIsIdle("$.state", response);
+        cancelAndAssertStatusIsIdle(null, response);
     }
 
     @Test
     public void shouldCancelFromStartedState() throws JSONException {
-        ResponseEntity<String> response = startVideo(CAPTURE_START_PARAMS_MIN_NO_RECORD);
+        ResponseEntity<String> response = recordVideo(CAPTURE_RECORD_PARAMS_MIN);
 
         cancelAndAssertStatusIsIdle("$.feature", response);
     }
 
     @Test
     public void shouldCancelFromRecordingState() throws JSONException {
-        ResponseEntity<String> response = startVideo(CAPTURE_START_PARAMS_MIN);
+        ResponseEntity<String> response = recordVideo(CAPTURE_RECORD_PARAMS_MIN);
 
         cancelAndAssertStatusIsIdle("$.started", response);
     }
 
     @Test
     public void shouldCancelFromStoppedState() throws JSONException {
-        startVideo(CAPTURE_START_PARAMS_MIN);
+        recordVideo(CAPTURE_RECORD_PARAMS_MIN);
         ResponseEntity<String> response = stopVideo();
 
         cancelAndAssertStatusIsIdle("$.finished", response);
@@ -558,10 +581,33 @@ public class CaptureControllerTest extends AbstractControllerTest {
 
     @Test
     public void shouldCancelFromFinishedState() throws JSONException {
-        startVideo(CAPTURE_START_PARAMS_MIN);
-        ResponseEntity<String> response = finishVideo(CAPTURE_FINISH_PARAMS_MIN);
+        recordVideo(CAPTURE_RECORD_PARAMS_MIN);
+        ResponseEntity<String> response = stopVideo(CAPTURE_STOP_PARAMS_MIN);
 
-        cancelAndAssertStatusIsIdle("$.testStatus", response);
+        cancelAndAssertStatusIsIdle("$.finished", response);
+    }
+
+    // Private methods
+
+    private void cancelAndAssertStatusIsIdle(String initialCheck, ResponseEntity<String> response)
+        throws JSONException {
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        DocumentContext json = JsonPath.parse(response.getBody());
+        if (initialCheck != null) {
+            JsonPathAssert.assertThat(json).jsonPathAsString(initialCheck).isNotNull();
+        }
+
+        cancelVideo();
+
+        response = statusVideo();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        JSONAssert.assertEquals("{'recording' : false}", response.getBody(), true);
+    }
+
+    private ResponseEntity<String> cancelVideo() {
+        HttpEntity<CaptureStopParams> entity = new HttpEntity<>(headers);
+        return restTemplate.exchange(
+            urlWithPort("/api/captures/cancel"), HttpMethod.POST, entity, String.class);
     }
 
     // ===========================================
@@ -607,97 +653,6 @@ public class CaptureControllerTest extends AbstractControllerTest {
 
     // Private methods
 
-    /**
-     * Call /api//videos GET endpoint.
-     */
-    private ResponseEntity<String> videos() {
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-        return restTemplate
-            .exchange(urlWithPort("/api/captures"), HttpMethod.GET, entity, String.class);
-    }
-
-    /**
-     * Call /api/captures/[captureId] GET endpoint.
-     */
-    private ResponseEntity<String> video(String captureId) {
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-        return restTemplate.exchange(
-            urlWithPort("/api/captures/" + captureId), HttpMethod.GET, entity, String.class);
-    }
-
-    /**
-     * Call /api/captures/start POST endpoint.
-     */
-    private ResponseEntity<String> startVideo(CaptureStartParams captureStartParams) {
-        HttpEntity<CaptureStartParams> entity = new HttpEntity<>(captureStartParams, headers);
-        return restTemplate.exchange(
-            urlWithPort("/api/captures/start"), HttpMethod.POST, entity, String.class);
-    }
-
-    private ResponseEntity<String> startVideo() {
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-        return restTemplate.exchange(
-            urlWithPort("/api/captures/start"), HttpMethod.POST, entity, String.class);
-    }
-
-    /**
-     * Call /api/captures/record POST endpoint.
-     */
-    private ResponseEntity<String> recordVideo() {
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-        return restTemplate.exchange(
-            urlWithPort("/api/captures/record"), HttpMethod.POST, entity, String.class);
-    }
-
-    /**
-     * Call /api/captures/stop POST endpoint.
-     */
-    private ResponseEntity<String> stopVideo() {
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-        return restTemplate.exchange(
-            urlWithPort("/api/captures/stop"), HttpMethod.POST, entity, String.class);
-    }
-
-    /**
-     * Call /api/captures/finish POST endpoint.
-     */
-    private ResponseEntity<String> finishVideo(CaptureFinishParams captureFinishParams) {
-        HttpEntity<CaptureFinishParams> entity = new HttpEntity<>(captureFinishParams, headers);
-        return restTemplate.exchange(
-            urlWithPort("/api/captures/finish"), HttpMethod.POST, entity, String.class);
-    }
-
-    /**
-     * Call /api/captures/cancel POST endpoint.
-     */
-    private ResponseEntity<String> cancelVideo() {
-        HttpEntity<CaptureFinishParams> entity = new HttpEntity<>(headers);
-        return restTemplate.exchange(
-            urlWithPort("/api/captures/cancel"), HttpMethod.POST, entity, String.class);
-    }
-
-    /**
-     * Call /api/captures/status GET endpoint.
-     */
-    private ResponseEntity<String> statusVideo() {
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-        return restTemplate.exchange(
-            urlWithPort("/api/captures/status"), HttpMethod.GET, entity, String.class);
-    }
-
-    /**
-     * Call /api/captures/[captureId] DELETE endpoint.
-     */
-    private ResponseEntity<Void> deleteVideo(String captureId) {
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-        return restTemplate
-            .exchange(urlWithPort("/api/captures/" + captureId), HttpMethod.DELETE, entity,
-                Void.class);
-    }
-
-    /**
-     * Call /api/captures/upload/[captureId] endpoint.
-     */
     private ResponseEntity<String> uploadById(String captureId) {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(
@@ -705,38 +660,16 @@ public class CaptureControllerTest extends AbstractControllerTest {
             String.class);
     }
 
-    /**
-     * Call /api/captures/upload endpoint.
-     */
     private ResponseEntity<String> uploadStatus() {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         return restTemplate
             .exchange(urlWithPort("/api/captures/upload"), HttpMethod.GET, entity, String.class);
     }
 
-    /**
-     * Grabs the first `state` in the status array.
-     */
     private String uploadStatusState() {
         ResponseEntity<String> response = uploadStatus();
         String state = JsonPath.parse(response.getBody()).read("$[0].state");
         return state;
-    }
-
-    /**
-     * Cancel and assert that the status is idle.
-     */
-    private void cancelAndAssertStatusIsIdle(String initialCheck, ResponseEntity<String> response)
-        throws JSONException {
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        DocumentContext json = JsonPath.parse(response.getBody());
-        JsonPathAssert.assertThat(json).jsonPathAsString(initialCheck).isNotNull();
-
-        cancelVideo();
-
-        response = statusVideo();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        JSONAssert.assertEquals("{'state' : 'idle'}", response.getBody(), true);
     }
 
 }

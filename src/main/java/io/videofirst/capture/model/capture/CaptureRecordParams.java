@@ -40,7 +40,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CaptureStartParams {
+public class CaptureRecordParams {
 
     // Optional
 
@@ -53,12 +53,7 @@ public class CaptureStartParams {
     private String description;
     private DisplayConfig display;
     private String author;
-    private String record;
     private String force;
-
-    public boolean record() {
-        return record == null || "true".equalsIgnoreCase(record.trim());
-    }
 
     public boolean force() {
         return force != null && "true".equalsIgnoreCase(force.trim());

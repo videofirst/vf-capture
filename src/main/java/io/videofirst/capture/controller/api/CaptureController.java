@@ -24,9 +24,9 @@
 package io.videofirst.capture.controller.api;
 
 import io.videofirst.capture.model.capture.Capture;
-import io.videofirst.capture.model.capture.CaptureFinishParams;
-import io.videofirst.capture.model.capture.CaptureStartParams;
+import io.videofirst.capture.model.capture.CaptureRecordParams;
 import io.videofirst.capture.model.capture.CaptureStatus;
+import io.videofirst.capture.model.capture.CaptureStopParams;
 import io.videofirst.capture.model.capture.CaptureSummary;
 import io.videofirst.capture.model.capture.UploadStatus;
 import io.videofirst.capture.service.CaptureService;
@@ -67,31 +67,27 @@ public class CaptureController {
         return capture;
     }
 
-    @PostMapping("/start")
-    public CaptureStatus start(@RequestBody(required = false) CaptureStartParams param) {
-        CaptureStatus status = captureService.start(param);
-        return status;
-    }
-
     @PostMapping("/record")
-    public CaptureStatus record() {
-        CaptureStatus status = captureService.record();
+    public CaptureStatus record(
+        @RequestBody(required = false) CaptureRecordParams captureRecordParams) {
+        if (captureRecordParams == null) {
+            captureRecordParams = CaptureRecordParams.builder().build();
+        }
+        CaptureStatus status = captureService.record(captureRecordParams);
         return status;
     }
 
     @PostMapping("/stop")
-    public CaptureStatus stop() {
-        CaptureStatus status = captureService.stop();
+    public CaptureStatus stop(
+        @RequestBody(required = false) CaptureStopParams captureStopParams) {
+        if (captureStopParams == null) {
+            captureStopParams = CaptureStopParams.builder().build();
+        }
+        CaptureStatus status = captureService.stop(captureStopParams);
         return status;
     }
 
-    @PostMapping("finish")
-    public CaptureStatus finish(@RequestBody CaptureFinishParams captureFinishParams) {
-        CaptureStatus status = captureService.finish(captureFinishParams);
-        return status;
-    }
-
-    @PostMapping("cancel")
+    @PostMapping("/cancel")
     public CaptureStatus cancel() {
         CaptureStatus status = captureService.cancel();
         return status;

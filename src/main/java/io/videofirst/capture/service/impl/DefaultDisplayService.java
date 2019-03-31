@@ -122,7 +122,7 @@ public class DefaultDisplayService extends JWindow implements Observer {
 
         g.setColor(displayText.getColor());
         final String message =
-            captureStatus != null ? ("Status : " + captureStatus.getState().toString())
+            captureStatus != null ? ("is recording : " + captureStatus.isRecording())
                 : ""; // FIXME improve
         FontMetrics metrics = g.getFontMetrics();
         g.drawString(message, displayText.getX(), displayText.getY() + metrics.getHeight());

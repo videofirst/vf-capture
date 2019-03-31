@@ -27,8 +27,9 @@ import static io.videofirst.capture.ui.constants.UiConstants.F;
 import static io.videofirst.capture.ui.constants.UiConstants.M_1;
 import static io.videofirst.capture.ui.constants.UiConstants.P;
 
-import io.videofirst.capture.enums.CaptureState;
+import io.videofirst.capture.model.capture.CaptureRecordParams;
 import io.videofirst.capture.model.capture.CaptureStatus;
+import io.videofirst.capture.model.capture.CaptureStopParams;
 import io.videofirst.capture.service.CaptureService;
 import io.videofirst.capture.ui.components.VfButton;
 import java.awt.event.MouseEvent;
@@ -57,6 +58,8 @@ public class RecordPanel extends VfPanel implements Observer, MouseListener {
     // Other fields
 
     private VfButton recordButton, stopButton;
+    private CaptureRecordParams captureRecordParams = new CaptureRecordParams();
+    private CaptureStopParams captureStopParams = new CaptureStopParams();
 
     public RecordPanel(CaptureService captureService) {
         super(SIZES);
@@ -120,8 +123,8 @@ public class RecordPanel extends VfPanel implements Observer, MouseListener {
         CaptureStatus captureStatus = this.captureService.status();
         //DisplayUpdate displayUpdate = this.captureService.getDisplayUpdate();
 
-        recordButton.setEnabled(captureStatus.getState() == CaptureState.idle);
-        stopButton.setEnabled(captureStatus.getState() != CaptureState.idle);
+        recordButton.setEnabled(!captureStatus.isRecording());
+        stopButton.setEnabled(captureStatus.isRecording());
     }
 
     @Override
@@ -131,9 +134,9 @@ public class RecordPanel extends VfPanel implements Observer, MouseListener {
             if (button.isEnabled()) {
                 String name = button.getName();
                 if ("Record".equals(name)) {
-                    this.captureService.record();
+                    this.captureService.record(captureRecordParams);
                 } else if ("Stop".equals(name)) {
-                    this.captureService.stop();
+                    this.captureService.stop(captureStopParams);
                 }
             }
         }

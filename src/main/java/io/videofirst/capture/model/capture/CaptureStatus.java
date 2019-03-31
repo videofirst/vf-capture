@@ -32,7 +32,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.videofirst.capture.configuration.properties.CaptureDefaults;
-import io.videofirst.capture.enums.CaptureState;
 import io.videofirst.capture.enums.CaptureType;
 import io.videofirst.capture.enums.TestStatus;
 import io.videofirst.capture.exception.InvalidParameterException;
@@ -54,21 +53,21 @@ import lombok.Getter;
  * @author Bob Marks
  */
 @JsonInclude(Include.NON_NULL)
-@JsonPropertyOrder({"state", "project", "feature", "scenario", "started", "finished",
+@JsonPropertyOrder({"isRecording", "project", "feature", "scenario", "started", "finished",
     "durationSeconds", "folder", "id", "capture", "format", "meta", "description", "environment",
     "testStatus", "testError", "testLogs"})
 public class CaptureStatus {
 
     // Constants
 
-    public static CaptureStatus IDLE = new CaptureStatus();
+    public static CaptureStatus STOPPED = new CaptureStatus();
 
     @Getter
-    private final CaptureState state; // Show state attribute ...
+    private final boolean isRecording; // Show state attribute ...
 
     @Getter
     @JsonIgnore
-    private final CaptureStartParams captureStartParams; // ... but not this one ...
+    private final CaptureRecordParams captureRecordParams; // ... but not this one ...
 
     @Getter
     @JsonIgnore
@@ -78,140 +77,106 @@ public class CaptureStatus {
      * Private no-args constructor.
      */
     private CaptureStatus() {
-        this(new CaptureStartParams(), new Capture(), CaptureState.idle);
+        this(new CaptureRecordParams(), new Capture(), false);
     }
 
     /**
      * This constructor is also private. All access to these are via a static builder method.
      */
-    private CaptureStatus(CaptureStartParams captureStartParams, Capture capture,
-        CaptureState state) {
-        this.captureStartParams = captureStartParams;
+    private CaptureStatus(CaptureRecordParams captureRecordParams, Capture capture,
+        boolean isRecording) {
+        this.captureRecordParams = captureRecordParams;
         this.capture = capture;
-        this.state = state;
+        this.isRecording = isRecording;
     }
 
     // Static methods
 
     /**
-     * Start a new CaptureStatus object which requires start parameters to get it kicked off.
-     */
-    public static CaptureStatus start(Info info, CaptureStartParams captureStartParams) {
-
-        // 1) Validation
-        validateInfo(info);
-        validateProject(captureStartParams.getProject(), info.getDefaults());
-        if (captureStartParams == null) {
-            throw new VideoStatusException("Please supply a valid capture start parameter");
-        } // is this correct?
-
-        // 3) Create and return capture object
-        Capture capture = Capture.builder()
-            .project(ConfigUtils
-                .parseString(captureStartParams.getProject(), info.getDefaults().getProject()))
-            .feature(VfCaptureUtils.nullTrim(captureStartParams.getFeature()))
-            .scenario(VfCaptureUtils.nullTrim(captureStartParams.getScenario()))
-            .type(captureStartParams.getType() == null ? DEFAULT_CAPTURE_TYPE
-                : captureStartParams.getType())
-            .sid(captureStartParams.getSid())
-            // optional
-            .meta(captureStartParams.getMeta())
-            .description(VfCaptureUtils.nullTrim(captureStartParams.getDescription()))
-            .environment(info.getInfo().getEnvironment())
-
-            .build();
-
-        // 4) Create CaptureStatus object and return
-        CaptureStatus captureStatus = new CaptureStatus(captureStartParams, capture,
-            CaptureState.started);
-        return captureStatus;
-    }
-
-    /**
      * Generate a CaptureStatus object from an existing capture status object
      */
-    public CaptureStatus record(DisplayCapture displayCapture) {
-        if (state != CaptureState.recording) {
-            // 1) Set started to now
+    public CaptureStatus record(Info info, CaptureRecordParams captureRecordParams,
+        DisplayCapture displayCapture) {
+        if (!isRecording) {
+            // 1) Validation
+            validateInfo(info);
+            validateProject(captureRecordParams.getProject(), info.getDefaults());
+
+            // 2) Set started to now
             LocalDateTime started = LocalDateTime.now();
 
-            // 2) Create id from started time + random string
+            // 3) Create id from started time + random string
             String id = VfCaptureUtils.generateId(started);
 
-            // 3) Create folder (check if sid is set)
-            boolean useSid = captureStartParams.getSid() != null;
-            List<String> folders = useSid ?
-                VfCaptureUtils.getFolderFriendlyList(getProject(),
-                    String.valueOf(captureStartParams.getSid()), id) :
-                VfCaptureUtils.getFolderFriendlyList(getProject(), getFeature(), getScenario(), id);
-            String folder = String.join("/", folders);
-
-            // 4) Create and return capture object from existing one
-            Capture capture = this.getCapture().toBuilder()
+            // 4) Create capture object
+            Capture capture = Capture.builder()
+                .project(ConfigUtils
+                    .parseString(captureRecordParams.getProject(), info.getDefaults().getProject()))
+                .feature(VfCaptureUtils.nullTrim(captureRecordParams.getFeature()))
+                .scenario(VfCaptureUtils.nullTrim(captureRecordParams.getScenario()))
+                .type(captureRecordParams.getType() == null ? DEFAULT_CAPTURE_TYPE
+                    : captureRecordParams.getType())
+                .sid(captureRecordParams.getSid())
+                // optional
+                .meta(captureRecordParams.getMeta())
+                .description(VfCaptureUtils.nullTrim(captureRecordParams.getDescription()))
+                .environment(info.getInfo().getEnvironment())
                 .started(started)
-                .folder(folder)
                 .id(id)
                 .capture(displayCapture)
                 .format(FORMAT_AVI)
                 .build();
 
-            // 5) Create VideoStatus object and return
-            CaptureStatus captureStatus = new CaptureStatus(this.getCaptureStartParams(), capture,
-                CaptureState.recording);
+            // 4) Create folder (check if sid is set)
+            boolean useSid = captureRecordParams.getSid() != null;
+            List<String> folders = useSid ?
+                VfCaptureUtils.getFolderFriendlyList(
+                    getProject(),
+                    String.valueOf(capture.getSid()),
+                    id) :
+                VfCaptureUtils.getFolderFriendlyList(
+                    capture.getProject(),
+                    capture.getFeature(),
+                    capture.getScenario(),
+                    id);
+            capture.setFolder(String.join("/", folders));
+
+            // 5) Create CaptureStatus object and return
+            CaptureStatus captureStatus = new CaptureStatus(this.getCaptureRecordParams(), capture,
+                true);
             return captureStatus;
         }
 
-        return this; // just return the old one
+        return this; // just return the current one
     }
 
-    public CaptureStatus stop() {
-        if (state == CaptureState.recording) {
+    public CaptureStatus stop(CaptureStopParams captureStopParams) {
+        if (isRecording) {
 
             // 1) Update finish and return
             LocalDateTime finished = LocalDateTime.now();
-            Capture capture = this.getCapture().toBuilder()
+
+            Capture oldCapture = this.getCapture();
+            Capture capture = oldCapture.toBuilder()
                 .finished(finished)
+                .meta(VfCaptureUtils.mergeMaps(oldCapture.getMeta(), captureStopParams.getMeta()))
+                .description(
+                    captureStopParams.getDescription() != null && !captureStopParams
+                        .getDescription()
+                        .isEmpty() ? captureStopParams.getDescription().trim()
+                        : oldCapture.getDescription())
+                .testStatus(captureStopParams.getTestStatus())
+                .testError(VfCaptureUtils.nullTrim(captureStopParams.getError()))
+                .testStackTrace(VfCaptureUtils.nullTrim(captureStopParams.getStackTrace()))
+                .testLogs(captureStopParams.getLogs())
                 .build();
 
             // 2) Create VideoStatus object and return
-            CaptureStatus captureStatus = new CaptureStatus(this.getCaptureStartParams(), capture,
-                CaptureState.stopped);
+            CaptureStatus captureStatus = new CaptureStatus(this.getCaptureRecordParams(), capture,
+                false);
             return captureStatus;
         }
         return this;
-    }
-
-    public CaptureStatus finish(CaptureFinishParams captureFinishParams) {
-
-        if (captureFinishParams == null) {
-            throw new VideoStatusException("Please supply a valid capture finish parameter");
-        }
-
-        // 1) Check if still recording and finish if that's the case.
-        if (state == CaptureState.recording) {
-            stop();
-        }
-
-        // 2) Create capture object
-
-        Capture oldCapture = this.getCapture();
-        Capture capture = oldCapture.toBuilder()
-            .meta(VfCaptureUtils.mergeMaps(oldCapture.getMeta(), captureFinishParams.getMeta()))
-            .description(
-                captureFinishParams.getDescription() != null && !captureFinishParams
-                    .getDescription()
-                    .isEmpty() ? captureFinishParams.getDescription().trim()
-                    : oldCapture.getDescription())
-            .testStatus(captureFinishParams.getTestStatus())
-            .testError(VfCaptureUtils.nullTrim(captureFinishParams.getError()))
-            .testStackTrace(VfCaptureUtils.nullTrim(captureFinishParams.getStackTrace()))
-            .testLogs(captureFinishParams.getLogs())
-            .build();
-
-        // 3) Create finished VideoStatus object and return
-        CaptureStatus captureStatus = new CaptureStatus(this.getCaptureStartParams(), capture,
-            CaptureState.finished);
-        return captureStatus;
     }
 
     // Public getters (for JSON)

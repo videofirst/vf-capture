@@ -24,9 +24,9 @@
 package io.videofirst.capture.service;
 
 import io.videofirst.capture.model.capture.Capture;
-import io.videofirst.capture.model.capture.CaptureFinishParams;
-import io.videofirst.capture.model.capture.CaptureStartParams;
+import io.videofirst.capture.model.capture.CaptureRecordParams;
 import io.videofirst.capture.model.capture.CaptureStatus;
+import io.videofirst.capture.model.capture.CaptureStopParams;
 import io.videofirst.capture.model.capture.CaptureSummary;
 import io.videofirst.capture.model.display.DisplayUpdate;
 import java.util.List;
@@ -55,24 +55,14 @@ public interface CaptureService {
     CaptureStatus status();
 
     /**
-     * Start the capture process (but not necessarily the actual screen recording).
+     * Start recording.
      */
-    CaptureStatus start(CaptureStartParams captureStartParams);
-
-    /**
-     * Start recording the screen (no parameters required).
-     */
-    CaptureStatus record();
+    CaptureStatus record(CaptureRecordParams captureRecordParams);
 
     /**
      * Stop recordinng the screen (no parameters required).
      */
-    CaptureStatus stop();
-
-    /**
-     * Finish capturing and finish video / test.
-     */
-    CaptureStatus finish(CaptureFinishParams captureFinishParams);
+    CaptureStatus stop(CaptureStopParams captureStopParams);
 
     /**
      * Cancel any current captures.

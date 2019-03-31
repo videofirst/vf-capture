@@ -6,13 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-- Remove `/api/captures/start` endpoint and merge into `/record` (optional parameter).
-- Remove `/api/capturesfinish` endpoint and merge into `/stop` (optional parameter).
 - Create a new `/api/captures/preview` endpoint which displays borders etc (but doesn't record). Note, cancel endpoint will also cancel preview.
-- Simplify capture state by removing states [ stopped, finished ] so we have 3 states [ idle, recording, stopped ]
 - Create `/edit` endpoint which can edit the test data associated with a capture?
 - New UI screen which only loads of configuration mode is not headless - record, stop
 - New UI panel to show a table of uploads.
+- Remove `/api` from API calls (not needed now that the UI is removed).
 - Change uploading so it works out of the box with Video First App.
 - Remove "alwaysOnTop" - make border always on top and background always in background.
 - Split docs into 2 i.e.
@@ -46,6 +44,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Updated spring security so that the UI doesn't require browser based basic auth.
 - Renamed all VFT (Video First Testing) to VF (Video First).  Also refactor `co.videofirst` to
   `io.videofirst`.
+- Removed `/api/captures/start` endpoint and merge into `/record` (optional parameter).
+- Removed `/api/captures/finish` endpoint and merge into `/stop` (optional parameter).
+- Simplify capture state by removing 5 states and having a simple boolean [ recording: true / false ]
 
 
 ## [0.1.0] - 2018-03-13

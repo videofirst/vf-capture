@@ -1,6 +1,10 @@
 # Test configuration for integration testing.
 capture_config:
 
+    ui:
+        # Don't show UI as part of testing
+        display: false
+
     # Test security settings
     security:
 

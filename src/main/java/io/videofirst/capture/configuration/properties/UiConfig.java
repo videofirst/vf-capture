@@ -34,5 +34,5 @@ import lombok.Data;
 public class UiConfig {
 
     private boolean display;
-    
+
 }

@@ -21,15 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.videofirst.capture.enums;
+package io.videofirst.capture.model.capture;
+
+import io.videofirst.capture.enums.TestStatus;
+import io.videofirst.capture.model.TestLog;
+import java.util.List;
+import java.util.Map;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
- * Capture state enum. 
+ * Model object which defines how to finish a capture.
  *
  * @author Bob Marks
  */
-public enum CaptureState {
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class CaptureStopParams {
 
-    idle, started, recording, stopped, finished
+    // Mandatory
+
+    private TestStatus testStatus;
+
+    // Optional
+
+    private Map<String, String> meta; // merge / override with start parameters
+    private String description; // override start params if set
+    private String error;
+    private String stackTrace;
+    private List<TestLog> logs;
+
+    // e.g. readyness, triggers, thresholds
 
 }
