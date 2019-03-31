@@ -48,7 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Bob Marks
  */
 @RestController
-@RequestMapping("/api/captures")
+@RequestMapping("/captures")
 @RequiredArgsConstructor
 public class CaptureController {
 

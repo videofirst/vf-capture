@@ -45,14 +45,14 @@ import org.springframework.http.ResponseEntity;
 public class InfoControllerTest extends AbstractControllerTest {
 
     // ===========================================
-    // [ /api ] GET
+    // [ / ] GET
     // ===========================================
 
     @Test
     public void shouldRetrieveInfo() throws JSONException {
 
         ResponseEntity<String> response = restTemplate.exchange(
-            urlWithPort("/api"), HttpMethod.GET, new HttpEntity<>(headers), String.class);
+            urlWithPort("/"), HttpMethod.GET, new HttpEntity<>(headers), String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         String expectedJson = "{" +

@@ -10,7 +10,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Create `/edit` endpoint which can edit the test data associated with a capture?
 - New UI screen which only loads of configuration mode is not headless - record, stop
 - New UI panel to show a table of uploads.
-- Remove `/api` from API calls (not needed now that the UI is removed).
 - Change uploading so it works out of the box with Video First App.
 - Remove "alwaysOnTop" - make border always on top and background always in background.
 - Split docs into 2 i.e.
@@ -30,6 +29,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Create `ffmpeg` support for custom screen capture.
 - Create test Linux / Windows service (https://docs.spring.io/spring-boot/docs/current/reference/html/deployment-install.html)
 
+
 ## [0.2.0] - (IN PROGRESS)
 ### Added
 - Add ability to _force_ a start capture using new `force` parameter (ideal for programmatic access).
@@ -47,6 +47,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Removed `/api/captures/start` endpoint and merge into `/record` (optional parameter).
 - Removed `/api/captures/finish` endpoint and merge into `/stop` (optional parameter).
 - Simplify capture state by removing 5 states and having a simple boolean [ recording: true / false ]
+- Removed `/api` from API calls (not needed now that the UI is removed).
 
 
 ## [0.1.0] - 2018-03-13

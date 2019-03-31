@@ -34,16 +34,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author Bob Marks
  */
 @Controller
-@RequestMapping("/")
+@RequestMapping("/docs")
 @RequiredArgsConstructor
 public class UiController {
 
-    @GetMapping("/")
-    public String showUi() {
-        return "/index.html";
-    }
-
-    @GetMapping("/docs")
+    @GetMapping
     public String showDocs() {
         return "redirect:/swagger-ui.html";
     }

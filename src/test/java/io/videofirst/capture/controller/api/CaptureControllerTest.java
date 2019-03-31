@@ -107,7 +107,7 @@ public class CaptureControllerTest extends AbstractControllerTest {
         .build();
 
     // ===========================================
-    // [ /api/captures ] GET
+    // [ /captures ] GET
     // ===========================================
 
     @Test
@@ -144,16 +144,16 @@ public class CaptureControllerTest extends AbstractControllerTest {
     // Private methods
 
     /**
-     * Call /api/captures GET endpoint.
+     * Call /captures GET endpoint.
      */
     private ResponseEntity<String> videos() {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         return restTemplate
-            .exchange(urlWithPort("/api/captures"), HttpMethod.GET, entity, String.class);
+            .exchange(urlWithPort("/captures"), HttpMethod.GET, entity, String.class);
     }
 
     // ===========================================
-    // [ /api/captures/<captureId> ] GET
+    // [ /captures/<captureId> ] GET
     // ===========================================
 
     @Test
@@ -192,16 +192,16 @@ public class CaptureControllerTest extends AbstractControllerTest {
     // Private methods
 
     /**
-     * Call /api/captures/[captureId] GET endpoint.
+     * Call /captures/[captureId] GET endpoint.
      */
     private ResponseEntity<String> video(String captureId) {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(
-            urlWithPort("/api/captures/" + captureId), HttpMethod.GET, entity, String.class);
+            urlWithPort("/captures/" + captureId), HttpMethod.GET, entity, String.class);
     }
 
     // ===========================================
-    // [ /api/captures/record ] POST
+    // [ /captures/record ] POST
     // ===========================================
 
     @Test
@@ -341,17 +341,17 @@ public class CaptureControllerTest extends AbstractControllerTest {
     private ResponseEntity<String> recordVideo() {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(
-            urlWithPort("/api/captures/record"), HttpMethod.POST, entity, String.class);
+            urlWithPort("/captures/record"), HttpMethod.POST, entity, String.class);
     }
 
     private ResponseEntity<String> recordVideo(CaptureRecordParams captureRecordParams) {
         HttpEntity<CaptureRecordParams> entity = new HttpEntity<>(captureRecordParams, headers);
         return restTemplate.exchange(
-            urlWithPort("/api/captures/record"), HttpMethod.POST, entity, String.class);
+            urlWithPort("/captures/record"), HttpMethod.POST, entity, String.class);
     }
 
     // ===========================================
-    // [ /api/captures/stop ] POST
+    // [ /captures/stop ] POST
     // ===========================================
 
     @Test
@@ -475,17 +475,17 @@ public class CaptureControllerTest extends AbstractControllerTest {
     private ResponseEntity<String> stopVideo() {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(
-            urlWithPort("/api/captures/stop"), HttpMethod.POST, entity, String.class);
+            urlWithPort("/captures/stop"), HttpMethod.POST, entity, String.class);
     }
 
     private ResponseEntity<String> stopVideo(CaptureStopParams captureStopParams) {
         HttpEntity<CaptureStopParams> entity = new HttpEntity<>(captureStopParams, headers);
         return restTemplate.exchange(
-            urlWithPort("/api/captures/stop"), HttpMethod.POST, entity, String.class);
+            urlWithPort("/captures/stop"), HttpMethod.POST, entity, String.class);
     }
 
     // ===========================================
-    // [ /api/captures/status ] GET
+    // [ /captures/status ] GET
     // ===========================================
 
     @Test
@@ -513,11 +513,11 @@ public class CaptureControllerTest extends AbstractControllerTest {
     private ResponseEntity<String> statusVideo() {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(
-            urlWithPort("/api/captures/status"), HttpMethod.GET, entity, String.class);
+            urlWithPort("/captures/status"), HttpMethod.GET, entity, String.class);
     }
 
     // ===========================================
-    // [ /api/captures/<captureId> ] DELETE
+    // [ /captures/<captureId> ] DELETE
     // ===========================================
 
     @Test
@@ -542,12 +542,12 @@ public class CaptureControllerTest extends AbstractControllerTest {
     private ResponseEntity<Void> deleteVideo(String captureId) {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         return restTemplate
-            .exchange(urlWithPort("/api/captures/" + captureId), HttpMethod.DELETE, entity,
+            .exchange(urlWithPort("/captures/" + captureId), HttpMethod.DELETE, entity,
                 Void.class);
     }
 
     // ===========================================
-    // [ /api/captures/cancel ]
+    // [ /captures/cancel ]
     // ===========================================
 
     @Test
@@ -607,11 +607,11 @@ public class CaptureControllerTest extends AbstractControllerTest {
     private ResponseEntity<String> cancelVideo() {
         HttpEntity<CaptureStopParams> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(
-            urlWithPort("/api/captures/cancel"), HttpMethod.POST, entity, String.class);
+            urlWithPort("/captures/cancel"), HttpMethod.POST, entity, String.class);
     }
 
     // ===========================================
-    // [ /api/captures/upload ]
+    // [ /captures/upload ]
     // ===========================================
 
     @Test
@@ -656,14 +656,14 @@ public class CaptureControllerTest extends AbstractControllerTest {
     private ResponseEntity<String> uploadById(String captureId) {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(
-            urlWithPort("/api/captures/upload/" + captureId), HttpMethod.POST, entity,
+            urlWithPort("/captures/upload/" + captureId), HttpMethod.POST, entity,
             String.class);
     }
 
     private ResponseEntity<String> uploadStatus() {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         return restTemplate
-            .exchange(urlWithPort("/api/captures/upload"), HttpMethod.GET, entity, String.class);
+            .exchange(urlWithPort("/captures/upload"), HttpMethod.GET, entity, String.class);
     }
 
     private String uploadStatusState() {

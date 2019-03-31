@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Bob Marks
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/")
 @RequiredArgsConstructor
 public class InfoController {
 
